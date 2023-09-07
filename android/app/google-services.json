@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "234947154935",
+    "project_id": "aiko-ben-expense-app",
+    "storage_bucket": "aiko-ben-expense-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:234947154935:android:8584063dc1edce5b5a94f2",
+        "android_client_info": {
+          "package_name": "com.example.aiko_ben_expense_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "234947154935-60591qqaoua5k7sq20uq773e50dtpcjh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmm3TeKKiQDt3HEKT2OYRlYzTnNwoRYzA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "234947154935-60591qqaoua5k7sq20uq773e50dtpcjh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
