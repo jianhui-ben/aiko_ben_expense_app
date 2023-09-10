@@ -112,6 +112,15 @@ class _RegisterState extends State<Register> {
                         }
                       },
                     )),
+                TextButton(
+                  child: const Text(
+                    'back to sign in',
+                    style: TextStyle(fontSize: 10),
+                  ),
+                  onPressed: () {
+                    widget.toggleView();
+                  },
+                ),
                 if (_errorText.isNotEmpty)
                   Container(
                     padding: const EdgeInsets.all(10),
