@@ -62,7 +62,8 @@ class _SignInState extends State<SignIn> {
     return loading ? Loading() : Scaffold(
         appBar: AppBar(
           elevation: 0.0,
-          title: Text("Sign In"),
+          title: Text("Sign in to Expense"),
+          titleTextStyle: appNameTextStyle,
         ),
             body: Container(
                 padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),

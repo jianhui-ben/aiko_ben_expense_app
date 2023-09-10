@@ -7,12 +7,22 @@ const textInputDecoration = InputDecoration(
   errorStyle: TextStyle(fontSize: 10), // Adjust the font size
 );
 
-ThemeData getCustomDarkTheme() {
+const appNameTextStyle = TextStyle(
+  color: Color(0xFF23036A),
+  fontSize: 30,
+  fontFamily: 'RockSalt',
+  fontWeight: FontWeight.w400,
+  height: 0.80,
+  letterSpacing: 0.18,
+);
+
+
+ThemeData getCustomTheme() {
   return ThemeData(
       useMaterial3: true,
       // Define the default brightness and colors.
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
+      // brightness: Brightness.dark,
+      // scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
       // Define the default `TextTheme`. Use this to specify the default
       // text styling for headlines, titles, bodies of text, and more.
       textTheme: TextTheme(
@@ -31,10 +41,11 @@ ThemeData getCustomDarkTheme() {
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderSide: BorderSide(width: 5.0),
+          borderSide: BorderSide(width: 1, color: Color(0xFF23036A)),
+          borderRadius: BorderRadius.circular(10),
         ),
         errorStyle: TextStyle(
-          fontSize: 16.0, // Customize error text font size
+          fontSize: 12.0, // Customize error text font size
           color: Colors.red, // Customize error text color
         ),
         // You can customize other InputDecoration properties here
