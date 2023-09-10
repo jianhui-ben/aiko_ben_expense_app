@@ -26,18 +26,9 @@ ThemeData getCustomTheme() {
       // Define the default `TextTheme`. Use this to specify the default
       // text styling for headlines, titles, bodies of text, and more.
       textTheme: TextTheme(
-        displayLarge: const TextStyle(
-          fontSize: 72,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+        labelLarge: TextStyle( // Customize the text style for buttons
+          fontSize: 12, // Text size
         ),
-        // ···
-        titleLarge: GoogleFonts.oswald(
-          fontSize: 30,
-          fontStyle: FontStyle.italic,
-        ),
-        bodyMedium: GoogleFonts.merriweather(),
-        displaySmall: GoogleFonts.pacifico(),
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
@@ -51,8 +42,9 @@ ThemeData getCustomTheme() {
         // You can customize other InputDecoration properties here
       ),
 
-      buttonTheme: ButtonThemeData(
-        buttonColor: Colors.white, //  <-- dark color
-        textTheme: ButtonTextTheme.primary, //  <-- this auto selects the right color
-      ));
+      // buttonTheme: ButtonThemeData(
+      //   buttonColor: Colors.white,
+      //   textTheme: ButtonTextTheme.primary, //  <-- this auto selects the right color
+      // )
+  );
 }

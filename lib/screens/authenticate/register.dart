@@ -49,6 +49,7 @@ class _RegisterState extends State<Register> {
         appBar: AppBar(
           elevation: 0.0,
           title: const Text("Register"),
+          titleTextStyle: appNameTextStyle,
         ),
         body: Container(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 50),
