@@ -11,6 +11,4 @@ class Category {
 
   Category(this.categoryId, this.categoryName, this.categoryIcon);
 
-
-
 }

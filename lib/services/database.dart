@@ -19,8 +19,8 @@ class DatabaseService {
       "transactionComment": transactionComment,
     };
     return await transactionsCollection
-        .doc(uid)
-        .set(newTransaction)
-        .onError((e, _) => print("Error writing document: $e"));
+        .doc(uid).collection('userTransactions')
+        .add(newTransaction)
+        .catchError((e) => print("Error adding document: $e"));
   }
 }

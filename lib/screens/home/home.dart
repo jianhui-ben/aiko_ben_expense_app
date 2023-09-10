@@ -1,10 +1,13 @@
 
+import 'package:aiko_ben_expense_app/models/user.dart';
+import 'package:aiko_ben_expense_app/screens/home/transactions_list.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
+import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
-
 
   @override
   State<Home> createState() => _HomeState();
@@ -16,6 +19,14 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+
+    String _defaultCategoryId = "123";
+    double _defaultTransactionAmoung = 100.0;
+    String _defaultTransactionComment = "comment";
+
+    final user = Provider.of<User?>(context);
+
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -42,7 +53,19 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      body: Placeholder(),
+      body: Column(
+        children: [
+          ElevatedButton(
+            child: const Text('add a default transaction'),
+            onPressed: () async {
+              await DatabaseService(uid: user?.uid).addNewTransaction(
+                  _defaultCategoryId, _defaultTransactionAmoung,
+                  _defaultTransactionComment);
+            },
+          ),
+          TransactionsList()
+        ],
+      )
     );
   }
 }
