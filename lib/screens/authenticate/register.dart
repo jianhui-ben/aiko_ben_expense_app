@@ -47,16 +47,16 @@ class _RegisterState extends State<Register> {
 
     return loading ? Loading() : Scaffold(
         appBar: AppBar(
+          toolbarHeight: 300,
           elevation: 0.0,
           title: const Text("Register"),
           titleTextStyle: appNameTextStyle,
         ),
         body: Container(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 50),
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 50),
             child: Form(
               key: _formKey,
               child: ListView(children: <Widget>[
-                const SizedBox(height: 100),
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: TextFormField(

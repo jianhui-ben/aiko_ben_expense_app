@@ -61,16 +61,16 @@ class _SignInState extends State<SignIn> {
 
     return loading ? Loading() : Scaffold(
         appBar: AppBar(
-          elevation: 0.0,
-          title: Text("Sign in to Expense"),
-          titleTextStyle: appNameTextStyle,
+            elevation: 0.0,
+            toolbarHeight: 300,
+            title: Text("Sign in to Expense"),
+            titleTextStyle: appNameTextStyle,
         ),
             body: Container(
-                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 50),
+                padding: EdgeInsets.symmetric(vertical: 0, horizontal: 50),
                 child: Form(
                   key: _formKey,
                   child: ListView(children: <Widget>[
-                    const SizedBox(height: 100),
                     Container(
                       padding: const EdgeInsets.all(10),
                       child: TextFormField(
