@@ -4,18 +4,14 @@ import 'package:google_fonts/google_fonts.dart';
 
 const textInputDecoration = InputDecoration(
   border: OutlineInputBorder(borderSide: BorderSide(width: 100)),
-  errorStyle: TextStyle(fontSize: 50), // Adjust the font size
+  errorStyle: TextStyle(fontSize: 10), // Adjust the font size
 );
 
 ThemeData getCustomDarkTheme() {
   return ThemeData(
       useMaterial3: true,
       // Define the default brightness and colors.
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.white,
-        primary: const Color.fromARGB(255, 18, 32, 47),
-        brightness: Brightness.dark,
-      ),
+      brightness: Brightness.dark,
       scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
       // Define the default `TextTheme`. Use this to specify the default
       // text styling for headlines, titles, bodies of text, and more.

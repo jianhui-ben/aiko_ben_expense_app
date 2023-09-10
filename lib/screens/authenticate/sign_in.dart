@@ -60,7 +60,6 @@ class _SignInState extends State<SignIn> {
     bool showEmailAndPasswordError = false;
 
     return loading ? Loading() : Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           elevation: 0.0,
           title: Text("Sign In"),
@@ -145,7 +144,8 @@ class _SignInState extends State<SignIn> {
                         padding: const EdgeInsets.all(10),
                         child: Text(
                           _errorText,
-                          style: TextStyle(color: Colors.red), // Customize the error text style
+                          // style: TextStyle(color: Colors.red),
+                          style: Theme.of(context).inputDecorationTheme.errorStyle,// Customize the error text style
                         ),
                       ),
                     Column(
