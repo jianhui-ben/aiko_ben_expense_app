@@ -9,6 +9,6 @@ class Category {
   final Icon categoryIcon;
   late List<Transaction?> transactionsUnderCategory;
 
-  Category(this.categoryId, this.categoryName, this.categoryIcon);
+  Category({required this.categoryId, required this.categoryName, required this.categoryIcon});
 
 }
