@@ -20,9 +20,8 @@ class _TransactionsListState extends State<TransactionsList> {
     final transactionStream = Provider.of<List<Transaction>?>(context);
 
     if (transactionStream == null) {
-      return Loading();
+      return Expanded(child:const Loading());
     }
-
     return Expanded(child: const Placeholder());
   }
 }
