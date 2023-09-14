@@ -77,7 +77,7 @@ class _HomeState extends State<Home> {
 
               Expanded(
                 child: Container(
-                    color: const Color(0xffee0038),
+                    color: Colors.blue,
                     child: SingleChildScrollView(
                       physics: ScrollPhysics(),
                       child: Column(
