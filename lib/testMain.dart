@@ -11,14 +11,10 @@ class FigmaToCodeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
-      ),
-      home: Scaffold(
-        body: ListView(children: [
-          TopARegularAFlat(),
-        ]),
-      ),
+      // theme: ThemeData.dark().copyWith(
+      //   scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
+      // ),
+      home: TopARegularAFlat(),
     );
   }
 }
@@ -26,59 +22,42 @@ class FigmaToCodeApp extends StatelessWidget {
 class TopARegularAFlat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 397,
-          height: 60,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: Color(0xFF6200EE)),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: 24,
-                height: 24,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      left: 3,
-                      top: 6,
-                      child: Container(
-                        width: 18,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage("https://via.placeholder.com/18x12"),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: SizedBox(
-                  child: Text(
-                    'Today',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.w500,
-                      height: 1.20,
-                      letterSpacing: 0.15,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Sample'),
+      ),
+      body: SingleChildScrollView(
+        child: Card(
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            // Image.network(
+            //   "https://cdn.pixabay.com/photo/2018/07/11/21/51/toast-3532016_1280.jpg",
+            //   width: 40,
+            // ),
+            Expanded(
+              child: Card(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  ListTile(
+                    trailing: Icon(Icons.play_arrow),
+                    title: Text("Black Lotus"),
+                    subtitle: Text("Name"),
+                  ),
+                  Container(
+                    child: Row(
+                      children: [Icon(Icons.play_arrow), Icon(Icons.polymer)],
                     ),
                   ),
-                ),
+                  ListTile(
+                    title: Text("Hello"),
+                  ),
+                  ListTile(
+                    title: Text("Hello"),
+                  ),
+                ]),
               ),
-            ],
-          ),
+            ),
+          ]),
         ),
-      ],
+      ),
     );
   }
 }

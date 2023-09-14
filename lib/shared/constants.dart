@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 const textInputDecoration = InputDecoration(
-  border: OutlineInputBorder(borderSide: BorderSide(width: 100)),
+  border: OutlineInputBorder(borderSide: BorderSide(width: 2)),
   errorStyle: TextStyle(fontSize: 10), // Adjust the font size
 );
 
