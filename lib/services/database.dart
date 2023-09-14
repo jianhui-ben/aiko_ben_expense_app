@@ -66,6 +66,23 @@ class DatabaseService {
         .catchError((e) => print("Error adding document: $e"));
   }
 
+  Future removeTransactionById(String transactionId) async {
+    try {
+      // Reference to the Firestore collection and document with the given ID
+      final DocumentReference documentReference = transactionsCollection
+          .doc(uid)
+          .collection('userTransactions')
+          .doc(transactionId);
+
+      // Delete the document
+      await documentReference.delete();
+
+      print('Document with transaction ID $transactionId deleted successfully');
+    } catch (e) {
+      print('Error deleting transaction document: $e');
+    }
+  }
+
   String generateTransactionId() {
     return uuid.v4(); // Generates a random UUID (Version 4)
   }
