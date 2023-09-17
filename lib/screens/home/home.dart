@@ -17,6 +17,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final AuthService _auth = AuthService();
+  int currentPageIndex = 0;
+  NavigationDestinationLabelBehavior labelBehavior =
+      NavigationDestinationLabelBehavior.alwaysShow;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +55,29 @@ class _HomeState extends State<Home> {
                       ), // Your text
                     ],
                   ),
+                ),
+              ],
+            ),
+            bottomNavigationBar: NavigationBar(
+              labelBehavior: labelBehavior,
+              selectedIndex: currentPageIndex,
+              onDestinationSelected: (int index) {
+                setState(() {
+                  currentPageIndex = index;
+                });
+              },
+              destinations: const <Widget>[
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: 'Home',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.insights),
+                  label: 'Insights',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.settings),
+                  label: 'Settings',
                 ),
               ],
             ),
@@ -101,10 +127,11 @@ class _HomeState extends State<Home> {
                         ],
                       ),
                     )
-                    // child: TransactionsList())
-                    ),
+                  // child: TransactionsList())
+                ),
               ),
-            ])));
+            ]))
+  );
   }
 
   // write some quick test case for scrollable window
