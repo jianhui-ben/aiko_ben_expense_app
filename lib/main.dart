@@ -9,6 +9,7 @@ import 'screens/wrapper.dart';
 import 'services/auth_service.dart';
 import 'shared/constants.dart';
 
+//test
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
