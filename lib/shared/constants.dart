@@ -1,5 +1,8 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 const textInputDecoration = InputDecoration(
@@ -32,19 +35,85 @@ ThemeData getCustomTheme() {
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderSide: BorderSide(width: 1, color: Color(0xFF23036A)),
+          borderSide: BorderSide(width: 5, color: Color(0xFF23036A)),
           borderRadius: BorderRadius.circular(10),
         ),
         errorStyle: TextStyle(
           fontSize: 12.0, // Customize error text font size
           color: Colors.red, // Customize error text color
         ),
+        labelStyle: TextStyle(fontWeight: FontWeight.bold, // Make the font bold
+            color: Color(0xFF6200EE)), // Adjust the font size
         // You can customize other InputDecoration properties here
       ),
 
-      // buttonTheme: ButtonThemeData(
-      //   buttonColor: Colors.white,
-      //   textTheme: ButtonTextTheme.primary, //  <-- this auto selects the right color
-      // )
+      buttonTheme: ButtonThemeData(
+        buttonColor: Colors.white,
+        textTheme: ButtonTextTheme.primary, //  <-- this auto selects the right color
+      )
   );
+}
+
+class DateTextFormatter extends TextInputFormatter {
+  static const _maxChars = 8;
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    String separator = '/';
+    var text = _format(
+      newValue.text,
+      oldValue.text,
+      separator,
+    );
+
+    return newValue.copyWith(
+      text: text,
+      selection: updateCursorPosition(
+        oldValue,
+        text,
+      ),
+    );
+  }
+
+  String _format(
+      String value,
+      String oldValue,
+      String separator,
+      ) {
+    var isErasing = value.length < oldValue.length;
+    var isComplete = value.length > _maxChars + 2;
+
+    if (!isErasing && isComplete) {
+      return oldValue;
+    }
+
+    value = value.replaceAll(separator, '');
+    final result = <String>[];
+
+    for (int i = 0; i < min(value.length, _maxChars); i++) {
+      result.add(value[i]);
+      if ((i == 1 || i == 3) && i != value.length - 1) {
+        result.add(separator);
+      }
+    }
+
+    return result.join();
+  }
+
+  TextSelection updateCursorPosition(
+      TextEditingValue oldValue,
+      String text,
+      ) {
+    var endOffset = max(
+      oldValue.text.length - oldValue.selection.end,
+      0,
+    );
+
+    var selectionEnd = text.length - endOffset;
+
+    return TextSelection.fromPosition(TextPosition(offset: selectionEnd));
+  }
 }

@@ -2,6 +2,7 @@
 import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/home/transactions_list/transactions_list.dart';
+import 'package:aiko_ben_expense_app/screens/single_transaction/add_new_single_transaction.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:flutter/material.dart';
@@ -60,10 +61,23 @@ class _HomeState extends State<Home> {
                 child: ElevatedButton(
                   child: const Text('add a default transaction'),
                   onPressed: () async {
-                    await DatabaseService(uid: user?.uid).addNewTransaction(
-                        _defaultCategoryId,
-                        _defaultTransactionAmoung,
-                        _defaultTransactionComment);
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddNewSingleTransaction(),
+                        settings: RouteSettings(arguments: {
+                          // TO-DO: change _defaultCategoryId into a variable
+                          "categoryId": _defaultCategoryId
+                        } // Pass your data here
+                            ),
+                      ),
+                    );
+
+                    // plan to move it into a separate screen
+                    // await DatabaseService(uid: user?.uid).addNewTransaction(
+                    //     _defaultCategoryId,
+                    //     _defaultTransactionAmoung,
+                    //     _defaultTransactionComment);
                   },
                 ),
               ),

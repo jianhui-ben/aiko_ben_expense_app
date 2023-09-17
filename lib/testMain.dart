@@ -1,65 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-// MyApp is a StatefulWidget. This allows updating the state of the
-// widget when an item is removed.
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
+class MyApp extends StatelessWidget{
   @override
-  MyAppState createState() {
-    return MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "Test App",
+      home: HomePage(),
+    );
   }
 }
 
-class MyAppState extends State<MyApp> {
-  final items = List<String>.generate(20, (i) => 'Item ${i + 1}');
+class HomePage extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return _HomePage();
+  }
+}
+
+class _HomePage extends State<HomePage>{
+  TextEditingController dateinput = TextEditingController();
+  //text editing controller for text field
+
+  @override
+  void initState() {
+    dateinput.text = ""; //set the initial value of text field
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    const title = 'Dismissing Items';
-
-    return MaterialApp(
-      title: title,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
-          title: const Text(title),
+          title:Text("DatePicker on TextField"),
+          backgroundColor: Colors.redAccent, //background color of app bar
         ),
-        body: ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return Dismissible(
-              // Each Dismissible must contain a Key. Keys allow Flutter to
-              // uniquely identify widgets.
-              key: Key(item),
-              // Provide a function that tells the app
-              // what to do after an item has been swiped away.
-              onDismissed: (direction) {
-                // Remove the item from the data source.
-                setState(() {
-                  items.removeAt(index);
-                });
+        body:Container(
+            padding: EdgeInsets.all(15),
+            height:150,
+            child:Center(
+                child:TextField(
+                  controller: dateinput, //editing controller of this TextField
+                  decoration: InputDecoration(
+                      icon: Icon(Icons.calendar_today), //icon of text field
+                      labelText: "Enter Date" //label text of field
+                  ),
+                  // readOnly: true,  //set it true, so that user will not able to edit text
+                  onTap: () async {
+                    DateTime? pickedDate = await showDatePicker(
+                        context: context, initialDate: DateTime.now(),
+                        firstDate: DateTime(2000), //DateTime.now() - not to allow to choose before today.
+                        lastDate: DateTime(2101)
+                    );
 
-                // Then show a snackbar.
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text('$item dismissed')));
-              },
-              // Show a red background as the item is swiped away.
-              background: Container(color: Colors.red),
-              child: ListTile(
-                title: Text(item),
-              ),
-            );
-          },
-        ),
-      ),
+                    if(pickedDate != null ){
+                      print(pickedDate);  //pickedDate output format => 2021-03-10 00:00:00.000
+                      String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+                      print(formattedDate); //formatted date output using intl package =>  2021-03-16
+                      //you can implement different kind of Date Format here according to your requirement
+
+                      setState(() {
+                        dateinput.text = formattedDate; //set output date to TextField value.
+                      });
+                    }else{
+                      print("Date is not selected");
+                    }
+                  },
+                )
+            )
+        )
     );
   }
 }

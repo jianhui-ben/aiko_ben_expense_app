@@ -43,6 +43,7 @@ dependencies:
   google_fonts: ^5.1.0
   intl: ^0.18.1
   uuid: ^4.0.0
+  keyboard_actions: ^4.2.0
 
 dev_dependencies:
   flutter_test:
