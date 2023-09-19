@@ -1,5 +1,6 @@
 
 import 'package:aiko_ben_expense_app/models/user.dart';
+import 'package:aiko_ben_expense_app/screens/single_transaction/numeric_keypad.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:flutter/material.dart';
@@ -16,10 +17,33 @@ class AddNewSingleTransaction extends StatefulWidget {
 
 class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
 
+  final FocusNode _focus = FocusNode(); // 1) init _focus to let user directly input number from keypad
+
   late Map data;
   TextEditingController dateInput = TextEditingController(text: DateFormat('MM/dd/yyyy').format(DateTime.now()));
-  TextEditingController transactionAmountInput = TextEditingController(text: "0");
+  TextEditingController transactionAmountInput = TextEditingController();
   TextEditingController transactionCommentInput = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    // FocusScope.of(context).requestFocus(_focus); // Request focus for the transaction amount field when the screen loads
+    _focus.addListener(_onFocusChange); // 2) add listener to our focus
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _focus
+      ..removeListener(_onFocusChange)
+      ..dispose(); // 3) removeListener and dispose
+  }
+
+// 4)
+  void _onFocusChange() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +58,8 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
     var _transactionAmount;
 
     return Scaffold(appBar: AppBar(),
-    body: Center(
+      resizeToAvoidBottomInset: false,
+      body: Center(
       child: Column(
           children: [
             // SizedBox(height: 30,),
@@ -111,7 +136,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                 ],
               ),
             ),
-            SizedBox(height: 10,),
+            SizedBox(height: 50,),
             Container(
               // color: Colors.blue, //for debugging
               width: 350,
@@ -120,13 +145,14 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                 padding: const EdgeInsets.fromLTRB(80, 0, 50, 0),
                 child: TextField(
                   controller: transactionAmountInput,
-                  // Your other properties here
+                  keyboardType: TextInputType.none,
+                  focusNode: _focus, // pass focusNode to our textfield
                   decoration: InputDecoration(
-                    prefixText: '\$ ', // Add a dollar sign as a prefix
+                    prefix: Text('\$ '), // Add a dollar sign as a prefix
                     border: InputBorder.none, // Remove the outline border
                     // border: OutlineInputBorder(), //for debugging
                   ),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  // keyboardType: TextInputType.numberWithOptions(decimal: true),
                   // Allow decimal input
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(
@@ -145,6 +171,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                   Container(
                     // color: Colors.yellow, //for debugging
                     width: 250,
+                    // height: 80,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 30, 0),
                       child: TextField(
@@ -163,7 +190,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                 ],
               ),
             ),
-            SizedBox(height: 50,),
+            SizedBox(height: 20,),
             Container(
               height: 50,
               width: 300, // Forces the button to take the full width of the screen
@@ -187,8 +214,19 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                 ),
               ),
             ),
-
-
+            const Spacer(),
+            // 6) if hasFocus show keyboard, else show empty container
+            // _focus.hasFocus
+            //     ? NumericKeypad(
+            //   controller: transactionAmountInput, focusNode: _focus,
+            // )
+            //     : Container(),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 80),
+              child: NumericKeypad(
+                controller: transactionAmountInput, focusNode: _focus,
+              ),
+            )
         ],
       ),
     ),
