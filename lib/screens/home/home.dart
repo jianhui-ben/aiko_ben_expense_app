@@ -81,39 +81,86 @@ class _HomeState extends State<Home> {
                 ),
               ],
             ),
-            body: Column(children: [
+            body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
               Container(
-                child: Row(
+                child: Column(
                   children: [
-                    IconButton.filled(
-                      icon: const Icon(Icons.flight),
-                      onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddNewSingleTransaction(),
-                            settings: RouteSettings(arguments: {
-                              // TO-DO: change _defaultCategoryId into a variable
-                              "categoryId": _defaultCategoryId
-                            } // Pass your data here
-                                ),
-                          ),
-                        );
+                    Row(
+                      children: [
+                        IconButton.filled(
+                          icon: const Icon(Icons.shopping_cart),
+                          onPressed: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddNewSingleTransaction(),
+                                settings: RouteSettings(arguments: {
+                                  // TO-DO: change _defaultCategoryId into a variable
+                                  "categoryId": _defaultCategoryId
+                                } // Pass your data here
+                                    ),
+                              ),
+                            );
 
-                        // plan to move it into a separate screen
-                        // await DatabaseService(uid: user?.uid).addNewTransaction(
-                        //     _defaultCategoryId,
-                        //     _defaultTransactionAmoung,
-                        //     _defaultTransactionComment);
-                      },
-                    ),
-                    IconButton.filled(
-                      icon: const Icon(Icons.luggage),
-                      onPressed: (){
-                        // add the code for adding expense
-                      },
-
-                    )
+                            // plan to move it into a separate screen
+                            // await DatabaseService(uid: user?.uid).addNewTransaction(
+                            //     _defaultCategoryId,
+                            //     _defaultTransactionAmoung,
+                            //     _defaultTransactionComment);
+                          },
+                        ),
+                        SizedBox(width: 16),
+                        IconButton.filled(
+                          icon: const Icon(Icons.house),
+                          onPressed: (){
+                            // add the code for adding expense
+                          },
+                        ),
+                        SizedBox(width: 16),
+                        IconButton.filled(
+                          icon: const Icon(Icons.local_dining),
+                          onPressed: (){
+                            // add the code for adding expense
+                          },
+                        ),
+                        SizedBox(width: 16),
+                        IconButton.filled(
+                          icon: const Icon(Icons.flight),
+                          onPressed: (){
+                            // add the code for adding expense
+                          },
+                        )
+                      ],
+                    ),//first row
+                    Row(
+                      children: [
+                        IconButton.filled(
+                          icon: const Icon(Icons.checkroom),
+                          onPressed: () {
+                          },
+                        ),
+                        SizedBox(width: 16),
+                        IconButton.filled(
+                          icon: const Icon(Icons.medical_information),
+                          onPressed: () {
+                          },
+                        ),
+                        SizedBox(width: 16),
+                        IconButton.filled(
+                          icon: const Icon(Icons.electrical_services),
+                          onPressed: () {
+                          },
+                        ),
+                        SizedBox(width: 16),
+                        IconButton.filled(
+                          icon: const Icon(Icons.commute),
+                          onPressed: () {
+                          },
+                        )
+                      ],
+                    ),//Second row
                   ],
                 ),
               ),
