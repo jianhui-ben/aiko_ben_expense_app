@@ -69,15 +69,15 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
             // SizedBox(height: 30,),
             Container(
               // color: Colors.yellow,  //for debugging
-              width: 350,
-              height: 150,
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.15,
               child: Row(
                 children: [
                   SizedBox(
                     width: 15,
                   ),
                   Icon(_defaultCategoryIcon.icon,
-                      size: 55, //
+                      size: 50, //
                       color: Color(0xFF6200EE)),
                   SizedBox(
                     width: 15,
@@ -86,7 +86,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                     // padding: EdgeInsets.all(15),
                     width: 250,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 40, 15, 40),
+                      padding: const EdgeInsets.fromLTRB(15, 32, 15, 32),
                       child: TextField(
                         controller: dateInput,
                         //editing controller of this TextField
@@ -140,11 +140,11 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                 ],
               ),
             ),
-            SizedBox(height: 50,),
+            // SizedBox(height: 30,),
             Container(
               // color: Colors.blue, //for debugging
-              width: 350,
-              height: 60,
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.12,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(80, 0, 50, 0),
                 child: TextField(
@@ -196,8 +196,8 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
             ),
             SizedBox(height: 20,),
             Container(
-              height: 50,
-              width: 300, // Forces the button to take the full width of the screen
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.05,
               margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 6), // Adjust margin as needed
               child: ElevatedButton(
                 onPressed: () async {
@@ -226,7 +226,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
             // )
             //     : Container(),
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 80),
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 50),
               child: NumericKeypad(
                 controller: transactionAmountInput, focusNode: _focus,
               ),
