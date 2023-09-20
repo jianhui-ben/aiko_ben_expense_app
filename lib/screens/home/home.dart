@@ -83,28 +83,38 @@ class _HomeState extends State<Home> {
             ),
             body: Column(children: [
               Container(
-                height: 120.0,
-                child: ElevatedButton(
-                  child: const Text('add a default transaction'),
-                  onPressed: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddNewSingleTransaction(),
-                        settings: RouteSettings(arguments: {
-                          // TO-DO: change _defaultCategoryId into a variable
-                          "categoryId": _defaultCategoryId
-                        } // Pass your data here
-                            ),
-                      ),
-                    );
+                child: Row(
+                  children: [
+                    IconButton.filled(
+                      icon: const Icon(Icons.flight),
+                      onPressed: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddNewSingleTransaction(),
+                            settings: RouteSettings(arguments: {
+                              // TO-DO: change _defaultCategoryId into a variable
+                              "categoryId": _defaultCategoryId
+                            } // Pass your data here
+                                ),
+                          ),
+                        );
 
-                    // plan to move it into a separate screen
-                    // await DatabaseService(uid: user?.uid).addNewTransaction(
-                    //     _defaultCategoryId,
-                    //     _defaultTransactionAmoung,
-                    //     _defaultTransactionComment);
-                  },
+                        // plan to move it into a separate screen
+                        // await DatabaseService(uid: user?.uid).addNewTransaction(
+                        //     _defaultCategoryId,
+                        //     _defaultTransactionAmoung,
+                        //     _defaultTransactionComment);
+                      },
+                    ),
+                    IconButton.filled(
+                      icon: const Icon(Icons.luggage),
+                      onPressed: (){
+                        // add the code for adding expense
+                      },
+
+                    )
+                  ],
                 ),
               ),
               Container(
