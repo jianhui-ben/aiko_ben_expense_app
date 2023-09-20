@@ -71,7 +71,7 @@ class _NumericKeypadState extends State<NumericKeypad> {
         ),
         Row(
           children: [
-            _buildButton('⇓', onPressed: _hideKeyboard),
+            _buildButton('.'),
             _buildButton('0'),
             _buildButton('⌫', onPressed: _backspace),
           ],
@@ -80,6 +80,7 @@ class _NumericKeypadState extends State<NumericKeypad> {
     );
   }
 
+  // hide keyboard for future usage
   _hideKeyboard() => _focusNode.unfocus();
 
   // Individual keys

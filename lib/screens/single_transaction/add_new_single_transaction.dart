@@ -27,9 +27,13 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
   @override
   void initState() {
     super.initState();
+  }
 
-    // FocusScope.of(context).requestFocus(_focus); // Request focus for the transaction amount field when the screen loads
-    _focus.addListener(_onFocusChange); // 2) add listener to our focus
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    FocusScope.of(context).requestFocus(_focus); // Request focus for the transaction amount field when the screen loads
+    _focus.addListener(_onFocusChange);
   }
 
   @override
