@@ -24,7 +24,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     String _defaultCategoryId = "123";
-    double _defaultTransactionAmoung = 100.0;
+    double _defaultTransactionAmount = 100.0;
     String? _defaultTransactionComment;
 
     final user = Provider.of<User?>(context);
@@ -103,12 +103,6 @@ class _HomeState extends State<Home> {
                                     ),
                               ),
                             );
-
-                            // plan to move it into a separate screen
-                            // await DatabaseService(uid: user?.uid).addNewTransaction(
-                            //     _defaultCategoryId,
-                            //     _defaultTransactionAmoung,
-                            //     _defaultTransactionComment);
                           },
                         ),
                         SizedBox(width: 16),
