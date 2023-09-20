@@ -1,5 +1,4 @@
 import 'package:aiko_ben_expense_app/models/user.dart';
-import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

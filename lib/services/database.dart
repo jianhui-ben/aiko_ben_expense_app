@@ -48,6 +48,39 @@ class DatabaseService {
     });
   }
 
+  Future addDefaultCategories() async {
+    final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
+    final userCategories = defaultCategories.map((category) {
+      return {
+        'categoryId': category.categoryId,
+        'categoryName': category.categoryName,
+        'categoryIcon': category.categoryIcon,
+      };
+    }).toList();
+    return await settingsCollection.set(
+        {'categories': userCategories}, SetOptions(merge: true))
+        .onError((e, _) => print("Error writing document: $e"));
+  }
+
+  Future<List<Category>> getUserCategories(String uid) async {
+    final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
+
+    final userSetting = await settingsCollection.get();
+    if (userSetting.exists) {
+      final categories = List<Map<String, dynamic>>.from(userSetting.data()!['categories'] ?? []);
+      return categories.map((categoryData) {
+        return Category(
+          categoryId: categoryData['categoryId'],
+          categoryName: categoryData['categoryName'],
+          categoryIcon: categoryData['categoryIcon'],
+        );
+      }).toList();
+    } else {
+      // User document doesn't exist, return default categories
+      return defaultCategories;
+    }
+  }
+
   Future addNewTransaction(String categoryId, double transactionAmount, String? transactionComment) async {
     DateTime now = DateTime.now();
     // Create a new user with a first and last name

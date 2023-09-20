@@ -81,10 +81,10 @@ class _HomeState extends State<Home> {
                 ),
               ],
             ),
-            body: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+            body:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Container(
+                color: Colors.red,
                 child: Column(
                   children: [
                     Row(
@@ -95,7 +95,8 @@ class _HomeState extends State<Home> {
                             await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AddNewSingleTransaction(),
+                                builder: (context) =>
+                                    AddNewSingleTransaction(),
                                 settings: RouteSettings(arguments: {
                                   // TO-DO: change _defaultCategoryId into a variable
                                   "categoryId": _defaultCategoryId
@@ -108,53 +109,49 @@ class _HomeState extends State<Home> {
                         SizedBox(width: 16),
                         IconButton.filled(
                           icon: const Icon(Icons.house),
-                          onPressed: (){
+                          onPressed: () {
                             // add the code for adding expense
                           },
                         ),
                         SizedBox(width: 16),
                         IconButton.filled(
                           icon: const Icon(Icons.local_dining),
-                          onPressed: (){
+                          onPressed: () {
                             // add the code for adding expense
                           },
                         ),
                         SizedBox(width: 16),
                         IconButton.filled(
                           icon: const Icon(Icons.flight),
-                          onPressed: (){
+                          onPressed: () {
                             // add the code for adding expense
                           },
                         )
                       ],
-                    ),//first row
+                    ), //first row
                     Row(
                       children: [
                         IconButton.filled(
                           icon: const Icon(Icons.checkroom),
-                          onPressed: () {
-                          },
+                          onPressed: () {},
                         ),
                         SizedBox(width: 16),
                         IconButton.filled(
                           icon: const Icon(Icons.medical_information),
-                          onPressed: () {
-                          },
+                          onPressed: () {},
                         ),
                         SizedBox(width: 16),
                         IconButton.filled(
                           icon: const Icon(Icons.electrical_services),
-                          onPressed: () {
-                          },
+                          onPressed: () {},
                         ),
                         SizedBox(width: 16),
                         IconButton.filled(
                           icon: const Icon(Icons.commute),
-                          onPressed: () {
-                          },
+                          onPressed: () {},
                         )
                       ],
-                    ),//Second row
+                    ),
                   ],
                 ),
               ),
@@ -165,24 +162,19 @@ class _HomeState extends State<Home> {
                 alignment: Alignment.center,
                 child: const Text('placeholder for total'),
               ),
-
               Expanded(
                 child: Container(
                     color: Colors.blue,
                     child: SingleChildScrollView(
                       physics: ScrollPhysics(),
                       child: Column(
-                        children:
-                        [
-                          TransactionsList()
-                        ],
+                        children: [TransactionsList()],
                       ),
                     )
-                  // child: TransactionsList())
-                ),
+                    // child: TransactionsList())
+                    ),
               ),
-            ]))
-  );
+            ])));
   }
 
   // write some quick test case for scrollable window
