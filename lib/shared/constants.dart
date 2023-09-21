@@ -5,6 +5,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+
+// for easy Icondata storing in firebase
+final Map<String, IconData> stringToSupportedIconsMap = {
+  'shopping_cart': Icons.shopping_cart,
+  'house': Icons.house,
+  'travel': Icons.flight,
+  'restaurant': Icons.local_dining,
+  'laundry': Icons.checkroom,
+  'medical': Icons.medical_information,
+  'utility': Icons.electrical_services,
+  'commute': Icons.commute,
+};
+
+Map<IconData, String> reverseIconsToStringMap(Map<String, IconData> inputMap) {
+  final reversedMap = <IconData, String>{};
+  inputMap.forEach((key, value) {
+    reversedMap[value] = key;
+  });
+  return reversedMap;
+}
+
+final supportedIconsToStringMap = reverseIconsToStringMap(stringToSupportedIconsMap);
+
+
+
 const textInputDecoration = InputDecoration(
   border: OutlineInputBorder(borderSide: BorderSide(width: 2)),
   errorStyle: TextStyle(fontSize: 10), // Adjust the font size

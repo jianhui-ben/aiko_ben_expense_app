@@ -7,7 +7,7 @@ class Category {
   final String categoryId;
   final String categoryName;
   final Icon categoryIcon;
-  late List<Transaction?> transactionsUnderCategory;
+  // late List<Transaction?> transactionsUnderCategory;
 
   Category({required this.categoryId, required this.categoryName, required this.categoryIcon});
 
@@ -36,8 +36,8 @@ final List<Category> defaultCategories = [
   ),
   Category(
     categoryId: '5',
-    categoryName: 'Travel',
-    categoryIcon: const Icon(Icons.flight),
+    categoryName: 'Laundry',
+    categoryIcon: const Icon(Icons.checkroom),
   ),
   Category(
     categoryId: '6',
@@ -56,3 +56,12 @@ final List<Category> defaultCategories = [
   ),
   // Add more default categories as needed
 ];
+
+
+final Map<String, Category> defaultCategoriesMap = {
+  for (final category in defaultCategories) category.categoryId: category,
+};
+
+Category? getCategory(String categoryId) {
+  return defaultCategoriesMap[categoryId];
+}

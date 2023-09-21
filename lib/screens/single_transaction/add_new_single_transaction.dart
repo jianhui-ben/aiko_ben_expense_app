@@ -1,4 +1,5 @@
 
+import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/single_transaction/numeric_keypad.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
@@ -56,10 +57,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
     final User? user= context.read<User?>();
 
     //TO-DO: here we should retrieve category icon and text from the categoryId
-    Icon _defaultCategoryIcon = Icon(Icons.shopping_cart);
-    String _defaultCategoryName = "shopping";
-
-    var _transactionAmount;
+    Category category = data["category"];
 
     return Scaffold(appBar: AppBar(),
       resizeToAvoidBottomInset: false,
@@ -76,7 +74,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                   SizedBox(
                     width: 15,
                   ),
-                  Icon(_defaultCategoryIcon.icon,
+                  Icon(category.categoryIcon.icon,
                       size: 50, //
                       color: Color(0xFF6200EE)),
                   SizedBox(
@@ -201,9 +199,8 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
               margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 6), // Adjust margin as needed
               child: ElevatedButton(
                 onPressed: () async {
-                  print(user!.uid);
                   await DatabaseService(uid: user!.uid).addNewTransaction(
-                      data["categoryId"],
+                      category.categoryId,
                       double.tryParse(transactionAmountInput.text)!,
                       transactionCommentInput.text);
                   Navigator.pop(context);

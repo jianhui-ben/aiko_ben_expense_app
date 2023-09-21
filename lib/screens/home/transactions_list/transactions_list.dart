@@ -1,4 +1,5 @@
 
+import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/home/transactions_list/transaction_tile.dart';
@@ -8,7 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class TransactionsList extends StatefulWidget {
-  const TransactionsList({super.key});
+
+
+  // add this userCategoriesMap for future usage
+  final Map<String, Category>? userCategoriesMap;
+
+  const TransactionsList({super.key, this.userCategoriesMap});
 
   @override
   State<TransactionsList> createState() => _TransactionsListState();
@@ -23,7 +29,6 @@ class _TransactionsListState extends State<TransactionsList> {
     final transactionStream = Provider.of<List<Transaction>?>(context);
     final user = Provider.of<User?>(context);
 
-    // print('Number of transactions: ${transactionStream?.length}');
     if (transactionStream == null) {
       return const Loading();
     }
@@ -50,7 +55,18 @@ class _TransactionsListState extends State<TransactionsList> {
               },
               // Show a red background as the item is swiped away.
               background: Container(color: Colors.red),
-              child: TransactionTile(transaction : transactionStream[index]));
+              child: TransactionTile(
+                  transactionIcon:
+                      transactionStream[index].category.categoryIcon,
+                  transactionComment:
+                      (transactionStream[index].transactionComment != null &&
+                              transactionStream[index]
+                                  .transactionComment!
+                                  .isNotEmpty)
+                          ? transactionStream[index].transactionComment!
+                          : transactionStream[index].category.categoryName,
+                  transactionAmount:
+                      transactionStream[index].transactionAmount));
         });
   }
 }

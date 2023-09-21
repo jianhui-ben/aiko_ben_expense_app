@@ -1,21 +1,14 @@
-
-
-import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class TransactionTile extends StatefulWidget {
+class TransactionTile extends StatelessWidget {
 
-  final Transaction transaction;
+  final Icon transactionIcon;
+  final String transactionComment;
+  final double transactionAmount;
 
-  const TransactionTile({super.key, required this.transaction});
+  const TransactionTile({super.key, required this.transactionIcon, required this.transactionComment, required this.transactionAmount});
 
-
-  @override
-  State<TransactionTile> createState() => _TransactionTileState();
-}
-
-class _TransactionTileState extends State<TransactionTile> {
   @override
   Widget build(BuildContext context) {
     return buildTransactonCard();
@@ -25,22 +18,18 @@ class _TransactionTileState extends State<TransactionTile> {
 
     final formatCurrency = new NumberFormat.simpleCurrency();
 
-
     return Padding(
       padding: const EdgeInsets.only(top: 5.0),
       child: Card(
           margin: EdgeInsets.fromLTRB(0, 2, 0, 0),
           elevation: 4.0,
           child: ListTile(
-            leading: Icon(Icons.shopping_cart),
-            title: Text(widget.transaction!.transactionComment ??
-                "default category name"),
+            leading: transactionIcon,
+            title: Text(transactionComment),
             trailing: Text(formatCurrency
-                .format(widget.transaction!.transactionAmount)),
+                .format(transactionAmount)),
           )),
     );
   }
-
-
-
 }
+
