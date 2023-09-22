@@ -34,15 +34,21 @@ class _TransactionsListState extends State<TransactionsList> {
       return const Loading();
     }
 
-    // next TO-DO right here
-    // final fetchedCategoriesMap = await getUserCategoriesMap(user!.uid);
+    // Filter transactions based on the selected date.
+    final filteredTransactionsList = transactionStream.where((transaction) {
+      final transactionDate = transaction.dateTime!;
+      return transactionDate.year == widget.selectedDate.year &&
+          transactionDate.month == widget.selectedDate.month &&
+          transactionDate.day == widget.selectedDate.day;
+    }).toList();
+
 
     return ListView.builder(
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        itemCount: transactionStream.length,
+        itemCount: filteredTransactionsList.length,
         itemBuilder: (context, index){
-          final transaction = transactionStream[index];
+          final transaction = filteredTransactionsList[index];
 
           return  Dismissible(
             // Each Dismissible must contain a Key. Keys allow Flutter to

@@ -33,26 +33,12 @@ class _HomeState extends State<Home> {
   // by default select today's date
   DateTime selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
-
   @override
   void initState() {
     super.initState();
     // Call the asynchronous function
     // in this case, it would only call the getUserCategoriesMap once
     fetchUserCategories();
-  }
-
-  Future<void> fetchUserCategories() async {
-    final user = Provider.of<User?>(context, listen: false);
-    final fetchedCategoriesMap = await getUserCategoriesMap(user!.uid);
-
-    // TO-DO update orderedUserCategoryIds
-
-    // Update the state with the fetched data
-    setState(() {
-      userCategoriesMap = fetchedCategoriesMap;
-    });
-    // print(userCategoriesMap);
   }
 
   @override
@@ -69,6 +55,7 @@ class _HomeState extends State<Home> {
     } else {
       DatabaseService db = DatabaseService(uid: user?.uid);
       db.setUserCategoriesMap(userCategoriesMap!);
+
       return StreamProvider<List<Transaction>?>.value(
           value: db.transactions,
           initialData: null,
@@ -205,6 +192,19 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future<void> fetchUserCategories() async {
+    final user = Provider.of<User?>(context, listen: false);
+    final fetchedCategoriesMap = await getUserCategoriesMap(user!.uid);
+
+    // TO-DO update orderedUserCategoryIds
+
+    // Update the state with the fetched data
+    setState(() {
+      userCategoriesMap = fetchedCategoriesMap;
+    });
+    // print(userCategoriesMap);
+  }
+
   void _selectDate(DateTime newDate) {
     setState(() {
       // print("set to new date: $newDate");
@@ -224,5 +224,4 @@ class _HomeState extends State<Home> {
       return '${selectedDate.toLocal()}'.split(' ')[0];
     }
   }
-
 }
