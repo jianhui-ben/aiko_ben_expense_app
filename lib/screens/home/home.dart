@@ -23,10 +23,16 @@ class _HomeState extends State<Home> {
   NavigationDestinationLabelBehavior labelBehavior =
       NavigationDestinationLabelBehavior.alwaysShow;
   Map<String, Category>? userCategoriesMap; // Store user categories here
+
+  // TO-DO the orderedUserCategoryIds should be retrieved from setting collection as well
   List<String> orderedUserCategoryIds = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
   final numOfCategoriesInARow = 4;
   final numOfCategoriesInAColumn = 2;
+
+  // by default select today's date
+  DateTime selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
 
   @override
   void initState() {
@@ -52,6 +58,10 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
 
+    final isToday = selectedDate.isAtSameMomentAs(DateTime(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day));
+    // print("isToday or not: $isToday");
+
     final user = Provider.of<User?>(context);
 
     if (userCategoriesMap == null) {
@@ -65,7 +75,36 @@ class _HomeState extends State<Home> {
           child: Scaffold(
               appBar: AppBar(
                 elevation: 0.0,
-                title: Text("Home"),
+                title: Container(
+                  color: Colors.green,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Left arrow icon
+                      IconButton(
+                        icon: Icon(Icons.arrow_left),
+                        onPressed: () {
+                          _selectDate(selectedDate.subtract(Duration(days: 1)));
+                        },
+                      ),
+                      Text(
+                        getSelectedDate(),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      // Right arrow icon
+                      if (!isToday)
+                        IconButton(
+                          icon: Icon(Icons.arrow_right),
+                          onPressed: () {
+                            _selectDate(selectedDate.add(Duration(days: 1)));
+                          },
+                        ),
+                    ],
+                  ),
+                ),
                 actions: <Widget>[
                   TextButton(
                     onPressed: () async {
@@ -87,6 +126,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ],
+                centerTitle: true, // Center the title
               ),
               bottomNavigationBar: NavigationBar(
                 labelBehavior: labelBehavior,
@@ -155,7 +195,7 @@ class _HomeState extends State<Home> {
                       child: SingleChildScrollView(
                         physics: ScrollPhysics(),
                         child: Column(
-                          children: [TransactionsList()],
+                          children: [TransactionsList(selectedDate: selectedDate)],
                         ),
                       )
                     // child: TransactionsList())
@@ -165,14 +205,24 @@ class _HomeState extends State<Home> {
     }
   }
 
-  // write some quick test case for scrollable window
-  testCase() {
-    List<Text> testList = [];
+  void _selectDate(DateTime newDate) {
+    setState(() {
+      // print("set to new date: $newDate");
+      selectedDate = newDate;
+    });
+  }
 
-    for (int i = 1; i <= 100; i++) {
-      testList.add(Text("test$i"));
+  String getSelectedDate() {
+    final now = DateTime.now();
+    final difference = selectedDate.difference(now).inDays;
+
+    if (difference == 0) {
+      return 'Today';
+    } else if (difference == -1) {
+      return 'Yesterday';
+    } else {
+      return '${selectedDate.toLocal()}'.split(' ')[0];
     }
-    return testList;
   }
 
 }

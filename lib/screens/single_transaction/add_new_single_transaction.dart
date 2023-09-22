@@ -109,7 +109,6 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                                   String formattedDate =
                                       DateFormat('MM/dd/yyyy')
                                           .format(pickedDate);
-
                                   setState(() {
                                     dateInput.text = formattedDate;
                                   });

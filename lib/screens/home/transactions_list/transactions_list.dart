@@ -13,8 +13,9 @@ class TransactionsList extends StatefulWidget {
 
   // add this userCategoriesMap for future usage
   final Map<String, Category>? userCategoriesMap;
+  final DateTime selectedDate;
 
-  const TransactionsList({super.key, this.userCategoriesMap});
+  const TransactionsList({super.key, this.userCategoriesMap, required this.selectedDate});
 
   @override
   State<TransactionsList> createState() => _TransactionsListState();
@@ -32,6 +33,10 @@ class _TransactionsListState extends State<TransactionsList> {
     if (transactionStream == null) {
       return const Loading();
     }
+
+    // next TO-DO right here
+    // final fetchedCategoriesMap = await getUserCategoriesMap(user!.uid);
+
     return ListView.builder(
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
