@@ -7,8 +7,9 @@ import 'package:flutter/material.dart';
 class CategoryIconButton extends StatefulWidget {
 
   final Category category;
+  final DateTime selectedDate;
 
-  const CategoryIconButton({super.key, required this.category});
+  const CategoryIconButton({super.key, required this.category, required this.selectedDate});
 
   @override
   State<CategoryIconButton> createState() => _CategoryIconButtonState();
@@ -24,7 +25,7 @@ class _CategoryIconButtonState extends State<CategoryIconButton> {
           context,
           MaterialPageRoute(
             builder: (context) =>
-                AddNewSingleTransaction(),
+                AddNewSingleTransaction(selectedDate: widget.selectedDate),
             settings: RouteSettings(arguments: {"category": widget.category}),
           ),
         );

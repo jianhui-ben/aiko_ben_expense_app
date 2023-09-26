@@ -10,7 +10,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AddNewSingleTransaction extends StatefulWidget {
-  const AddNewSingleTransaction({super.key});
+
+  final DateTime selectedDate;
+
+  const AddNewSingleTransaction({super.key, required this.selectedDate});
 
   @override
   State<AddNewSingleTransaction> createState() => _AddNewSingleTransactionState();
@@ -21,12 +24,13 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
   final FocusNode _focus = FocusNode(); // 1) init _focus to let user directly input number from keypad
 
   late Map data;
-  TextEditingController dateInput = TextEditingController(text: DateFormat('MM/dd/yyyy').format(DateTime.now()));
+  TextEditingController dateInput = TextEditingController();
   TextEditingController transactionAmountInput = TextEditingController();
   TextEditingController transactionCommentInput = TextEditingController();
 
   @override
   void initState() {
+    dateInput.text = DateFormat('MM/dd/yyyy').format(widget.selectedDate);
     super.initState();
   }
 
@@ -45,14 +49,12 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
       ..dispose(); // 3) removeListener and dispose
   }
 
-// 4)
   void _onFocusChange() {
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-
     data = ModalRoute.of(context)?.settings.arguments as Map<String, Object?>;
     final User? user= context.read<User?>();
 

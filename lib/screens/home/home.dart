@@ -146,24 +146,24 @@ class _HomeState extends State<Home> {
                     children: [
                       Row(
                         children: [
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[0]]!),
+                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[0]]!, selectedDate: selectedDate,),
                           SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[1]]!),
+                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[1]]!, selectedDate: selectedDate,),
                           SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[2]]!),
+                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[2]]!, selectedDate: selectedDate,),
                           SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[3]]!),
+                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[3]]!, selectedDate: selectedDate,),
                         ],
                       ), //first row
                       Row(
                         children: [
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[4]]!),
+                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[4]]!, selectedDate: selectedDate,),
                           SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[5]]!),
+                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[5]]!, selectedDate: selectedDate,),
                           SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[6]]!),
+                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[6]]!, selectedDate: selectedDate,),
                           SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[7]]!),
+                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[7]]!, selectedDate: selectedDate,),
                         ],
                       ),
                     ],
