@@ -74,12 +74,11 @@ class DatabaseService {
         .onError((e, _) => print("Error writing document: $e"));
   }
 
-  Future addNewTransaction(String categoryId, double transactionAmount, String? transactionComment) async {
-    DateTime now = DateTime.now();
+  Future addNewTransaction(String categoryId, double transactionAmount, String? transactionComment, DateTime selectedDate) async {
     // Create a new user with a first and last name
     var newTransaction = <String, dynamic>{
       "transactionId": generateTransactionId(),
-      "dateTime": DateTime(now.year, now.month, now.day),
+      "dateTime": selectedDate,
       "categoryId": categoryId,
       "transactionAmount": transactionAmount,
       "transactionComment": transactionComment ?? "Shopping",

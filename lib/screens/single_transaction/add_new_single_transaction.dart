@@ -203,7 +203,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                   await DatabaseService(uid: user!.uid).addNewTransaction(
                       category.categoryId,
                       double.tryParse(transactionAmountInput.text)!,
-                      transactionCommentInput.text);
+                      transactionCommentInput.text, DateFormat('MM/dd/yyyy').parse(dateInput.text));
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(

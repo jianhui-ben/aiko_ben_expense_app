@@ -15,4 +15,16 @@ class Transaction{
       required this.transactionAmount,
       this.transactionComment,
       this.dateTime});
+
+  @override
+  String toString() {
+    return 'Transaction('
+        'transactionId: $transactionId, '
+        'dateTime: $dateTime, '
+        'category: $category, '
+        'transactionAmount: $transactionAmount, '
+        'transactionComment: $transactionComment'
+        ')';
+  }
+
 }
