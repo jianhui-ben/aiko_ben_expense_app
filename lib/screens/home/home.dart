@@ -3,6 +3,7 @@ import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/home/category_icon_button.dart';
+import 'package:aiko_ben_expense_app/screens/home/daily_and_monthly_total.dart';
 import 'package:aiko_ben_expense_app/screens/home/transactions_list/transactions_list.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
@@ -55,6 +56,8 @@ class _HomeState extends State<Home> {
     } else {
       DatabaseService db = DatabaseService(uid: user?.uid);
       db.setUserCategoriesMap(userCategoriesMap!);
+
+      // final transactionStream = Provider.of<List<Transaction>?>(context);
 
       return StreamProvider<List<Transaction>?>.value(
           value: db.transactions,
@@ -174,7 +177,7 @@ class _HomeState extends State<Home> {
                   color: const Color(0xffeeee00), // Yellow
                   height: 120.0,
                   alignment: Alignment.center,
-                  child: const Text('placeholder for total'),
+                  child: const DailyAndMonthlyTotal(),
                 ),
                 Expanded(
                   child: Container(
