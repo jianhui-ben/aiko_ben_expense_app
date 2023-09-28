@@ -50,14 +50,12 @@ class _HomeState extends State<Home> {
     // print("isToday or not: $isToday");
 
     final user = Provider.of<User?>(context);
+    DatabaseService db = DatabaseService(uid: user?.uid);
 
     if (userCategoriesMap == null) {
       return Loading();
     } else {
-      DatabaseService db = DatabaseService(uid: user?.uid);
       db.setUserCategoriesMap(userCategoriesMap!);
-
-      // final transactionStream = Provider.of<List<Transaction>?>(context);
 
       return StreamProvider<List<Transaction>?>.value(
           value: db.transactions,
@@ -144,10 +142,12 @@ class _HomeState extends State<Home> {
               body:
               Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Container(
+                  height: MediaQuery.of(context).size.height * 0.16,
                   color: Colors.red,
                   child: Column(
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[0]]!, selectedDate: selectedDate,),
                           SizedBox(width: 16),
@@ -159,6 +159,7 @@ class _HomeState extends State<Home> {
                         ],
                       ), //first row
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[4]]!, selectedDate: selectedDate,),
                           SizedBox(width: 16),
@@ -173,11 +174,10 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 Container(
-                  // A fixed-height child.
                   color: const Color(0xffeeee00), // Yellow
-                  height: 120.0,
+                  height: MediaQuery.of(context).size.height * 0.1,
                   alignment: Alignment.center,
-                  child: const DailyAndMonthlyTotal(),
+                  child: DailyAndMonthlyTotal(selectedDate: selectedDate,),
                 ),
                 Expanded(
                   child: Container(

@@ -18,18 +18,26 @@ class CategoryIconButton extends StatefulWidget {
 class _CategoryIconButtonState extends State<CategoryIconButton> {
   @override
   Widget build(BuildContext context) {
-    return IconButton.filled(
-      icon: widget.category.categoryIcon,
-      onPressed: () async {
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                AddNewSingleTransaction(selectedDate: widget.selectedDate),
-            settings: RouteSettings(arguments: {"category": widget.category}),
-          ),
-        );
-      },
+    return Column(
+      children: [
+        IconButton.filled(
+          icon: widget.category.categoryIcon,
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    AddNewSingleTransaction(selectedDate: widget.selectedDate),
+                settings: RouteSettings(arguments: {"category": widget.category}),
+              ),
+            );
+          },
+        ),
+        Text(
+          widget.category.categoryName, // Display the category name
+          style: TextStyle(fontSize: 12), // Adjust the font size as needed
+        ),
+      ],
     );
   }
 }
