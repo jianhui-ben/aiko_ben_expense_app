@@ -65,6 +65,7 @@ class _TransactionsListState extends State<TransactionsList> {
               },
               // Show a red background as the item is swiped away.
               background: Container(color: Colors.red),
+              // TO_DO: add gestureDetector here
               child: TransactionTile(
                   transactionIcon:
                   filteredTransactionsList[index].category.categoryIcon,

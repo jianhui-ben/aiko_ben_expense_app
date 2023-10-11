@@ -12,8 +12,9 @@ import 'package:provider/provider.dart';
 class AddNewSingleTransaction extends StatefulWidget {
 
   final DateTime selectedDate;
+  final int? transactionAmount;
 
-  const AddNewSingleTransaction({super.key, required this.selectedDate});
+  const AddNewSingleTransaction({super.key, required this.selectedDate, this.transactionAmount});
 
   @override
   State<AddNewSingleTransaction> createState() => _AddNewSingleTransactionState();

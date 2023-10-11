@@ -49,8 +49,6 @@ class AuthService {
       User? user = userCredential.user;
       String uid = user!.uid;
 
-
-
       return _userFromFireBaseUserCredential(userCredential);
     } catch(e) {
       return e.toString();
