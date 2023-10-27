@@ -11,10 +11,17 @@ import 'package:provider/provider.dart';
 
 class AddNewSingleTransaction extends StatefulWidget {
 
+  final Category category;
   final DateTime selectedDate;
   final int? transactionAmount;
+  final String? transactionComment;
 
-  const AddNewSingleTransaction({super.key, required this.selectedDate, this.transactionAmount});
+  const AddNewSingleTransaction(
+      {super.key,
+      required this.category,
+      required this.selectedDate,
+      this.transactionAmount,
+      this.transactionComment});
 
   @override
   State<AddNewSingleTransaction> createState() => _AddNewSingleTransactionState();
@@ -56,11 +63,8 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    data = ModalRoute.of(context)?.settings.arguments as Map<String, Object?>;
+    // data = ModalRoute.of(context)?.settings.arguments as Map<String, Object?>;
     final User? user= context.read<User?>();
-
-    //TO-DO: here we should retrieve category icon and text from the categoryId
-    Category category = data["category"];
 
     return Scaffold(appBar: AppBar(),
       resizeToAvoidBottomInset: false,
@@ -77,7 +81,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                   SizedBox(
                     width: 15,
                   ),
-                  Icon(category.categoryIcon.icon,
+                  Icon(widget.category.categoryIcon.icon,
                       size: 50, //
                       color: Color(0xFF6200EE)),
                   SizedBox(
@@ -202,7 +206,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
               child: ElevatedButton(
                 onPressed: () async {
                   await DatabaseService(uid: user!.uid).addNewTransaction(
-                      category.categoryId,
+                      widget.category.categoryId,
                       double.tryParse(transactionAmountInput.text)!,
                       transactionCommentInput.text, DateFormat('MM/dd/yyyy').parse(dateInput.text));
                   Navigator.pop(context);
