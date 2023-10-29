@@ -91,6 +91,26 @@ class DatabaseService {
         .catchError((e) => print("Error adding document: $e"));
   }
 
+  Future editTransactionById(String transactionId, String categoryId, double newTransactionAmount, String? newTransactionComment, DateTime newSelectedDate) async {
+    try {
+      final DocumentReference documentReference = transactionsCollection
+          .doc(uid)
+          .collection('userTransactions')
+          .doc(transactionId);
+
+      // Update the document with the new values
+      await documentReference.update({
+        "dateTime": newSelectedDate,
+        "transactionAmount": newTransactionAmount,
+        "transactionComment": newTransactionComment,
+        "categoryId": categoryId,
+      });
+      print('Document with transaction ID $transactionId updated successfully');
+    } catch (e) {
+      print('Error updating transaction document: $e');
+    }
+  }
+
   Future removeTransactionById(String transactionId) async {
     try {
       // Reference to the Firestore collection and document with the given ID

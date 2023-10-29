@@ -1,4 +1,5 @@
 
+import 'dart:ffi';
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/single_transaction/numeric_keypad.dart';
@@ -9,25 +10,27 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class AddNewSingleTransaction extends StatefulWidget {
+class AddOrEditSingleTransaction extends StatefulWidget {
 
   final Category category;
   final DateTime selectedDate;
-  final int? transactionAmount;
+  final double? transactionAmount;
   final String? transactionComment;
+  final String? transactionId;
 
-  const AddNewSingleTransaction(
+  const AddOrEditSingleTransaction(
       {super.key,
       required this.category,
       required this.selectedDate,
       this.transactionAmount,
-      this.transactionComment});
+      this.transactionComment,
+      this.transactionId});
 
   @override
-  State<AddNewSingleTransaction> createState() => _AddNewSingleTransactionState();
+  State<AddOrEditSingleTransaction> createState() => _AddOrEditSingleTransaction();
 }
 
-class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
+class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
 
   final FocusNode _focus = FocusNode(); // 1) init _focus to let user directly input number from keypad
 
@@ -39,6 +42,12 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
   @override
   void initState() {
     dateInput.text = DateFormat('MM/dd/yyyy').format(widget.selectedDate);
+
+    // if transactionId exists, it's not a new transaction
+    if (widget.transactionId != null) {
+      transactionAmountInput.text = widget.transactionAmount.toString();
+      transactionCommentInput.text = widget.transactionComment.toString();
+    }
     super.initState();
   }
 
@@ -65,6 +74,8 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
   Widget build(BuildContext context) {
     // data = ModalRoute.of(context)?.settings.arguments as Map<String, Object?>;
     final User? user= context.read<User?>();
+
+    bool _isTransactionAmountInputValid = true;
 
     return Scaffold(appBar: AppBar(),
       resizeToAvoidBottomInset: false,
@@ -205,18 +216,39 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
               margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 6), // Adjust margin as needed
               child: ElevatedButton(
                 onPressed: () async {
-                  await DatabaseService(uid: user!.uid).addNewTransaction(
-                      widget.category.categoryId,
-                      double.tryParse(transactionAmountInput.text)!,
-                      transactionCommentInput.text, DateFormat('MM/dd/yyyy').parse(dateInput.text));
-                  Navigator.pop(context);
+                  if (transactionAmountInput.text.isEmpty) {
+                    // Show an error message using a SnackBar
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Invalid transaction amount. Please enter a valid number.'),
+                      ),
+                    );
+                  } else {
+                    // new transaction
+                    if (widget.transactionId == null) {
+                      await DatabaseService(uid: user!.uid).addNewTransaction(
+                          widget.category.categoryId,
+                          double.tryParse(transactionAmountInput.text)!,
+                          transactionCommentInput.text,
+                          DateFormat('MM/dd/yyyy').parse(dateInput.text));
+                    } else {
+                      //modify existing transaction by transactionId
+                      await DatabaseService(uid: user!.uid).editTransactionById(
+                          widget.transactionId!,
+                          widget.category.categoryId,
+                          double.tryParse(transactionAmountInput.text)!,
+                          transactionCommentInput.text,
+                          DateFormat('MM/dd/yyyy').parse(dateInput.text));
+                    }
+                    Navigator.pop(context);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF6200EE), // Background color
                   foregroundColor: Colors.white, // Text color
                 ),
                 child: Text(
-                  'ADD',
+                  widget.transactionId == null ? 'ADD' : 'UPDATE',
                   style: TextStyle(fontSize: 18.0), // Adjust the text style as needed
                 ),
               ),

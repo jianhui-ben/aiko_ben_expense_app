@@ -58,7 +58,7 @@ class _TransactionsListState extends State<TransactionsList> {
               onDismissed: (direction) async {
                 await DatabaseService(uid: user!.uid).removeTransactionById(transaction.transactionId);
 
-                // Then show a snackbar.
+                // optional: Then show a snackbar.
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(
                         'transaction ${transaction.transactionId} dismissed')));
@@ -67,17 +67,19 @@ class _TransactionsListState extends State<TransactionsList> {
               background: Container(color: Colors.red),
               // TO_DO: add gestureDetector here
               child: TransactionTile(
-                  transactionIcon:
-                  filteredTransactionsList[index].category.categoryIcon,
-                  transactionComment:
-                      (filteredTransactionsList[index].transactionComment != null &&
+                  transactionId: transaction.transactionId,
+                  selectedDate: widget.selectedDate,
+                  transactionCategory: filteredTransactionsList[index].category,
+                  transactionComment: (filteredTransactionsList[index]
+                                  .transactionComment !=
+                              null &&
                           filteredTransactionsList[index]
-                                  .transactionComment!
-                                  .isNotEmpty)
-                          ? filteredTransactionsList[index].transactionComment!
-                          : filteredTransactionsList[index].category.categoryName,
+                              .transactionComment!
+                              .isNotEmpty)
+                      ? filteredTransactionsList[index].transactionComment!
+                      : filteredTransactionsList[index].category.categoryName,
                   transactionAmount:
-                  filteredTransactionsList[index].transactionAmount));
+                      filteredTransactionsList[index].transactionAmount));
         });
   }
 }

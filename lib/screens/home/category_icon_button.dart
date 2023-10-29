@@ -1,6 +1,6 @@
 
 import 'package:aiko_ben_expense_app/models/category.dart';
-import 'package:aiko_ben_expense_app/screens/single_transaction/add_new_single_transaction.dart';
+import 'package:aiko_ben_expense_app/screens/single_transaction/add_or_edit_single_transaction.dart';
 import 'package:flutter/material.dart';
 
 class CategoryIconButton extends StatefulWidget {
@@ -25,11 +25,9 @@ class _CategoryIconButtonState extends State<CategoryIconButton> {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => AddNewSingleTransaction(
+                builder: (context) => AddOrEditSingleTransaction(
                   category: widget.category,
                   selectedDate: widget.selectedDate,
-                  // transactionAmount: null,
-                  // transactionComment: null,
                 ),
                 // settings: RouteSettings(arguments: {"some key": some value}), //added here for quick reminder
               ),
