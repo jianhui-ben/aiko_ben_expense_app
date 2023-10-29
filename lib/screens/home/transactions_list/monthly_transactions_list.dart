@@ -7,25 +7,18 @@ import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-// this has to be stateful because it has a gestrure detector to the scrolldownn function on home screen
-class TransactionsList extends StatefulWidget {
+class MonthlyTransactionsList extends StatefulWidget {
 
-  // add this userCategoriesMap for future usage
   final Map<String, Category>? userCategoriesMap;
   final DateTime selectedDate;
-  final bool isDailyView;
 
-  const TransactionsList(
-      {super.key,
-      this.userCategoriesMap,
-      required this.selectedDate,
-      required this.isDailyView});
+  const MonthlyTransactionsList({super.key, this.userCategoriesMap, required this.selectedDate});
 
   @override
-  State<TransactionsList> createState() => _TransactionsListState();
+  State<MonthlyTransactionsList> createState() => _MonthlyTransactionsListState();
 }
 
-class _TransactionsListState extends State<TransactionsList> {
+class _MonthlyTransactionsListState extends State<MonthlyTransactionsList> {
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +33,12 @@ class _TransactionsListState extends State<TransactionsList> {
     }
 
     // // Filter transactions based on the selected date.
-    List<Transaction> filteredTransactionsList = widget.isDailyView
-        ? filterTransactionsByDate(transactionStream, widget.selectedDate)
-        : filterTransactionsByMonth(transactionStream, widget.selectedDate);
+    List<Transaction> filteredTransactionsList = transactionStream.where((transaction) {
+      final transactionDate = transaction.dateTime!;
+      return transactionDate.year == widget.selectedDate.year &&
+          transactionDate.month == widget.selectedDate.month &&
+          transactionDate.day == widget.selectedDate.day;
+    }).toList();
 
     return ListView.builder(
         physics: NeverScrollableScrollPhysics(),
@@ -67,9 +63,10 @@ class _TransactionsListState extends State<TransactionsList> {
               },
               // Show a red background as the item is swiped away.
               background: Container(color: Colors.red),
+              // TO_DO: add gestureDetector here
               child: TransactionTile(
                   transactionId: transaction.transactionId,
-                  selectedDate: filteredTransactionsList[index].dateTime ?? widget.selectedDate,
+                  selectedDate: widget.selectedDate,
                   transactionCategory: filteredTransactionsList[index].category,
                   transactionComment: (filteredTransactionsList[index]
                                   .transactionComment !=
@@ -83,25 +80,4 @@ class _TransactionsListState extends State<TransactionsList> {
                       filteredTransactionsList[index].transactionAmount));
         });
   }
-
-
-  List<Transaction> filterTransactionsByDate(
-      List<Transaction> transactions, DateTime selectedDate) {
-    return transactions.where((transaction) {
-      final transactionDate = transaction.dateTime!;
-      return transactionDate.year == selectedDate.year &&
-          transactionDate.month == selectedDate.month &&
-          transactionDate.day == selectedDate.day;
-    }).toList();
-  }
-
-  List<Transaction> filterTransactionsByMonth(
-      List<Transaction> transactions, DateTime selectedDate) {
-    return transactions.where((transaction) {
-      final transactionDate = transaction.dateTime!;
-      return transactionDate.year == selectedDate.year &&
-          transactionDate.month == selectedDate.month;
-    }).toList();
-  }
-
 }

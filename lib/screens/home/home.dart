@@ -26,13 +26,25 @@ class _HomeState extends State<Home> {
   Map<String, Category>? userCategoriesMap; // Store user categories here
 
   // TO-DO the orderedUserCategoryIds should be retrieved from setting collection as well
-  List<String> orderedUserCategoryIds = ["1", "2", "3", "4", "5", "6", "7", "8"];
+  List<String> orderedUserCategoryIds = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8"
+  ];
 
   final numOfCategoriesInARow = 4;
   final numOfCategoriesInAColumn = 2;
 
   // by default select today's date
-  DateTime selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  DateTime selectedDate =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+  bool isDailyView = true;
 
   @override
   void initState() {
@@ -44,7 +56,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-
     final isToday = selectedDate.isAtSameMomentAs(DateTime(
         DateTime.now().year, DateTime.now().month, DateTime.now().day));
     // print("isToday or not: $isToday");
@@ -139,59 +150,105 @@ class _HomeState extends State<Home> {
                   ),
                 ],
               ),
-              body:
-              Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.18,
-                  color: Colors.red,
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              body: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.18,
+                      color: Colors.red,
+                      child: Column(
                         children: [
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[0]]!, selectedDate: selectedDate,),
-                          SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[1]]!, selectedDate: selectedDate,),
-                          SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[2]]!, selectedDate: selectedDate,),
-                          SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[3]]!, selectedDate: selectedDate,),
-                        ],
-                      ), //first row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[4]]!, selectedDate: selectedDate,),
-                          SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[5]]!, selectedDate: selectedDate,),
-                          SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[6]]!, selectedDate: selectedDate,),
-                          SizedBox(width: 16),
-                          CategoryIconButton(category: userCategoriesMap![orderedUserCategoryIds[7]]!, selectedDate: selectedDate,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              CategoryIconButton(
+                                category: userCategoriesMap![
+                                    orderedUserCategoryIds[0]]!,
+                                selectedDate: selectedDate,
+                              ),
+                              SizedBox(width: 16),
+                              CategoryIconButton(
+                                category: userCategoriesMap![
+                                    orderedUserCategoryIds[1]]!,
+                                selectedDate: selectedDate,
+                              ),
+                              SizedBox(width: 16),
+                              CategoryIconButton(
+                                category: userCategoriesMap![
+                                    orderedUserCategoryIds[2]]!,
+                                selectedDate: selectedDate,
+                              ),
+                              SizedBox(width: 16),
+                              CategoryIconButton(
+                                category: userCategoriesMap![
+                                    orderedUserCategoryIds[3]]!,
+                                selectedDate: selectedDate,
+                              ),
+                            ],
+                          ), //first row
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              CategoryIconButton(
+                                category: userCategoriesMap![
+                                    orderedUserCategoryIds[4]]!,
+                                selectedDate: selectedDate,
+                              ),
+                              SizedBox(width: 16),
+                              CategoryIconButton(
+                                category: userCategoriesMap![
+                                    orderedUserCategoryIds[5]]!,
+                                selectedDate: selectedDate,
+                              ),
+                              SizedBox(width: 16),
+                              CategoryIconButton(
+                                category: userCategoriesMap![
+                                    orderedUserCategoryIds[6]]!,
+                                selectedDate: selectedDate,
+                              ),
+                              SizedBox(width: 16),
+                              CategoryIconButton(
+                                category: userCategoriesMap![
+                                    orderedUserCategoryIds[7]]!,
+                                selectedDate: selectedDate,
+                              ),
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-                Container(
-                  color: const Color(0xffeeee00), // Yellow
-                  height: MediaQuery.of(context).size.height * 0.1,
-                  alignment: Alignment.center,
-                  child: DailyAndMonthlyTotal(selectedDate: selectedDate,),
-                ),
-                Expanded(
-                  child: Container(
-                      color: Colors.blue,
-                      child: SingleChildScrollView(
-                        physics: ScrollPhysics(),
-                        child: Column(
-                          children: [TransactionsList(selectedDate: selectedDate)],
-                        ),
-                      )
-                    // child: TransactionsList())
-                  ),
-                ),
-              ])));
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isDailyView = !isDailyView;
+                        });
+                      },
+                      child: Container(
+                        color: const Color(0xffeeee00), // Yellow
+                        height: MediaQuery.of(context).size.height * 0.1,
+                        alignment: Alignment.center,
+                        child: DailyAndMonthlyTotal(
+                            selectedDate: selectedDate,
+                            isDailyView: isDailyView),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                          color: Colors.blue,
+                          child: SingleChildScrollView(
+                            physics: ScrollPhysics(),
+                            child: Column(
+                              children: [
+                                TransactionsList(
+                                    selectedDate: selectedDate,
+                                    isDailyView: isDailyView)
+                              ],
+                            ),
+                          )
+                          // child: TransactionsList())
+                          ),
+                    ),
+                  ])));
     }
   }
 

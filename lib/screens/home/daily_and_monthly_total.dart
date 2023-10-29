@@ -3,35 +3,35 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class DailyAndMonthlyTotal extends StatelessWidget {
-
   final DateTime selectedDate;
+  final bool isDailyView;
 
-  const DailyAndMonthlyTotal({super.key, required this.selectedDate});
-
+  const DailyAndMonthlyTotal(
+      {super.key, required this.selectedDate, required this.isDailyView});
 
   // calculate the total transaction amount for the current month
   double calculateMonthlyTotal(List<Transaction> transactions) {
     return transactions
         .where((transaction) =>
-    transaction.dateTime!.year == selectedDate.year &&
-        transaction.dateTime!.month == selectedDate.month)
-        .fold(0.0, (double sum, transaction) => sum + transaction.transactionAmount);
+            transaction.dateTime!.year == selectedDate.year &&
+            transaction.dateTime!.month == selectedDate.month)
+        .fold(0.0,
+            (double sum, transaction) => sum + transaction.transactionAmount);
   }
 
   // calculate the total transaction amount for the current day
   double calculateDailyTotal(List<Transaction> transactions) {
     return transactions
         .where((transaction) =>
-    transaction.dateTime!.year == selectedDate.year &&
-        transaction.dateTime!.month == selectedDate.month &&
-        transaction.dateTime!.day == selectedDate.day)
-        .fold(0.0, (double sum, transaction) => sum + transaction.transactionAmount);
+            transaction.dateTime!.year == selectedDate.year &&
+            transaction.dateTime!.month == selectedDate.month &&
+            transaction.dateTime!.day == selectedDate.day)
+        .fold(0.0,
+            (double sum, transaction) => sum + transaction.transactionAmount);
   }
-
 
   @override
   Widget build(BuildContext context) {
-
     final transactionStream = Provider.of<List<Transaction>?>(context);
 
     if (transactionStream == null) {
@@ -39,7 +39,8 @@ class DailyAndMonthlyTotal extends StatelessWidget {
     }
 
     // // Filter transactions based on the selected date.
-    List<Transaction> filteredTransactionsList = transactionStream.where((transaction) {
+    List<Transaction> filteredTransactionsList =
+        transactionStream.where((transaction) {
       final transactionDate = transaction.dateTime!;
       return transactionDate.year == selectedDate.year &&
           transactionDate.month == selectedDate.month &&
@@ -58,37 +59,33 @@ class DailyAndMonthlyTotal extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Adjust spacing as needed
-          children: [
-            // Left column for Daily Total
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Daily Total',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  '\$${dailyTotal.toStringAsFixed(0)}', // Round to closest integer and add $
-                  style: TextStyle(fontSize: 24), // Adjust the font size as needed
-                ),
-              ],
-            ),
-            // Right column for Monthly Total
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Monthly Total',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  '\$${monthlyTotal.toStringAsFixed(0)}',
-                  style: TextStyle(fontSize: 24), // Adjust the font size as needed
-                ),
-              ],
-            ),
-          ],
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          // Adjust spacing as needed
+          children: isDailyView
+              ? [
+                  // Left column for Daily Total
+                  createTotal(dailyTotal, 'Daily Total'),
+                  // Right column for Monthly Total
+                  createTotal(monthlyTotal, 'Monthly Total'),
+                ]
+              : [createTotal(monthlyTotal, 'Monthly Total')],
+        ),
+      ],
+    );
+  }
+
+  Widget createTotal(double totalAmount, String textField) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          textField,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        Text(
+          '\$${totalAmount.toStringAsFixed(0)}',
+          // Round to closest integer and add $
+          style: TextStyle(fontSize: 24), // Adjust the font size as needed
         ),
       ],
     );
