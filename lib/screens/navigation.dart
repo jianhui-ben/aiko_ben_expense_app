@@ -1,5 +1,5 @@
 import 'package:aiko_ben_expense_app/screens/home/home.dart';
-import 'package:aiko_ben_expense_app/screens/insights.dart';
+import 'package:aiko_ben_expense_app/screens/insights/insights.dart';
 import 'package:aiko_ben_expense_app/screens/settings.dart';
 import 'package:flutter/material.dart';
 

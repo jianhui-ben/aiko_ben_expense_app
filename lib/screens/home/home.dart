@@ -52,7 +52,6 @@ class _HomeState extends State<Home> {
     // Call the asynchronous function
     // in this case, it would only call the getUserCategoriesMap once
     fetchUserCategories();
-
   }
 
   @override
