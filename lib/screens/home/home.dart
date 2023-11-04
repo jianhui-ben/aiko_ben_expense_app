@@ -52,6 +52,7 @@ class _HomeState extends State<Home> {
     // Call the asynchronous function
     // in this case, it would only call the getUserCategoriesMap once
     fetchUserCategories();
+
   }
 
   @override
@@ -126,29 +127,6 @@ class _HomeState extends State<Home> {
                   ),
                 ],
                 centerTitle: true, // Center the title
-              ),
-              bottomNavigationBar: NavigationBar(
-                labelBehavior: labelBehavior,
-                selectedIndex: currentPageIndex,
-                onDestinationSelected: (int index) {
-                  setState(() {
-                    currentPageIndex = index;
-                  });
-                },
-                destinations: const <Widget>[
-                  NavigationDestination(
-                    icon: Icon(Icons.home),
-                    label: 'Home',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.insights),
-                    label: 'Insights',
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.settings),
-                    label: 'Settings',
-                  ),
-                ],
               ),
               body: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -248,7 +226,8 @@ class _HomeState extends State<Home> {
                           // child: TransactionsList())
                           ),
                     ),
-                  ])));
+                  ])
+          ));
     }
   }
 
