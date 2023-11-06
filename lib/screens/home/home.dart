@@ -1,6 +1,5 @@
 
 import 'package:aiko_ben_expense_app/models/category.dart';
-import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/home/category_icon_button.dart';
 import 'package:aiko_ben_expense_app/screens/home/daily_and_monthly_total.dart';
