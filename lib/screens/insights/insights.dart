@@ -3,7 +3,9 @@ import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/insights/monthly_dashboard.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
+import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
+import 'package:aiko_ben_expense_app/shared/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,13 +18,6 @@ class Insights extends StatefulWidget {
 
 
 class _InsightsState extends State<Insights> {
-  // List of dashboard widgets for each tab
-  final List<Widget> dashboards = [
-    DailyDashboard(),
-    WeeklyDashboard(),
-    MonthlyDashboard(),
-    YearlyDashboard(),
-  ];
 
   Map<String, Category>? userCategoriesMap; // Store user categories here
 
@@ -52,30 +47,38 @@ class _InsightsState extends State<Insights> {
     final user = Provider.of<User?>(context);
     DatabaseService db = DatabaseService(uid: user?.uid);
 
+    final transactionStream = Provider.of<List<Transaction>?>(context);
+
+    if (transactionStream == null) {
+      return Container();
+    }
+
+    // List of dashboard widgets for each tab
+    final List<Widget> dashboards = [
+      WeeklyDashboard(),
+      MonthlyDashboard(transactions: Util.filterTransactionListToMonth(transactionStream, today)),
+      YearlyDashboard(),
+    ];
+
     if (userCategoriesMap == null) {
       return Loading();
     } else {
       db.setUserCategoriesMap(userCategoriesMap!);
       return DefaultTabController(
           length: dashboards.length,
-          child: StreamProvider<List<Transaction>?>.value(
-            value: db.transactions,
-            initialData: null,
-            child: Scaffold(
-              appBar: AppBar(
-                title: Text('Insights'),
-                bottom: TabBar(
-                  tabs: [
-                    Tab(text: 'Day'),
-                    Tab(text: 'Week'),
-                    Tab(text: 'Month'),
-                    Tab(text: 'Year'),
-                  ],
-                ),
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text('Insights'),
+              bottom: TabBar(
+                tabs: [
+                  Tab(text: 'Week'),
+                  Tab(text: 'Month'),
+                  Tab(text: 'Year'),
+                ],
               ),
-              body: TabBarView(
-                children: dashboards,
-              ),
+            ),
+            body: TabBarView(
+              children: dashboards,
             ),
           ));
     }

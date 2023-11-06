@@ -68,165 +68,162 @@ class _HomeState extends State<Home> {
     } else {
       db.setUserCategoriesMap(userCategoriesMap!);
 
-      return StreamProvider<List<Transaction>?>.value(
-          value: db.transactions,
-          initialData: null,
-          child: Scaffold(
-              appBar: AppBar(
-                elevation: 0.0,
-                title: Container(
-                  color: Colors.green,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // Left arrow icon
-                      IconButton(
-                        icon: Icon(Icons.arrow_left),
-                        onPressed: () {
-                          _selectDate(selectedDate.subtract(Duration(days: 1)));
-                        },
-                      ),
-                      Text(
-                        getSelectedDate(),
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      // Right arrow icon
-                      if (!isToday)
-                        IconButton(
-                          icon: Icon(Icons.arrow_right),
-                          onPressed: () {
-                            _selectDate(selectedDate.add(Duration(days: 1)));
-                          },
-                        ),
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () async {
-                      await _auth.signOut();
+      return Scaffold(
+          appBar: AppBar(
+            elevation: 0.0,
+            title: Container(
+              color: Colors.green,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Left arrow icon
+                  IconButton(
+                    icon: Icon(Icons.arrow_left),
+                    onPressed: () {
+                      _selectDate(selectedDate.subtract(Duration(days: 1)));
                     },
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(Icons.person), // Your icon
-                        SizedBox(height: 1), // Spacer between icon and text
-                        Text(
-                          'logout',
-                          style: TextStyle(
-                            fontSize: 10,
-                          ),
-                        ), // Your text
-                      ],
+                  ),
+                  Text(
+                    getSelectedDate(),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
+                  // Right arrow icon
+                  if (!isToday)
+                    IconButton(
+                      icon: Icon(Icons.arrow_right),
+                      onPressed: () {
+                        _selectDate(selectedDate.add(Duration(days: 1)));
+                      },
+                    ),
                 ],
-                centerTitle: true, // Center the title
               ),
-              body: Column(
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  await _auth.signOut();
+                },
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.18,
-                      color: Colors.red,
-                      child: Column(
+                    Icon(Icons.person), // Your icon
+                    SizedBox(height: 1), // Spacer between icon and text
+                    Text(
+                      'logout',
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    ), // Your text
+                  ],
+                ),
+              ),
+            ],
+            centerTitle: true, // Center the title
+          ),
+          body: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.18,
+                  color: Colors.red,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              CategoryIconButton(
-                                category: userCategoriesMap![
-                                    orderedUserCategoryIds[0]]!,
-                                selectedDate: selectedDate,
-                              ),
-                              SizedBox(width: 16),
-                              CategoryIconButton(
-                                category: userCategoriesMap![
-                                    orderedUserCategoryIds[1]]!,
-                                selectedDate: selectedDate,
-                              ),
-                              SizedBox(width: 16),
-                              CategoryIconButton(
-                                category: userCategoriesMap![
-                                    orderedUserCategoryIds[2]]!,
-                                selectedDate: selectedDate,
-                              ),
-                              SizedBox(width: 16),
-                              CategoryIconButton(
-                                category: userCategoriesMap![
-                                    orderedUserCategoryIds[3]]!,
-                                selectedDate: selectedDate,
-                              ),
-                            ],
-                          ), //first row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              CategoryIconButton(
-                                category: userCategoriesMap![
-                                    orderedUserCategoryIds[4]]!,
-                                selectedDate: selectedDate,
-                              ),
-                              SizedBox(width: 16),
-                              CategoryIconButton(
-                                category: userCategoriesMap![
-                                    orderedUserCategoryIds[5]]!,
-                                selectedDate: selectedDate,
-                              ),
-                              SizedBox(width: 16),
-                              CategoryIconButton(
-                                category: userCategoriesMap![
-                                    orderedUserCategoryIds[6]]!,
-                                selectedDate: selectedDate,
-                              ),
-                              SizedBox(width: 16),
-                              CategoryIconButton(
-                                category: userCategoriesMap![
-                                    orderedUserCategoryIds[7]]!,
-                                selectedDate: selectedDate,
-                              ),
-                            ],
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[0]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[1]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[2]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[3]]!,
+                            selectedDate: selectedDate,
+                          ),
+                        ],
+                      ), //first row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[4]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[5]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[6]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[7]]!,
+                            selectedDate: selectedDate,
                           ),
                         ],
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isDailyView = !isDailyView;
-                        });
-                      },
-                      child: Container(
-                        color: const Color(0xffeeee00), // Yellow
-                        height: MediaQuery.of(context).size.height * 0.1,
-                        alignment: Alignment.center,
-                        child: DailyAndMonthlyTotal(
-                            selectedDate: selectedDate,
-                            isDailyView: isDailyView),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isDailyView = !isDailyView;
+                    });
+                  },
+                  child: Container(
+                    color: const Color(0xffeeee00), // Yellow
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    alignment: Alignment.center,
+                    child: DailyAndMonthlyTotal(
+                        selectedDate: selectedDate,
+                        isDailyView: isDailyView),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                      color: Colors.blue,
+                      child: SingleChildScrollView(
+                        physics: ScrollPhysics(),
+                        child: Column(
+                          children: [
+                            TransactionsList(
+                                selectedDate: selectedDate,
+                                isDailyView: isDailyView)
+                          ],
+                        ),
+                      )
+                      // child: TransactionsList())
                       ),
-                    ),
-                    Expanded(
-                      child: Container(
-                          color: Colors.blue,
-                          child: SingleChildScrollView(
-                            physics: ScrollPhysics(),
-                            child: Column(
-                              children: [
-                                TransactionsList(
-                                    selectedDate: selectedDate,
-                                    isDailyView: isDailyView)
-                              ],
-                            ),
-                          )
-                          // child: TransactionsList())
-                          ),
-                    ),
-                  ])
-          ));
+                ),
+              ])
+      );
     }
   }
 

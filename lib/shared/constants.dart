@@ -29,6 +29,9 @@ Map<IconData, String> reverseIconsToStringMap(Map<String, IconData> inputMap) {
 final supportedIconsToStringMap = reverseIconsToStringMap(stringToSupportedIconsMap);
 
 
+//insights page always consider today's date as selectedDate
+final DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
 
 const textInputDecoration = InputDecoration(
   border: OutlineInputBorder(borderSide: BorderSide(width: 2)),

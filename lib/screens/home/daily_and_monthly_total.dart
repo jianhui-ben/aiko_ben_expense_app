@@ -1,4 +1,5 @@
 import 'package:aiko_ben_expense_app/models/transaction.dart';
+import 'package:aiko_ben_expense_app/shared/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,13 +40,15 @@ class DailyAndMonthlyTotal extends StatelessWidget {
     }
 
     // // Filter transactions based on the selected date.
-    List<Transaction> filteredTransactionsList =
-        transactionStream.where((transaction) {
-      final transactionDate = transaction.dateTime!;
-      return transactionDate.year == selectedDate.year &&
-          transactionDate.month == selectedDate.month &&
-          transactionDate.day == selectedDate.day;
-    }).toList();
+    // List<Transaction> filteredTransactionsList =
+    //     transactionStream.where((transaction) {
+    //   final transactionDate = transaction.dateTime!;
+    //   return transactionDate.year == selectedDate.year &&
+    //       transactionDate.month == selectedDate.month &&
+    //       transactionDate.day == selectedDate.day;
+    // }).toList();
+
+    List<Transaction> filteredTransactionsList = Util.filterTransactionListToDate(transactionStream, selectedDate);
 
     if (transactionStream == null) {
       // return const Loading(); // or some other better loading widget
@@ -91,3 +94,5 @@ class DailyAndMonthlyTotal extends StatelessWidget {
     );
   }
 }
+
+
