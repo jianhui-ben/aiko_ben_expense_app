@@ -19,7 +19,7 @@ class _MonthlyDashboardState extends State<MonthlyDashboard> {
 
     List<Widget> charts = [
       TotalAmount(title: 'Monthly Total:', transactions: widget.transactions),
-      SplineChart(),
+      widget.transactions != null ? SplineChart(transactions: widget.transactions) : Container(),
     ];
 
     return Scaffold(
