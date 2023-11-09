@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class SplineChart extends StatefulWidget {
+class MonthExpenseByDaySplineChart extends StatefulWidget {
   final List<Transaction> transactions;
-  const SplineChart({super.key, required this.transactions});
+  const MonthExpenseByDaySplineChart({super.key, required this.transactions});
 
   @override
-  State<SplineChart> createState() => _SplineChartState();
+  State<MonthExpenseByDaySplineChart> createState() => _MonthExpenseByDaySplineChartState();
 }
 
-class _SplineChartState extends State<SplineChart> {
+class _MonthExpenseByDaySplineChartState extends State<MonthExpenseByDaySplineChart> {
   late List<_ChartData> _chartData;
   late TooltipBehavior _tooltipBehaviror;
 
