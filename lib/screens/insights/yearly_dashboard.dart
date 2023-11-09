@@ -3,22 +3,21 @@ import 'package:aiko_ben_expense_app/screens/insights/charts/month_expense_by_da
 import 'package:aiko_ben_expense_app/screens/insights/charts/total_amount.dart';
 import 'package:flutter/material.dart';
 
-class MonthlyDashboard extends StatefulWidget {
+class YearlyDashboard extends StatefulWidget {
 
   final List<Transaction> transactions;
-  const MonthlyDashboard({super.key, required this.transactions});
+  const YearlyDashboard({super.key, required this.transactions});
 
   @override
-  State<MonthlyDashboard> createState() => _MonthlyDashboardState();
+  State<YearlyDashboard> createState() => _YearlyDashboardState();
 }
 
-class _MonthlyDashboardState extends State<MonthlyDashboard> {
-
+class _YearlyDashboardState extends State<YearlyDashboard> {
   @override
   Widget build(BuildContext context) {
 
     List<Widget> charts = [
-      TotalAmount(title: 'Month Total:', transactions: widget.transactions),
+      TotalAmount(title: 'Year Total:', transactions: widget.transactions),
       MonthExpenseByDaySplineChart(transactions: widget.transactions),
     ];
 

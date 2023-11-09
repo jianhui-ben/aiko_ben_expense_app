@@ -2,6 +2,7 @@ import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/insights/monthly_dashboard.dart';
+import 'package:aiko_ben_expense_app/screens/insights/weekly_dashboard.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
@@ -55,7 +56,7 @@ class _InsightsState extends State<Insights> {
 
     // List of dashboard widgets for each tab
     final List<Widget> dashboards = [
-      WeeklyDashboard(),
+      WeeklyDashboard(transactions: Util.filterTransactionListToLastSevenDays(transactionStream, today)),
       MonthlyDashboard(transactions: Util.filterTransactionListToMonth(transactionStream, today)),
       YearlyDashboard(),
     ];
@@ -85,29 +86,12 @@ class _InsightsState extends State<Insights> {
   }
 }
 
-class DailyDashboard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Daily Dashboard Content'),
-    );
-  }
-}
 
-class WeeklyDashboard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Weekly Dashboard Content'),
-    );
-  }
-}
-
-// class MonthlyDashboard extends StatelessWidget {
+// class WeeklyDashboard extends StatelessWidget {
 //   @override
 //   Widget build(BuildContext context) {
 //     return Center(
-//       child: Text('Monthly Dashboard Content'),
+//       child: Text('Weekly Dashboard Content'),
 //     );
 //   }
 // }

@@ -1,25 +1,25 @@
 import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/screens/insights/charts/month_expense_by_day_spline_chart.dart';
 import 'package:aiko_ben_expense_app/screens/insights/charts/total_amount.dart';
+import 'package:aiko_ben_expense_app/screens/insights/charts/week_expense_by_weekday_spline_chart.dart';
 import 'package:flutter/material.dart';
 
-class MonthlyDashboard extends StatefulWidget {
+class WeeklyDashboard extends StatefulWidget {
 
   final List<Transaction> transactions;
-  const MonthlyDashboard({super.key, required this.transactions});
+  const WeeklyDashboard({super.key, required this.transactions});
 
   @override
-  State<MonthlyDashboard> createState() => _MonthlyDashboardState();
+  State<WeeklyDashboard> createState() => _WeeklyDashboardState();
 }
 
-class _MonthlyDashboardState extends State<MonthlyDashboard> {
-
+class _WeeklyDashboardState extends State<WeeklyDashboard> {
   @override
   Widget build(BuildContext context) {
 
     List<Widget> charts = [
-      TotalAmount(title: 'Month Total:', transactions: widget.transactions),
-      MonthExpenseByDaySplineChart(transactions: widget.transactions),
+      TotalAmount(title: 'Week Total:', transactions: widget.transactions),
+      WeekExpenseByWeekdaySplineChart(transactions: widget.transactions),
     ];
 
     return Scaffold(
