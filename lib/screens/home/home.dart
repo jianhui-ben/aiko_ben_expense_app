@@ -71,7 +71,7 @@ class _HomeState extends State<Home> {
           appBar: AppBar(
             elevation: 0.0,
             title: Container(
-              color: Colors.green,
+              // color: Colors.green,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -128,7 +128,7 @@ class _HomeState extends State<Home> {
               children: [
                 Container(
                   height: MediaQuery.of(context).size.height * 0.18,
-                  color: Colors.red,
+                  // color: Colors.red,
                   child: Column(
                     children: [
                       Row(
@@ -190,6 +190,9 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
+                Container(
+                    height: MediaQuery.of(context).size.height * 0.001,
+                    child: Divider()),
                 GestureDetector(
                   onTap: () {
                     setState(() {
@@ -197,7 +200,7 @@ class _HomeState extends State<Home> {
                     });
                   },
                   child: Container(
-                    color: const Color(0xffeeee00), // Yellow
+                    // color: const Color(0xffeeee00), // Yellow
                     height: MediaQuery.of(context).size.height * 0.1,
                     alignment: Alignment.center,
                     child: DailyAndMonthlyTotal(
@@ -207,7 +210,7 @@ class _HomeState extends State<Home> {
                 ),
                 Expanded(
                   child: Container(
-                      color: Colors.blue,
+                      // color: Colors.blue,
                       child: SingleChildScrollView(
                         physics: ScrollPhysics(),
                         child: Column(

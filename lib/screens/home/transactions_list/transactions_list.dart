@@ -44,44 +44,51 @@ class _TransactionsListState extends State<TransactionsList> {
         ? filterTransactionsByDate(transactionStream, widget.selectedDate)
         : filterTransactionsByMonth(transactionStream, widget.selectedDate);
 
-    return ListView.builder(
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: filteredTransactionsList.length,
-        itemBuilder: (context, index){
-          final transaction = filteredTransactionsList[index];
+    return filteredTransactionsList.isEmpty
+        ? DefaultTransactionList()
+        : ListView.builder(
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: filteredTransactionsList.length,
+            itemBuilder: (context, index) {
+              final transaction = filteredTransactionsList[index];
 
-          return  Dismissible(
-            // Each Dismissible must contain a Key. Keys allow Flutter to
-            // uniquely identify widgets.
-              key: Key(transaction.transactionId),
-              // Provide a function that tells the app
-              // what to do after an item has been swiped away.
-              onDismissed: (direction) async {
-                await DatabaseService(uid: user!.uid).removeTransactionById(transaction.transactionId);
+              return Dismissible(
+                  // Each Dismissible must contain a Key. Keys allow Flutter to
+                  // uniquely identify widgets.
+                  key: Key(transaction.transactionId),
+                  // Provide a function that tells the app
+                  // what to do after an item has been swiped away.
+                  onDismissed: (direction) async {
+                    await DatabaseService(uid: user!.uid)
+                        .removeTransactionById(transaction.transactionId);
 
-                // optional: Then show a snackbar.
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(
-                        'transaction ${transaction.transactionId} dismissed')));
-              },
-              // Show a red background as the item is swiped away.
-              background: Container(color: Colors.red),
-              child: TransactionTile(
-                  transactionId: transaction.transactionId,
-                  selectedDate: filteredTransactionsList[index].dateTime ?? widget.selectedDate,
-                  transactionCategory: filteredTransactionsList[index].category,
-                  transactionComment: (filteredTransactionsList[index]
-                                  .transactionComment !=
-                              null &&
-                          filteredTransactionsList[index]
-                              .transactionComment!
-                              .isNotEmpty)
-                      ? filteredTransactionsList[index].transactionComment!
-                      : filteredTransactionsList[index].category.categoryName,
-                  transactionAmount:
-                      filteredTransactionsList[index].transactionAmount));
-        });
+                    // optional: Then show a snackbar.
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(
+                            'transaction ${transaction.transactionId} dismissed')));
+                  },
+                  // Show a red background as the item is swiped away.
+                  background: Container(color: Colors.red),
+                  child: TransactionTile(
+                      transactionId: transaction.transactionId,
+                      selectedDate: filteredTransactionsList[index].dateTime ??
+                          widget.selectedDate,
+                      transactionCategory:
+                          filteredTransactionsList[index].category,
+                      transactionComment: (filteredTransactionsList[index]
+                                      .transactionComment !=
+                                  null &&
+                              filteredTransactionsList[index]
+                                  .transactionComment!
+                                  .isNotEmpty)
+                          ? filteredTransactionsList[index].transactionComment!
+                          : filteredTransactionsList[index]
+                              .category
+                              .categoryName,
+                      transactionAmount:
+                          filteredTransactionsList[index].transactionAmount));
+            });
   }
 
 
@@ -104,4 +111,24 @@ class _TransactionsListState extends State<TransactionsList> {
     }).toList();
   }
 
+}
+
+class DefaultTransactionList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.info_outline, size: 48, color: Colors.grey),
+          SizedBox(height: 16),
+          Text(
+            'No transactions for the selected date',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
 }
