@@ -1,5 +1,5 @@
 import 'package:aiko_ben_expense_app/models/transaction.dart';
-import 'package:aiko_ben_expense_app/screens/insights/charts/month_expense_by_day_spline_chart.dart';
+import 'package:aiko_ben_expense_app/screens/insights/charts/month_expense_spline_chart.dart';
 import 'package:aiko_ben_expense_app/screens/insights/charts/total_amount.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +19,7 @@ class _MonthlyDashboardState extends State<MonthlyDashboard> {
 
     List<Widget> charts = [
       TotalAmount(title: 'Month Total:', transactions: widget.transactions),
-      MonthExpenseByDaySplineChart(transactions: widget.transactions),
+      MonthExpenseSplineChart(transactions: widget.transactions),
     ];
 
     return Scaffold(

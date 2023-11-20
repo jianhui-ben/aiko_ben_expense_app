@@ -3,6 +3,7 @@ import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/insights/monthly_dashboard.dart';
 import 'package:aiko_ben_expense_app/screens/insights/weekly_dashboard.dart';
+import 'package:aiko_ben_expense_app/screens/insights/yearly_dashboard.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
@@ -58,7 +59,7 @@ class _InsightsState extends State<Insights> {
     final List<Widget> dashboards = [
       WeeklyDashboard(transactions: Util.filterTransactionListToLastSevenDays(transactionStream, today)),
       MonthlyDashboard(transactions: Util.filterTransactionListToMonth(transactionStream, today)),
-      YearlyDashboard(),
+      YearlyDashboard(transactions: Util.filterTransactionListToYear(transactionStream, today)),
     ];
 
     if (userCategoriesMap == null) {
@@ -96,11 +97,11 @@ class _InsightsState extends State<Insights> {
 //   }
 // }
 
-class YearlyDashboard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Yearly Dashboard Content'),
-    );
-  }
-}
+// class YearlyDashboard extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Text('Yearly Dashboard Content'),
+//     );
+//   }
+// }
