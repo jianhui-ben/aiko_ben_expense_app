@@ -17,6 +17,8 @@ class _WeekExpenseByWeekdaySplineChartState extends State<WeekExpenseByWeekdaySp
 
   @override
   void initState() {
+    //unit test
+
     // for week data we show every single day
     _chartData = convertTransactionsToChartData(widget.transactions, true);
     _tooltipBehaviror = TooltipBehavior(enable: true);
