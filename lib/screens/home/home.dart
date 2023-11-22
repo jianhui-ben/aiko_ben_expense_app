@@ -1,10 +1,12 @@
 
-import 'package:aiko_ben_expense_app/models/transaction.dart';
+import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
+import 'package:aiko_ben_expense_app/screens/home/category_icon_button.dart';
+import 'package:aiko_ben_expense_app/screens/home/daily_and_monthly_total.dart';
 import 'package:aiko_ben_expense_app/screens/home/transactions_list/transactions_list.dart';
-import 'package:aiko_ben_expense_app/screens/single_transaction/add_new_single_transaction.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
+import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,184 +23,243 @@ class _HomeState extends State<Home> {
   NavigationDestinationLabelBehavior labelBehavior =
       NavigationDestinationLabelBehavior.alwaysShow;
 
+  Map<String, Category>? userCategoriesMap; // Store user categories here
+
+  // TO-DO the orderedUserCategoryIds should be retrieved from setting collection as well
+  List<String> orderedUserCategoryIds = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8"
+  ];
+
+  final numOfCategoriesInARow = 4;
+  final numOfCategoriesInAColumn = 2;
+
+  // by default select today's date
+  DateTime selectedDate =
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+
+  bool isDailyView = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Call the asynchronous function
+    // in this case, it would only call the getUserCategoriesMap once
+    fetchUserCategories();
+  }
+
   @override
   Widget build(BuildContext context) {
-    String _defaultCategoryId = "123";
-    double _defaultTransactionAmoung = 100.0;
-    String? _defaultTransactionComment;
+    final isToday = selectedDate.isAtSameMomentAs(DateTime(
+        DateTime.now().year, DateTime.now().month, DateTime.now().day));
+    // print("isToday or not: $isToday");
 
     final user = Provider.of<User?>(context);
+    DatabaseService db = DatabaseService(uid: user?.uid);
 
-    return StreamProvider<List<Transaction>?>.value(
-        value: DatabaseService(uid: user?.uid).transactions,
-        initialData: null,
-        child: Scaffold(
-            appBar: AppBar(
-              elevation: 0.0,
-              title: Text("Home"),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () async {
-                    await _auth.signOut();
-                  },
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(Icons.person), // Your icon
-                      SizedBox(height: 1), // Spacer between icon and text
-                      Text(
-                        'logout',
-                        style: TextStyle(
-                          fontSize: 10,
-                        ),
-                      ), // Your text
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            bottomNavigationBar: NavigationBar(
-              labelBehavior: labelBehavior,
-              selectedIndex: currentPageIndex,
-              onDestinationSelected: (int index) {
-                setState(() {
-                  currentPageIndex = index;
-                });
-              },
-              destinations: const <Widget>[
-                NavigationDestination(
-                  icon: Icon(Icons.home),
-                  label: 'Home',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.insights),
-                  label: 'Insights',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.settings),
-                  label: 'Settings',
-                ),
-              ],
-            ),
-            body: Column(
+    if (userCategoriesMap == null) {
+      return Loading();
+    } else {
+      db.setUserCategoriesMap(userCategoriesMap!);
+
+      return Scaffold(
+          appBar: AppBar(
+            elevation: 0.0,
+            title: Container(
+              // color: Colors.green,
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-              Container(
+                  // Left arrow icon
+                  IconButton(
+                    icon: Icon(Icons.arrow_left),
+                    onPressed: () {
+                      _selectDate(selectedDate.subtract(Duration(days: 1)));
+                    },
+                  ),
+                  Text(
+                    getSelectedDate(),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  // Right arrow icon
+                  if (!isToday)
+                    IconButton(
+                      icon: Icon(Icons.arrow_right),
+                      onPressed: () {
+                        _selectDate(selectedDate.add(Duration(days: 1)));
+                      },
+                    ),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  await _auth.signOut();
+                },
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Row(
-                      children: [
-                        IconButton.filled(
-                          icon: const Icon(Icons.shopping_cart),
-                          onPressed: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AddNewSingleTransaction(),
-                                settings: RouteSettings(arguments: {
-                                  // TO-DO: change _defaultCategoryId into a variable
-                                  "categoryId": _defaultCategoryId
-                                } // Pass your data here
-                                    ),
-                              ),
-                            );
-
-                            // plan to move it into a separate screen
-                            // await DatabaseService(uid: user?.uid).addNewTransaction(
-                            //     _defaultCategoryId,
-                            //     _defaultTransactionAmoung,
-                            //     _defaultTransactionComment);
-                          },
-                        ),
-                        SizedBox(width: 16),
-                        IconButton.filled(
-                          icon: const Icon(Icons.house),
-                          onPressed: (){
-                            // add the code for adding expense
-                          },
-                        ),
-                        SizedBox(width: 16),
-                        IconButton.filled(
-                          icon: const Icon(Icons.local_dining),
-                          onPressed: (){
-                            // add the code for adding expense
-                          },
-                        ),
-                        SizedBox(width: 16),
-                        IconButton.filled(
-                          icon: const Icon(Icons.flight),
-                          onPressed: (){
-                            // add the code for adding expense
-                          },
-                        )
-                      ],
-                    ),//first row
-                    Row(
-                      children: [
-                        IconButton.filled(
-                          icon: const Icon(Icons.checkroom),
-                          onPressed: () {
-                          },
-                        ),
-                        SizedBox(width: 16),
-                        IconButton.filled(
-                          icon: const Icon(Icons.medical_information),
-                          onPressed: () {
-                          },
-                        ),
-                        SizedBox(width: 16),
-                        IconButton.filled(
-                          icon: const Icon(Icons.electrical_services),
-                          onPressed: () {
-                          },
-                        ),
-                        SizedBox(width: 16),
-                        IconButton.filled(
-                          icon: const Icon(Icons.commute),
-                          onPressed: () {
-                          },
-                        )
-                      ],
-                    ),//Second row
+                    Icon(Icons.person), // Your icon
+                    SizedBox(height: 1), // Spacer between icon and text
+                    Text(
+                      'logout',
+                      style: TextStyle(
+                        fontSize: 10,
+                      ),
+                    ), // Your text
                   ],
                 ),
               ),
-              Container(
-                // A fixed-height child.
-                color: const Color(0xffeeee00), // Yellow
-                height: 120.0,
-                alignment: Alignment.center,
-                child: const Text('placeholder for total'),
-              ),
-
-              Expanded(
-                child: Container(
-                    color: Colors.blue,
-                    child: SingleChildScrollView(
-                      physics: ScrollPhysics(),
-                      child: Column(
-                        children:
-                        [
-                          TransactionsList()
+            ],
+            centerTitle: true, // Center the title
+          ),
+          body: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.18,
+                  // color: Colors.red,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[0]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[1]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[2]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[3]]!,
+                            selectedDate: selectedDate,
+                          ),
+                        ],
+                      ), //first row
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[4]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[5]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[6]]!,
+                            selectedDate: selectedDate,
+                          ),
+                          SizedBox(width: 16),
+                          CategoryIconButton(
+                            category: userCategoriesMap![
+                                orderedUserCategoryIds[7]]!,
+                            selectedDate: selectedDate,
+                          ),
                         ],
                       ),
-                    )
-                  // child: TransactionsList())
+                    ],
+                  ),
                 ),
-              ),
-            ]))
-  );
-  }
-
-  // write some quick test case for scrollable window
-  testCase() {
-    List<Text> testList = [];
-
-    for (int i = 1; i <= 100; i++) {
-      testList.add(Text("test$i"));
+                Container(
+                    height: MediaQuery.of(context).size.height * 0.001,
+                    child: Divider()),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      isDailyView = !isDailyView;
+                    });
+                  },
+                  child: Container(
+                    // color: const Color(0xffeeee00), // Yellow
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    alignment: Alignment.center,
+                    child: DailyAndMonthlyTotal(
+                        selectedDate: selectedDate,
+                        isDailyView: isDailyView),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                      // color: Colors.blue,
+                      child: SingleChildScrollView(
+                        physics: ScrollPhysics(),
+                        child: Column(
+                          children: [
+                            TransactionsList(
+                                selectedDate: selectedDate,
+                                isDailyView: isDailyView)
+                          ],
+                        ),
+                      )
+                      // child: TransactionsList())
+                      ),
+                ),
+              ])
+      );
     }
-    return testList;
   }
 
+  Future<void> fetchUserCategories() async {
+    final user = Provider.of<User?>(context, listen: false);
+    final fetchedCategoriesMap = await getUserCategoriesMap(user!.uid);
+
+    // TO-DO update orderedUserCategoryIds
+
+    // Update the state with the fetched data
+    setState(() {
+      userCategoriesMap = fetchedCategoriesMap;
+    });
+    // print(userCategoriesMap);
+  }
+
+  void _selectDate(DateTime newDate) {
+    setState(() {
+      // print("set to new date: $newDate");
+      selectedDate = newDate;
+    });
+  }
+
+  String getSelectedDate() {
+    final now = DateTime.now();
+    final difference = selectedDate.difference(now).inDays;
+
+    if (difference == 0) {
+      return 'Today';
+    } else if (difference == -1) {
+      return 'Yesterday';
+    } else {
+      return '${selectedDate.toLocal()}'.split(' ')[0];
+    }
+  }
 }

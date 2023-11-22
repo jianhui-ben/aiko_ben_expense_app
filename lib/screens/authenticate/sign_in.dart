@@ -134,9 +134,12 @@ class _SignInState extends State<SignIn> {
                                 loading = true;
                               });
                               await signInWithEmailAndPassword();
-                              setState(() {
-                                loading = false;
-                              });
+                              // add mounted avoid setState() after dispose()
+                              if (mounted) {
+                                setState(() {
+                                  loading = false;
+                                });
+                              }
                             }
                           },
                         )),

@@ -1,5 +1,8 @@
 
+import 'dart:ffi';
+import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
+import 'package:aiko_ben_expense_app/screens/single_transaction/numeric_keypad.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:flutter/material.dart';
@@ -7,48 +10,90 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class AddNewSingleTransaction extends StatefulWidget {
-  const AddNewSingleTransaction({super.key});
+class AddOrEditSingleTransaction extends StatefulWidget {
+
+  final Category category;
+  final DateTime selectedDate;
+  final double? transactionAmount;
+  final String? transactionComment;
+  final String? transactionId;
+
+  const AddOrEditSingleTransaction(
+      {super.key,
+      required this.category,
+      required this.selectedDate,
+      this.transactionAmount,
+      this.transactionComment,
+      this.transactionId});
 
   @override
-  State<AddNewSingleTransaction> createState() => _AddNewSingleTransactionState();
+  State<AddOrEditSingleTransaction> createState() => _AddOrEditSingleTransaction();
 }
 
-class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
+class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
+
+  final FocusNode _focus = FocusNode(); // 1) init _focus to let user directly input number from keypad
 
   late Map data;
-  TextEditingController dateInput = TextEditingController(text: DateFormat('MM/dd/yyyy').format(DateTime.now()));
-  TextEditingController transactionAmountInput = TextEditingController(text: "0");
+  TextEditingController dateInput = TextEditingController();
+  TextEditingController transactionAmountInput = TextEditingController();
   TextEditingController transactionCommentInput = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    dateInput.text = DateFormat('MM/dd/yyyy').format(widget.selectedDate);
 
-    data = ModalRoute.of(context)?.settings.arguments as Map<String, Object?>;
+    // if transactionId exists, it's not a new transaction
+    if (widget.transactionId != null) {
+      transactionAmountInput.text = widget.transactionAmount.toString();
+      transactionCommentInput.text = widget.transactionComment.toString();
+    }
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    FocusScope.of(context).requestFocus(_focus); // Request focus for the transaction amount field when the screen loads
+    _focus.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _focus
+      ..removeListener(_onFocusChange)
+      ..dispose(); // 3) removeListener and dispose
+  }
+
+  void _onFocusChange() {
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // data = ModalRoute.of(context)?.settings.arguments as Map<String, Object?>;
     final User? user= context.read<User?>();
 
-    //TO-DO: here we should retrieve category icon and text from the categoryId
-    Icon _defaultCategoryIcon = Icon(Icons.shopping_cart);
-    String _defaultCategoryName = "shopping";
-
-    var _transactionAmount;
+    bool _isTransactionAmountInputValid = true;
 
     return Scaffold(appBar: AppBar(),
-    body: Center(
+      resizeToAvoidBottomInset: false,
+      body: Center(
       child: Column(
           children: [
             // SizedBox(height: 30,),
             Container(
               // color: Colors.yellow,  //for debugging
-              width: 350,
-              height: 150,
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.15,
               child: Row(
                 children: [
                   SizedBox(
                     width: 15,
                   ),
-                  Icon(_defaultCategoryIcon.icon,
-                      size: 55, //
+                  Icon(widget.category.categoryIcon.icon,
+                      size: 50, //
                       color: Color(0xFF6200EE)),
                   SizedBox(
                     width: 15,
@@ -57,7 +102,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                     // padding: EdgeInsets.all(15),
                     width: 250,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(15, 40, 15, 40),
+                      padding: const EdgeInsets.fromLTRB(15, 32, 15, 32),
                       child: TextField(
                         controller: dateInput,
                         //editing controller of this TextField
@@ -82,7 +127,6 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                                   String formattedDate =
                                       DateFormat('MM/dd/yyyy')
                                           .format(pickedDate);
-
                                   setState(() {
                                     dateInput.text = formattedDate;
                                   });
@@ -111,22 +155,23 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                 ],
               ),
             ),
-            SizedBox(height: 10,),
+            // SizedBox(height: 30,),
             Container(
               // color: Colors.blue, //for debugging
-              width: 350,
-              height: 60,
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.12,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(80, 0, 50, 0),
                 child: TextField(
                   controller: transactionAmountInput,
-                  // Your other properties here
+                  keyboardType: TextInputType.none,
+                  focusNode: _focus, // pass focusNode to our textfield
                   decoration: InputDecoration(
-                    prefixText: '\$ ', // Add a dollar sign as a prefix
+                    prefix: Text('\$ '), // Add a dollar sign as a prefix
                     border: InputBorder.none, // Remove the outline border
                     // border: OutlineInputBorder(), //for debugging
                   ),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  // keyboardType: TextInputType.numberWithOptions(decimal: true),
                   // Allow decimal input
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(
@@ -145,6 +190,7 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                   Container(
                     // color: Colors.yellow, //for debugging
                     width: 250,
+                    // height: 80,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 30, 0),
                       child: TextField(
@@ -163,32 +209,63 @@ class _AddNewSingleTransactionState extends State<AddNewSingleTransaction> {
                 ],
               ),
             ),
-            SizedBox(height: 50,),
+            SizedBox(height: 20,),
             Container(
-              height: 50,
-              width: 300, // Forces the button to take the full width of the screen
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.05,
               margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 6), // Adjust margin as needed
               child: ElevatedButton(
                 onPressed: () async {
-                  print(user!.uid);
-                  await DatabaseService(uid: user!.uid).addNewTransaction(
-                      data["categoryId"],
-                      double.tryParse(transactionAmountInput.text)!,
-                      transactionCommentInput.text);
-                  Navigator.pop(context);
+                  if (transactionAmountInput.text.isEmpty) {
+                    // Show an error message using a SnackBar
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Invalid transaction amount. Please enter a valid number.'),
+                      ),
+                    );
+                  } else {
+                    // new transaction
+                    if (widget.transactionId == null) {
+                      await DatabaseService(uid: user!.uid).addNewTransaction(
+                          widget.category.categoryId,
+                          double.tryParse(transactionAmountInput.text)!,
+                          transactionCommentInput.text,
+                          DateFormat('MM/dd/yyyy').parse(dateInput.text));
+                    } else {
+                      //modify existing transaction by transactionId
+                      await DatabaseService(uid: user!.uid).editTransactionById(
+                          widget.transactionId!,
+                          widget.category.categoryId,
+                          double.tryParse(transactionAmountInput.text)!,
+                          transactionCommentInput.text,
+                          DateFormat('MM/dd/yyyy').parse(dateInput.text));
+                    }
+                    Navigator.pop(context);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF6200EE), // Background color
                   foregroundColor: Colors.white, // Text color
                 ),
                 child: Text(
-                  'ADD',
+                  widget.transactionId == null ? 'ADD' : 'UPDATE',
                   style: TextStyle(fontSize: 18.0), // Adjust the text style as needed
                 ),
               ),
             ),
-
-
+            const Spacer(),
+            // 6) if hasFocus show keyboard, else show empty container
+            // _focus.hasFocus
+            //     ? NumericKeypad(
+            //   controller: transactionAmountInput, focusNode: _focus,
+            // )
+            //     : Container(),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 50),
+              child: NumericKeypad(
+                controller: transactionAmountInput, focusNode: _focus,
+              ),
+            )
         ],
       ),
     ),
