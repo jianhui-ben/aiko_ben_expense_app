@@ -1,4 +1,5 @@
 import 'package:aiko_ben_expense_app/models/transaction.dart';
+import 'package:aiko_ben_expense_app/screens/insights/charts/expense_by_category_bar_chart.dart';
 import 'package:aiko_ben_expense_app/screens/insights/charts/month_expense_spline_chart.dart';
 import 'package:aiko_ben_expense_app/screens/insights/charts/total_amount.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class _MonthlyDashboardState extends State<MonthlyDashboard> {
     List<Widget> charts = [
       TotalAmount(title: 'Month Total:', transactions: widget.transactions),
       MonthExpenseSplineChart(transactions: widget.transactions),
+      ExpenseByCategoryBarChart(transactions: widget.transactions),
     ];
 
     return Scaffold(
