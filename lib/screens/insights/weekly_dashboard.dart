@@ -1,6 +1,5 @@
 import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/screens/insights/charts/expense_by_category_bar_chart.dart';
-import 'package:aiko_ben_expense_app/screens/insights/charts/month_expense_spline_chart.dart';
 import 'package:aiko_ben_expense_app/screens/insights/charts/total_amount.dart';
 import 'package:aiko_ben_expense_app/screens/insights/charts/week_expense_spline_chart.dart';
 import 'package:flutter/material.dart';
