@@ -1,4 +1,5 @@
 import 'package:aiko_ben_expense_app/models/transaction.dart';
+import 'package:aiko_ben_expense_app/shared/util.dart';
 import 'package:flutter/material.dart';
 
 class TotalAmount extends StatelessWidget {
@@ -18,7 +19,7 @@ class TotalAmount extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         Text(
-          '\$${sumTotal(transactions).toStringAsFixed(0)}',
+          '\$${Util.sumTotal(transactions).toStringAsFixed(0)}',
           // Round to closest integer and add $
           style: TextStyle(fontSize: 24), // Adjust the font size as needed
         ),
@@ -27,8 +28,3 @@ class TotalAmount extends StatelessWidget {
   }
 }
 
-// calculate the total transaction amount for the current day
-double sumTotal(List<Transaction> transactions) {
-  return transactions.fold(
-      0.0, (double sum, transaction) => sum + transaction.transactionAmount);
-}

@@ -126,26 +126,6 @@ class _HomeState extends State<Home> {
           body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.18,
-                  // color: Colors.red,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: orderedUserCategoryIds.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.all(6.0), // Add some padding
-                        child: CategoryIconButton(
-                              category: userCategoriesMap![orderedUserCategoryIds[index]]!,
-                              selectedDate: selectedDate,
-                            )// The rest of your CategoryIconButton content
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                    height: MediaQuery.of(context).size.height * 0.001,
-                    child: Divider()),
                 GestureDetector(
                   onTap: () {
                     setState(() {
@@ -161,6 +141,26 @@ class _HomeState extends State<Home> {
                         isDailyView: isDailyView),
                   ),
                 ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.12,
+                  // color: Colors.red,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: orderedUserCategoryIds.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0), // Add some padding
+                        child: CategoryIconButton(
+                              category: userCategoriesMap![orderedUserCategoryIds[index]]!,
+                              selectedDate: selectedDate,
+                            )// The rest of your CategoryIconButton content
+                      );
+                    },
+                  ),
+                ),
+                // Container(
+                //     height: MediaQuery.of(context).size.height * 0.001,
+                //     child: Divider()),
                 Expanded(
                   child: Container(
                       // color: Colors.blue,

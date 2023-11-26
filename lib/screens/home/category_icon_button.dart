@@ -20,11 +20,11 @@ class _CategoryIconButtonState extends State<CategoryIconButton> {
     return Column(
       children: [
         Container(
-          width: MediaQuery.of(context).size.width / 5, // Adjust the width here
-          height: MediaQuery.of(context).size.width / 5, // Adjust the height here
+          width: MediaQuery.of(context).size.width / 6, // Adjust the width here
+          height: MediaQuery.of(context).size.width / 6, // Adjust the height here
           child: IconButton.filled(
             icon: widget.category.categoryIcon,
-            iconSize: MediaQuery.of(context).size.width / 7, // Adjust the icon size here
+            iconSize: MediaQuery.of(context).size.width / 8, // Adjust the icon size here
             onPressed: () async {
               await Navigator.push(
                 context,
@@ -40,10 +40,10 @@ class _CategoryIconButtonState extends State<CategoryIconButton> {
           ),
         ),
         Container(
-          // width: MediaQuery.of(context).size.width / 5, // Adjust the width here
+          // width: MediaQuery.of(context).size.width / 6, // Adjust the width here
           child: Text(
             widget.category.categoryName, // Display the category name
-            style: TextStyle(fontSize: 12), // Adjust the font size as needed
+            style: TextStyle(fontSize: 14), // Adjust the font size as needed
             textAlign: TextAlign.center, // Center the text
           ),
         ),

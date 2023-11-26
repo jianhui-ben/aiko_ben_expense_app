@@ -43,4 +43,10 @@ class Util {
     }).toList();
   }
 
+  // calculate the total transaction amount for the current day
+  static double sumTotal(List<Transaction> transactions) {
+    return transactions.fold(
+        0.0, (double sum, transaction) => sum + transaction.transactionAmount);
+  }
+
 }
