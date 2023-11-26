@@ -29,6 +29,56 @@ class TransactionsList extends StatefulWidget {
 
 class _TransactionsListState extends State<TransactionsList> {
 
+  Map<DateTime, List<Transaction>> groupedTransactionsList = {};
+  ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant TransactionsList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.selectedDate != widget.selectedDate) {
+      scrollToTransaction(widget.selectedDate);
+    }
+  }
+
+  void scrollToTransaction(DateTime date) {
+    // Find the index of the first transaction that matches the selected date
+    int index = groupedTransactionsList.entries.toList().indexWhere((entry) {
+      return entry.key.isAtSameMomentAs(date);
+    });
+
+    // If no transaction matches the selected date, find the last transaction before the selected date
+    if (index == -1) {
+      index = groupedTransactionsList.entries.toList().lastIndexWhere((entry) {
+        return entry.key.isBefore(date);
+      });
+    }
+
+    // If a matching transaction is found, scroll to it
+    if (index != -1) {
+      _scrollController.animateTo(
+        index * 56.0, // 56.0 is the typical height of a ListTile
+        duration: Duration(seconds: 1),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _onScroll() {
+    // Your existing scroll logic here
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -48,8 +98,8 @@ class _TransactionsListState extends State<TransactionsList> {
 
     // new design use the current month transactions
     List<Transaction> filteredTransactionsList = filterTransactionsByMonth(transactionStream, widget.selectedDate);
-    Map<DateTime, List<Transaction>> groupedTransactionsList =
-    groupTransactionsByDate(filteredTransactionsList);
+    filteredTransactionsList = Util.sortTransactionsByDateAndAmount(filteredTransactionsList);
+    Map<DateTime, List<Transaction>> groupedTransactionsList = groupTransactionsByDate(filteredTransactionsList);
 
     return filteredTransactionsList.isEmpty
         ? DefaultEmptyTransactionList()
@@ -60,7 +110,7 @@ class _TransactionsListState extends State<TransactionsList> {
             itemBuilder: (context, index) {
               final entry = groupedTransactionsList.entries.elementAt(index);
               return Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -99,22 +149,17 @@ class _TransactionsListState extends State<TransactionsList> {
                             background: Container(color: Colors.red),
                             child: TransactionTile(
                                 transactionId: transaction.transactionId,
-                                selectedDate: filteredTransactionsList[index].dateTime ??
-                                    widget.selectedDate,
-                                transactionCategory:
-                                filteredTransactionsList[index].category,
-                                transactionComment: (filteredTransactionsList[index]
-                                    .transactionComment !=
-                                    null &&
-                                    filteredTransactionsList[index]
-                                        .transactionComment!
-                                        .isNotEmpty)
-                                    ? filteredTransactionsList[index].transactionComment!
-                                    : filteredTransactionsList[index]
-                                    .category
-                                    .categoryName,
+                                selectedDate:
+                                    transaction.dateTime ?? widget.selectedDate,
+                                transactionCategory: transaction.category,
+                                transactionComment:
+                                    (transaction.transactionComment != null &&
+                                            transaction
+                                                .transactionComment!.isNotEmpty)
+                                        ? transaction.transactionComment!
+                                        : transaction.category.categoryName,
                                 transactionAmount:
-                                filteredTransactionsList[index].transactionAmount));
+                                    transaction.transactionAmount));
                       }).toList(),
                     ),
                   ],

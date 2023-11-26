@@ -49,4 +49,25 @@ class Util {
         0.0, (double sum, transaction) => sum + transaction.transactionAmount);
   }
 
+  // sort the transactions by date descendingly (newest first) and if the same date,
+  // then sort by amount descendingly
+  static List<Transaction> sortTransactionsByDateAndAmount(List<Transaction> transactions) {
+    transactions.sort((a, b) {
+      if (a.dateTime!.isAfter(b.dateTime!)) {
+        return -1;
+      } else if (a.dateTime!.isBefore(b.dateTime!)) {
+        return 1;
+      } else {
+        if (a.transactionAmount > b.transactionAmount) {
+          return -1;
+        } else if (a.transactionAmount < b.transactionAmount) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+    });
+    return transactions;
+  }
+
 }
