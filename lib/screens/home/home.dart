@@ -129,65 +129,18 @@ class _HomeState extends State<Home> {
                 Container(
                   height: MediaQuery.of(context).size.height * 0.18,
                   // color: Colors.red,
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          CategoryIconButton(
-                            category: userCategoriesMap![
-                                orderedUserCategoryIds[0]]!,
-                            selectedDate: selectedDate,
-                          ),
-                          SizedBox(width: 16),
-                          CategoryIconButton(
-                            category: userCategoriesMap![
-                                orderedUserCategoryIds[1]]!,
-                            selectedDate: selectedDate,
-                          ),
-                          SizedBox(width: 16),
-                          CategoryIconButton(
-                            category: userCategoriesMap![
-                                orderedUserCategoryIds[2]]!,
-                            selectedDate: selectedDate,
-                          ),
-                          SizedBox(width: 16),
-                          CategoryIconButton(
-                            category: userCategoriesMap![
-                                orderedUserCategoryIds[3]]!,
-                            selectedDate: selectedDate,
-                          ),
-                        ],
-                      ), //first row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          CategoryIconButton(
-                            category: userCategoriesMap![
-                                orderedUserCategoryIds[4]]!,
-                            selectedDate: selectedDate,
-                          ),
-                          SizedBox(width: 16),
-                          CategoryIconButton(
-                            category: userCategoriesMap![
-                                orderedUserCategoryIds[5]]!,
-                            selectedDate: selectedDate,
-                          ),
-                          SizedBox(width: 16),
-                          CategoryIconButton(
-                            category: userCategoriesMap![
-                                orderedUserCategoryIds[6]]!,
-                            selectedDate: selectedDate,
-                          ),
-                          SizedBox(width: 16),
-                          CategoryIconButton(
-                            category: userCategoriesMap![
-                                orderedUserCategoryIds[7]]!,
-                            selectedDate: selectedDate,
-                          ),
-                        ],
-                      ),
-                    ],
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: orderedUserCategoryIds.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(6.0), // Add some padding
+                        child: CategoryIconButton(
+                              category: userCategoriesMap![orderedUserCategoryIds[index]]!,
+                              selectedDate: selectedDate,
+                            )// The rest of your CategoryIconButton content
+                      );
+                    },
                   ),
                 ),
                 Container(

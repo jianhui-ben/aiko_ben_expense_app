@@ -19,24 +19,33 @@ class _CategoryIconButtonState extends State<CategoryIconButton> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        IconButton.filled(
-          icon: widget.category.categoryIcon,
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddOrEditSingleTransaction(
-                  category: widget.category,
-                  selectedDate: widget.selectedDate,
+        Container(
+          width: MediaQuery.of(context).size.width / 5, // Adjust the width here
+          height: MediaQuery.of(context).size.width / 5, // Adjust the height here
+          child: IconButton.filled(
+            icon: widget.category.categoryIcon,
+            iconSize: MediaQuery.of(context).size.width / 7, // Adjust the icon size here
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddOrEditSingleTransaction(
+                    category: widget.category,
+                    selectedDate: widget.selectedDate,
+                  ),
+                  // settings: RouteSettings(arguments: {"some key": some value}), //added here for quick reminder
                 ),
-                // settings: RouteSettings(arguments: {"some key": some value}), //added here for quick reminder
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
-        Text(
-          widget.category.categoryName, // Display the category name
-          style: TextStyle(fontSize: 12), // Adjust the font size as needed
+        Container(
+          // width: MediaQuery.of(context).size.width / 5, // Adjust the width here
+          child: Text(
+            widget.category.categoryName, // Display the category name
+            style: TextStyle(fontSize: 12), // Adjust the font size as needed
+            textAlign: TextAlign.center, // Center the text
+          ),
         ),
       ],
     );
