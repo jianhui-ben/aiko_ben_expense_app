@@ -149,7 +149,7 @@ class _HomeState extends State<Home> {
                     itemCount: orderedUserCategoryIds.length,
                     itemBuilder: (context, index) {
                       return Padding(
-                        padding: const EdgeInsets.all(8.0), // Add some padding
+                        padding: const EdgeInsets.all(6.0), // Add some padding
                         child: CategoryIconButton(
                               category: userCategoriesMap![orderedUserCategoryIds[index]]!,
                               selectedDate: selectedDate,
@@ -162,20 +162,13 @@ class _HomeState extends State<Home> {
                 //     height: MediaQuery.of(context).size.height * 0.001,
                 //     child: Divider()),
                 Expanded(
-                  child: Container(
-                      // color: Colors.blue,
-                      child: SingleChildScrollView(
-                        physics: ScrollPhysics(),
-                        child: Column(
-                          children: [
-                            TransactionsList(
-                                selectedDate: selectedDate,
-                                isDailyView: isDailyView)
-                          ],
-                        ),
-                      )
-                      // child: TransactionsList())
-                      ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
+                    child: TransactionsList(
+                      selectedDate: selectedDate,
+                      isDailyView: isDailyView,
+                    ),
+                  ),
                 ),
               ])
       );

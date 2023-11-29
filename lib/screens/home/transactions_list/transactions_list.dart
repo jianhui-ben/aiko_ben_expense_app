@@ -29,13 +29,18 @@ class TransactionsList extends StatefulWidget {
 
 class _TransactionsListState extends State<TransactionsList> {
 
-  Map<DateTime, List<Transaction>> groupedTransactionsList = {};
-  ScrollController _scrollController = ScrollController();
+  Map<DateTime, List<Transaction>> _groupedTransactionsList = {};
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
+
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      scrollToTransaction(widget.selectedDate);
+    });
   }
 
   @override
@@ -53,25 +58,39 @@ class _TransactionsListState extends State<TransactionsList> {
   }
 
   void scrollToTransaction(DateTime date) {
-    // Find the index of the first transaction that matches the selected date
-    int index = groupedTransactionsList.entries.toList().indexWhere((entry) {
-      return entry.key.isAtSameMomentAs(date);
-    });
 
-    // If no transaction matches the selected date, find the last transaction before the selected date
-    if (index == -1) {
-      index = groupedTransactionsList.entries.toList().lastIndexWhere((entry) {
-        return entry.key.isBefore(date);
+    if (_scrollController.hasClients) {
+      // Find the index of the first transaction that matches the selected date
+      int dateIndex = _groupedTransactionsList.entries.toList().indexWhere((entry) {
+        return entry.key.isAtSameMomentAs(date);
       });
-    }
 
-    // If a matching transaction is found, scroll to it
-    if (index != -1) {
-      _scrollController.animateTo(
-        index * 56.0, // 56.0 is the typical height of a ListTile
-        duration: Duration(seconds: 1),
-        curve: Curves.easeInOut,
-      );
+      // If no transaction matches the selected date, find the last transaction before the selected date
+      if (dateIndex == -1) {
+        dateIndex = _groupedTransactionsList.entries.toList().indexWhere((entry) {
+          return entry.key.isBefore(date);
+        });
+      }
+
+      // If a matching date is found, calculate the offset and scroll to it
+      if (dateIndex != -1) {
+        // Get the number of transactions for the selected date
+        int numOfTransactions = 0;
+        // write me a for loop to get the total number of transactions for the selected date
+        for (int i = 0; i < dateIndex; i++) {
+          numOfTransactions += _groupedTransactionsList.entries.elementAt(i).value.length;
+        }
+        // Calculate the offset
+        // each subtitle and padding is around 35 pixel and each transaction tile is 56 (by default) + 7 padding
+        double offset = dateIndex * 35.0 + numOfTransactions * 63.0;
+        // print("offset: $offset");
+        // print("numOfTransactions: $numOfTransactions");
+        _scrollController.animateTo(
+          offset,
+          duration: Duration(seconds: 1),
+          curve: Curves.fastLinearToSlowEaseIn,
+        );
+      }
     }
   }
 
@@ -99,33 +118,36 @@ class _TransactionsListState extends State<TransactionsList> {
     // new design use the current month transactions
     List<Transaction> filteredTransactionsList = filterTransactionsByMonth(transactionStream, widget.selectedDate);
     filteredTransactionsList = Util.sortTransactionsByDateAndAmount(filteredTransactionsList);
-    Map<DateTime, List<Transaction>> groupedTransactionsList = groupTransactionsByDate(filteredTransactionsList);
+    _groupedTransactionsList = groupTransactionsByDate(filteredTransactionsList);
 
     return filteredTransactionsList.isEmpty
         ? DefaultEmptyTransactionList()
         : ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
+        controller:  _scrollController,
             shrinkWrap: true,
-            itemCount: groupedTransactionsList.length,
+            itemCount: _groupedTransactionsList.length,
             itemBuilder: (context, index) {
-              final entry = groupedTransactionsList.entries.elementAt(index);
+              final entry = _groupedTransactionsList.entries.elementAt(index);
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          DateFormat('MMM d, yyyy').format(entry.key),
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                        Text(
-                          "Total: \$${Util.sumTotal(entry.value).toStringAsFixed(0)}",
-                          style: TextStyle(fontSize: 10, color: Colors.grey),
-                        ),
-                      ],
+                    Container(
+                      // color: Colors.blue,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            DateFormat('MMM d, yyyy').format(entry.key),
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                          Text(
+                            "Total: \$${Util.sumTotal(entry.value).toStringAsFixed(0)}",
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                        ],
+                      ),
                     ),
                     Divider(height: 1),
                     Column(

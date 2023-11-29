@@ -70,4 +70,23 @@ class Util {
     return transactions;
   }
 
+
+  List<Transaction> filterTransactionsByDate(
+      List<Transaction> transactions, DateTime selectedDate) {
+    return transactions.where((transaction) {
+      final transactionDate = transaction.dateTime!;
+      return transactionDate.year == selectedDate.year &&
+          transactionDate.month == selectedDate.month &&
+          transactionDate.day == selectedDate.day;
+    }).toList();
+  }
+
+  List<Transaction> filterTransactionsByMonth(
+      List<Transaction> transactions, DateTime selectedDate) {
+    return transactions.where((transaction) {
+      final transactionDate = transaction.dateTime!;
+      return transactionDate.year == selectedDate.year &&
+          transactionDate.month == selectedDate.month;
+    }).toList();
+  }
 }
