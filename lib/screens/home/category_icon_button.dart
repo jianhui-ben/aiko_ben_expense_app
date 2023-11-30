@@ -21,7 +21,6 @@ class _CategoryIconButtonState extends State<CategoryIconButton> {
       children: [
         Container(
           width: MediaQuery.of(context).size.width / 6, // Adjust the width here
-          height: MediaQuery.of(context).size.width / 6, // Adjust the height here
           child: IconButton.filled(
             icon: widget.category.categoryIcon,
             iconSize: MediaQuery.of(context).size.width / 8, // Adjust the icon size here

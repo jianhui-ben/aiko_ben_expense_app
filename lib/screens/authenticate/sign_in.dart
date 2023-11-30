@@ -56,137 +56,151 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-
     bool showEmailAndPasswordError = false;
 
-    return loading ? Loading() : Scaffold(
-        appBar: AppBar(
-            elevation: 0.0,
-            toolbarHeight: 300,
-            title: Text("Sign in to Expense"),
-            titleTextStyle: appNameTextStyle,
-        ),
+    return loading
+        ? Loading()
+        : Scaffold(
             body: Container(
                 padding: EdgeInsets.symmetric(vertical: 0, horizontal: 50),
-                child: Form(
-                  key: _formKey,
-                  child: ListView(children: <Widget>[
+                child: Column(
+                  children: [
                     Container(
-                      padding: const EdgeInsets.all(10),
-                      child: TextFormField(
-                        controller: emailController,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return emailErrorText;
-                          }
-                          return null;
-                        },
-                        decoration: textInputDecoration.copyWith(
-                          hintText: "Email",
-                          labelText: 'Email',
-                          errorText: showEmailAndPasswordError
-                              ? emailErrorText
-                              : null,
-                        ),
-                      ),
+                      height: MediaQuery.of(context).size.height * 0.1,
                     ),
                     Container(
-                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      child: TextFormField(
-                          obscureText: true,
-                          controller: passwordController,
-                          validator: (value) {
-                            if (value == null ||
-                                value.isEmpty ||
-                                value.length < 5) {
-                              return passwordErrorText;
-                            }
-                            return null;
-                          },
-                          decoration: textInputDecoration.copyWith(
-                            labelText: 'Password',
-                            errorText: showEmailAndPasswordError
-                                ? passwordErrorText
-                                : null,
-                          )),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        //forgot password screen
-                      },
-                      child: const Text(
-                        'Forgot Password',
+                      height: 200,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Sign in to Expense",
+                        style: appNameTextStyle,
                       ),
                     ),
-                    Container(
-                        height: 50,
-                        padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        child: ElevatedButton(
-                          child: const Text('Login'),
-                          onPressed: () async {
-                            setState(() {
-                              showEmailAndPasswordError =
-                                  true; // Set the flag to show the error text
-                            });
-
-                            if (_formKey.currentState!.validate()) {
-                              setState(() {
-                                loading = true;
-                              });
-                              await signInWithEmailAndPassword();
-                              // add mounted avoid setState() after dispose()
-                              if (mounted) {
-                                setState(() {
-                                  loading = false;
-                                });
-                              }
-                            }
-                          },
-                        )),
-                    if (_errorText.isNotEmpty)
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        child: Text(
-                          _errorText,
-                          // style: TextStyle(color: Colors.red),
-                          style: Theme.of(context).inputDecorationTheme.errorStyle,// Customize the error text style
-                        ),
-                      ),
-                    Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            const Text('Does not have account?'),
-                            TextButton(
-                              child: const Text(
-                                'Sign Up',
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              onPressed: () {
-                                // go to the sign up screen
-                                widget.toggleView();
+                    Expanded(
+                      child: Form(
+                        key: _formKey,
+                        child: ListView(children: <Widget>[
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            child: TextFormField(
+                              controller: emailController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return emailErrorText;
+                                }
+                                return null;
                               },
+                              decoration: textInputDecoration.copyWith(
+                                hintText: "Email",
+                                labelText: 'Email',
+                                errorText: showEmailAndPasswordError
+                                    ? emailErrorText
+                                    : null,
+                              ),
                             ),
-                          ],
-                        ),
-                        Text("or"),
-                        ElevatedButton(
-                          child: Text("Sign in anon"),
-                          onPressed: () async {
-                            setState(() {
-                              loading = true;
-                            });
-                            await signInAnonymously();
-                            if (!mounted) return;
-                            setState(() {
-                              loading = false;
-                            });
-                          },
-                        ),
-                      ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                            child: TextFormField(
+                                obscureText: true,
+                                controller: passwordController,
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.isEmpty ||
+                                      value.length < 5) {
+                                    return passwordErrorText;
+                                  }
+                                  return null;
+                                },
+                                decoration: textInputDecoration.copyWith(
+                                  labelText: 'Password',
+                                  errorText: showEmailAndPasswordError
+                                      ? passwordErrorText
+                                      : null,
+                                )),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              //forgot password screen
+                            },
+                            child: const Text(
+                              'Forgot Password',
+                            ),
+                          ),
+                          Container(
+                              height: 50,
+                              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                              child: ElevatedButton(
+                                child: const Text('Login'),
+                                onPressed: () async {
+                                  setState(() {
+                                    showEmailAndPasswordError =
+                                        true; // Set the flag to show the error text
+                                  });
+
+                                  if (_formKey.currentState!.validate()) {
+                                    setState(() {
+                                      loading = true;
+                                    });
+                                    await signInWithEmailAndPassword();
+                                    // add mounted avoid setState() after dispose()
+                                    if (mounted) {
+                                      setState(() {
+                                        loading = false;
+                                      });
+                                    }
+                                  }
+                                },
+                              )),
+                          if (_errorText.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              child: Text(
+                                _errorText,
+                                // style: TextStyle(color: Colors.red),
+                                style: Theme.of(context)
+                                    .inputDecorationTheme
+                                    .errorStyle, // Customize the error text style
+                              ),
+                            ),
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  const Text('Does not have account?'),
+                                  TextButton(
+                                    child: const Text(
+                                      'Sign Up',
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                    onPressed: () {
+                                      // go to the sign up screen
+                                      widget.toggleView();
+                                    },
+                                  ),
+                                ],
+                              ),
+                              Text("or"),
+                              ElevatedButton(
+                                child: Text("Sign in anon"),
+                                onPressed: () async {
+                                  setState(() {
+                                    loading = true;
+                                  });
+                                  await signInAnonymously();
+                                  if (!mounted) return;
+                                  setState(() {
+                                    loading = false;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ]),
+                      ),
                     ),
-                  ]),
+                  ],
                 )));
   }
 }

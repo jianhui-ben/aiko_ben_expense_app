@@ -40,7 +40,7 @@ const textInputDecoration = InputDecoration(
 
 const appNameTextStyle = TextStyle(
   color: Color(0xFF23036A),
-  fontSize: 30,
+  fontSize: 28,
   fontFamily: 'RockSalt',
   fontWeight: FontWeight.w400,
   height: 0.80,
@@ -51,6 +51,19 @@ const appNameTextStyle = TextStyle(
 ThemeData getCustomTheme() {
   return ThemeData(
       useMaterial3: true,
+
+      // Define the default background color
+      scaffoldBackgroundColor: Color(0xFFF3EDF7),
+      buttonTheme: ButtonThemeData(
+        buttonColor: Color(0xFFB69DF8),
+        // textTheme: ButtonTextTheme.primary,
+      ),
+    // Define the default IconTheme. Use this to specify the default
+    // color and size for icons in your application.
+    iconTheme: IconThemeData(
+      color: Colors.white, // Sets the color for icons
+    ),
+
       // Define the default brightness and colors.
       // brightness: Brightness.dark,
       // scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
@@ -74,11 +87,6 @@ ThemeData getCustomTheme() {
             color: Color(0xFF6200EE)), // Adjust the font size
         // You can customize other InputDecoration properties here
       ),
-
-      buttonTheme: ButtonThemeData(
-        buttonColor: Colors.white,
-        textTheme: ButtonTextTheme.primary, //  <-- this auto selects the right color
-      )
   );
 }
 

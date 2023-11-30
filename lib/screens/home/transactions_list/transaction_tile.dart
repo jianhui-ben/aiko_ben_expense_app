@@ -43,10 +43,14 @@ class TransactionTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 5.0),
       child: Card(
+          color: Colors.white,
           margin: EdgeInsets.fromLTRB(0, 2, 0, 0),
-          elevation: 4.0,
+          // elevation: 4.0,
           child: ListTile(
-            leading: transactionCategory.categoryIcon,
+            leading: IconTheme(
+              data: IconThemeData(color: Color(0xFFB69DF8)),
+              child: transactionCategory.categoryIcon,
+            ),
             title: Text(transactionComment),
             trailing: Text(formatCurrency
                 .format(transactionAmount)),
