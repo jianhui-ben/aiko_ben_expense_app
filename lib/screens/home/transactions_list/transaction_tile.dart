@@ -25,12 +25,18 @@ class TransactionTile extends StatelessWidget {
           isScrollControlled: true,
           context: context,
           builder: (context) {
-            return AddOrEditSingleTransaction(
-              category: transactionCategory,
-              transactionComment: transactionComment,
-              transactionAmount: transactionAmount,
-              selectedDate: selectedDate,
-              transactionId: transactionId,
+            return ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20.0),
+                topRight: Radius.circular(20.0),
+              ),
+              child: AddOrEditSingleTransaction(
+                category: transactionCategory,
+                transactionComment: transactionComment,
+                transactionAmount: transactionAmount,
+                selectedDate: selectedDate,
+                transactionId: transactionId,
+              ),
             );
           },
         );

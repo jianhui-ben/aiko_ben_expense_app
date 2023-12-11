@@ -27,16 +27,23 @@ class _CategoryIconButtonState extends State<CategoryIconButton> {
             iconSize: MediaQuery.of(context).size.width / 8, // Adjust the icon size here
             onPressed: () {
               showModalBottomSheet(
+                //add constraints to the bottom sheet
                 constraints: BoxConstraints.loose(Size(
                     MediaQuery.of(context).size.width,
                     MediaQuery.of(context).size.height * 0.8)),
-                // <= this is set to 3/4 of screen size.
                 isScrollControlled: true, // <= set to true. setting this without constrains may cause full screen bottomsheet.
                 context: context,
                 builder: (context) {
-                  return AddOrEditSingleTransaction(
-                    category: widget.category,
-                    selectedDate: widget.selectedDate,
+                  // clipRRect is used to make the bottomsheet rounded
+                  return ClipRRect(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20.0),
+                      topRight: Radius.circular(20.0),
+                    ),
+                    child: AddOrEditSingleTransaction(
+                      category: widget.category,
+                      selectedDate: widget.selectedDate,
+                    ),
                   );
                 },
               );

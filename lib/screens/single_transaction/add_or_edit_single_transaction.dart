@@ -81,9 +81,24 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
       child: Center(
         child: Column(
             children: [
-              // SizedBox(height: 30,),
+              // drag handler
+              Padding(
+                padding: const EdgeInsets.only(top: 15.0),
+                child: Opacity(
+                  opacity: 0.40,
+                  child: Container(
+                    width: 32,
+                    height: 4,
+                    decoration: ShapeDecoration(
+                      color: Color(0xFF79747E),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               Container(
-                // color: Colors.yellow,  //for debugging
                 width: MediaQuery.of(context).size.width * 0.9,
                 height: MediaQuery.of(context).size.height * 0.15,
                 child: Row(
