@@ -18,18 +18,21 @@ class TransactionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigate to the edit screen with the transaction details
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AddOrEditSingleTransaction(
-              category : transactionCategory,
+        showModalBottomSheet(
+          constraints: BoxConstraints.loose(Size(
+              MediaQuery.of(context).size.width,
+              MediaQuery.of(context).size.height * 0.8)),
+          isScrollControlled: true,
+          context: context,
+          builder: (context) {
+            return AddOrEditSingleTransaction(
+              category: transactionCategory,
               transactionComment: transactionComment,
               transactionAmount: transactionAmount,
               selectedDate: selectedDate,
               transactionId: transactionId,
-            ),
-          ),
+            );
+          },
         );
       },
       child: buildTransactonCard(),

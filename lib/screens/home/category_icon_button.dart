@@ -21,19 +21,24 @@ class _CategoryIconButtonState extends State<CategoryIconButton> {
       children: [
         Container(
           width: MediaQuery.of(context).size.width / 6, // Adjust the width here
-          child: IconButton.filled(
+          child:
+          IconButton.filled(
             icon: widget.category.categoryIcon,
             iconSize: MediaQuery.of(context).size.width / 8, // Adjust the icon size here
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddOrEditSingleTransaction(
+            onPressed: () {
+              showModalBottomSheet(
+                constraints: BoxConstraints.loose(Size(
+                    MediaQuery.of(context).size.width,
+                    MediaQuery.of(context).size.height * 0.8)),
+                // <= this is set to 3/4 of screen size.
+                isScrollControlled: true, // <= set to true. setting this without constrains may cause full screen bottomsheet.
+                context: context,
+                builder: (context) {
+                  return AddOrEditSingleTransaction(
                     category: widget.category,
                     selectedDate: widget.selectedDate,
-                  ),
-                  // settings: RouteSettings(arguments: {"some key": some value}), //added here for quick reminder
-                ),
+                  );
+                },
               );
             },
           ),
