@@ -28,6 +28,22 @@ Map<IconData, String> reverseIconsToStringMap(Map<String, IconData> inputMap) {
 
 final supportedIconsToStringMap = reverseIconsToStringMap(stringToSupportedIconsMap);
 
+const transactionAmountInputTextStyle = TextStyle(
+  color: Color(0xFF6750A4),
+  fontSize: 57,
+  fontFamily: 'Montserrat',
+  fontWeight: FontWeight.w400,
+  letterSpacing: -0.25,
+);
+
+const inputBoxHintTextStyle = TextStyle(
+  color: Color(0xFFCAC4D0),
+  fontSize: 14,
+  fontFamily: 'Montserrat',
+  fontWeight: FontWeight.w400,
+  height: 0.10,
+  letterSpacing: 0.25,
+);
 
 //insights page always consider today's date as selectedDate
 final DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);

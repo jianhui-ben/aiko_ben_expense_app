@@ -72,216 +72,201 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    // data = ModalRoute.of(context)?.settings.arguments as Map<String, Object?>;
     final User? user= context.read<User?>();
 
-    bool _isTransactionAmountInputValid = true;
-
     return Material(
-      child: Center(
-        child: Column(
-            children: [
-              // drag handler
-              Padding(
-                padding: const EdgeInsets.only(top: 15.0),
-                child: Opacity(
-                  opacity: 0.40,
-                  child: Container(
-                    width: 32,
-                    height: 4,
-                    decoration: ShapeDecoration(
-                      color: Color(0xFF79747E),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
+      child: Column(
+          children: [
+            // drag handler
+            Padding(
+              padding: const EdgeInsets.only(top: 15.0),
+              child: Opacity(
+                opacity: 0.40,
+                child: Container(
+                  width: 32,
+                  height: 4,
+                  decoration: ShapeDecoration(
+                    color: Color(0xFF79747E),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
                     ),
                   ),
                 ),
               ),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: MediaQuery.of(context).size.height * 0.15,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 15,
-                    ),
-                    Icon(widget.category.categoryIcon.icon,
-                        size: 50, //
-                        color: Color(0xFF6200EE)),
-                    SizedBox(
-                      width: 15,
-                    ),
-                    Container(
-                      // padding: EdgeInsets.all(15),
-                      width: 250,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(15, 32, 15, 32),
-                        child: TextField(
-                          controller: dateInput,
-                          //editing controller of this TextField
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                                borderSide: BorderSide(width: 2)),
-                            hintText: "MM/DD/YYYY",
-                            labelText: 'Transaction Date',
-                            suffixIcon: Align(
-                              widthFactor: 1.0,
-                              heightFactor: 1.0,
-                              child: GestureDetector(
-                                onTap: () async {
-                                  DateTime? pickedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime(2000),
-                                    lastDate: DateTime(2101),
-                                  );
-      
-                                  if (pickedDate != null) {
-                                    String formattedDate =
-                                        DateFormat('MM/dd/yyyy')
-                                            .format(pickedDate);
-                                    setState(() {
-                                      dateInput.text = formattedDate;
-                                    });
-                                  } else {
-                                    print(
-                                        "Date is not selected from the day picker, so default today will be used");
-                                  }
-                                },
-                                child: CircleAvatar(
-                                  child: const Icon(Icons.calendar_today,
-                                      color: Color(0xFF6200EE)),
-                                ),
-                              ),
-                            ),
-                          ),
-                          readOnly: false,
-                          //set it true, so that user will not able to edit text
-                          inputFormatters: [
-                            // only allow date be input
-                            // FilteringTextInputFormatter.allow(RegExp(r'^\d{41}-\d{2}-\d{2}$')),
-                            DateTextFormatter(),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // SizedBox(height: 30,),
-              Container(
-                // color: Colors.blue, //for debugging
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: MediaQuery.of(context).size.height * 0.12,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(80, 0, 50, 0),
-                  child: TextField(
-                    controller: transactionAmountInput,
-                    keyboardType: TextInputType.none,
-                    focusNode: _focus, // pass focusNode to our textfield
-                    decoration: InputDecoration(
-                      prefix: Text('\$ '), // Add a dollar sign as a prefix
-                      border: InputBorder.none, // Remove the outline border
-                      // border: OutlineInputBorder(), //for debugging
-                    ),
-                    // keyboardType: TextInputType.numberWithOptions(decimal: true),
-                    // Allow decimal input
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'^\$?\d+\.?\d{0,2}')), // Format as currency
-                    ],
-                    style: TextStyle(fontSize: 50.0, fontWeight: FontWeight.bold,), // Style for entered text
-                    // textAlign: TextAlign.center, // Center the text horizontally
+            ),
+            // Container(
+            //   width: MediaQuery.of(context).size.width * 0.9,
+            //   height: MediaQuery.of(context).size.height * 0.15,
+            //   child: Row(
+            //     children: [
+            //       SizedBox(
+            //         width: 15,
+            //       ),
+            //       Icon(widget.category.categoryIcon.icon,
+            //           size: 50, //
+            //           color: Color(0xFF6200EE)),
+            //       SizedBox(
+            //         width: 15,
+            //       ),
+            //       Container(
+            //         // padding: EdgeInsets.all(15),
+            //         width: 250,
+            //         child: Padding(
+            //           padding: const EdgeInsets.fromLTRB(15, 32, 15, 32),
+            //           child: TextField(
+            //             controller: dateInput,
+            //             //editing controller of this TextField
+            //             decoration: InputDecoration(
+            //               border: OutlineInputBorder(
+            //                   borderSide: BorderSide(width: 2)),
+            //               hintText: "MM/DD/YYYY",
+            //               labelText: 'Transaction Date',
+            //               suffixIcon: Align(
+            //                 widthFactor: 1.0,
+            //                 heightFactor: 1.0,
+            //                 child: GestureDetector(
+            //                   onTap: () async {
+            //                     DateTime? pickedDate = await showDatePicker(
+            //                       context: context,
+            //                       initialDate: DateTime.now(),
+            //                       firstDate: DateTime(2000),
+            //                       lastDate: DateTime(2101),
+            //                     );
+            //
+            //                     if (pickedDate != null) {
+            //                       String formattedDate =
+            //                           DateFormat('MM/dd/yyyy')
+            //                               .format(pickedDate);
+            //                       setState(() {
+            //                         dateInput.text = formattedDate;
+            //                       });
+            //                     } else {
+            //                       print(
+            //                           "Date is not selected from the day picker, so default today will be used");
+            //                     }
+            //                   },
+            //                   child: CircleAvatar(
+            //                     child: const Icon(Icons.calendar_today,
+            //                         color: Color(0xFF6200EE)),
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //             readOnly: false,
+            //             //set it true, so that user will not able to edit text
+            //             inputFormatters: [
+            //               // only allow date be input
+            //               // FilteringTextInputFormatter.allow(RegExp(r'^\d{41}-\d{2}-\d{2}$')),
+            //               DateTextFormatter(),
+            //             ],
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // SizedBox(height: 30,),
+            Container(
+              // color: Colors.blue, //for debugging
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.15,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(80, 0, 50, 0),
+                child: TextField(
+                  controller: transactionAmountInput,
+                  keyboardType: TextInputType.none,
+                  focusNode: _focus, // pass focusNode to our textfield
+                  decoration: InputDecoration(
+                    prefix: Text('\$ '), // Add a dollar sign as a prefix
+                    border: InputBorder.none, // Remove the outline border
+                    // border: OutlineInputBorder(), //for debugging
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(35, 0, 10, 0),
-                child: Row(
-                  children: [
-                    Text("Description: "),
-                    Container(
-                      // color: Colors.yellow, //for debugging
-                      width: 250,
-                      // height: 80,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 30, 0),
-                        child: TextField(
-                          controller: transactionCommentInput,
-                          // Your other properties here
-                          decoration: InputDecoration(
-                            border: UnderlineInputBorder( // Use UnderlineInputBorder to add an underline border
-                              borderSide: BorderSide(color: Color(0xFF6200EE)), // Customize the underline color
-                            ), // Remove the outline border
-                          ),
-                          // style: TextStyle(fontSize: 5.0,), // Style for entered text
-                          // textAlign: TextAlign.center, // Center the text horizontally
-                        ),
-                      ),
-                    ),
+                  // keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  // Allow decimal input
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r'^\$?\d+\.?\d{0,2}')), // Format as currency
                   ],
+                  style: transactionAmountInputTextStyle, // Style for entered text
+                  // textAlign: TextAlign.center, // Center the text horizontally
                 ),
               ),
-              SizedBox(height: 20,),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: MediaQuery.of(context).size.height * 0.05,
-                margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 6), // Adjust margin as needed
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (transactionAmountInput.text.isEmpty) {
-                      // Show an error message using a SnackBar
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Invalid transaction amount. Please enter a valid number.'),
-                        ),
-                      );
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: TextField(
+                controller: transactionCommentInput,
+                decoration: InputDecoration(
+                  hintText: "Description: ex. Trader Joes",
+                  hintStyle: inputBoxHintTextStyle,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none, // Remove the underline
+                  ),
+                  filled: true,
+                  fillColor: Color(0xFFE6E0E9),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),                    ),
+                // style: TextStyle(fontSize: 5.0,), // Style for entered text
+                // textAlign: TextAlign.center, // Center the text horizontally
+              ),
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.05,
+              margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 6), // Adjust margin as needed
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (transactionAmountInput.text.isEmpty) {
+                    // Show an error message using a SnackBar
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Invalid transaction amount. Please enter a valid number.'),
+                      ),
+                    );
+                  } else {
+                    // new transaction
+                    if (widget.transactionId == null) {
+                      await DatabaseService(uid: user!.uid).addNewTransaction(
+                          widget.category.categoryId,
+                          double.tryParse(transactionAmountInput.text)!,
+                          transactionCommentInput.text,
+                          DateFormat('MM/dd/yyyy').parse(dateInput.text));
                     } else {
-                      // new transaction
-                      if (widget.transactionId == null) {
-                        await DatabaseService(uid: user!.uid).addNewTransaction(
-                            widget.category.categoryId,
-                            double.tryParse(transactionAmountInput.text)!,
-                            transactionCommentInput.text,
-                            DateFormat('MM/dd/yyyy').parse(dateInput.text));
-                      } else {
-                        //modify existing transaction by transactionId
-                        await DatabaseService(uid: user!.uid).editTransactionById(
-                            widget.transactionId!,
-                            widget.category.categoryId,
-                            double.tryParse(transactionAmountInput.text)!,
-                            transactionCommentInput.text,
-                            DateFormat('MM/dd/yyyy').parse(dateInput.text));
-                      }
-                      Navigator.pop(context);
+                      //modify existing transaction by transactionId
+                      await DatabaseService(uid: user!.uid).editTransactionById(
+                          widget.transactionId!,
+                          widget.category.categoryId,
+                          double.tryParse(transactionAmountInput.text)!,
+                          transactionCommentInput.text,
+                          DateFormat('MM/dd/yyyy').parse(dateInput.text));
                     }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF6200EE), // Background color
-                    foregroundColor: Colors.white, // Text color
-                  ),
-                  child: Text(
-                    widget.transactionId == null ? 'ADD' : 'UPDATE',
-                    style: TextStyle(fontSize: 18.0), // Adjust the text style as needed
-                  ),
+                    Navigator.pop(context);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF6200EE), // Background color
+                  foregroundColor: Colors.white, // Text color
+                ),
+                child: Text(
+                  widget.transactionId == null ? 'ADD' : 'UPDATE',
+                  style: TextStyle(fontSize: 18.0), // Adjust the text style as needed
                 ),
               ),
-              const Spacer(),
-              // 6) if hasFocus show keyboard, else show empty container
-              // _focus.hasFocus
-              //     ? NumericKeypad(
-              //   controller: transactionAmountInput, focusNode: _focus,
-              // )
-              //     : Container(),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 50),
-                child: NumericKeypad(
-                  controller: transactionAmountInput, focusNode: _focus,
-                ),
-              )
-          ],
-        ),
+            ),
+            const Spacer(),
+            // 6) if hasFocus show keyboard, else show empty container
+            // _focus.hasFocus
+            //     ? NumericKeypad(
+            //   controller: transactionAmountInput, focusNode: _focus,
+            // )
+            //     : Container(),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 50),
+              child: NumericKeypad(
+                controller: transactionAmountInput, focusNode: _focus,
+              ),
+            )
+        ],
       ),
     );
   }
