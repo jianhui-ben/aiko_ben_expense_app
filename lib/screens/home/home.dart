@@ -8,6 +8,7 @@ import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
@@ -57,7 +58,6 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     final isToday = selectedDate.isAtSameMomentAs(DateTime(
         DateTime.now().year, DateTime.now().month, DateTime.now().day));
-    // print("isToday or not: $isToday");
 
     final user = Provider.of<User?>(context);
     DatabaseService db = DatabaseService(uid: user?.uid);
@@ -68,64 +68,70 @@ class _HomeState extends State<Home> {
       db.setUserCategoriesMap(userCategoriesMap!);
 
       return Scaffold(
-          appBar: AppBar(
-            elevation: 0.0,
-            title: Container(
-              // color: Colors.green,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Left arrow icon
-                  IconButton(
-                    icon: Icon(Icons.arrow_left),
-                    onPressed: () {
-                      _selectDate(selectedDate.subtract(Duration(days: 1)));
-                    },
-                  ),
-                  Text(
-                    getSelectedDate(),
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  // Right arrow icon
-                  if (!isToday)
-                    IconButton(
-                      icon: Icon(Icons.arrow_right),
-                      onPressed: () {
-                        _selectDate(selectedDate.add(Duration(days: 1)));
-                      },
-                    ),
-                ],
-              ),
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () async {
-                  await _auth.signOut();
-                },
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(Icons.person), // Your icon
-                    SizedBox(height: 1), // Spacer between icon and text
-                    Text(
-                      'logout',
-                      style: TextStyle(
-                        fontSize: 10,
-                      ),
-                    ), // Your text
-                  ],
-                ),
-              ),
-            ],
-            centerTitle: true, // Center the title
-          ),
+        // for easy sign out debugging purpose
+          // appBar: AppBar(
+          //   actions: <Widget>[
+          //     TextButton(
+          //       onPressed: () async {
+          //         await _auth.signOut();
+          //       },
+          //       child: Column(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         crossAxisAlignment: CrossAxisAlignment.center,
+          //         children: [
+          //           Icon(Icons.person), // Your icon
+          //           SizedBox(height: 1), // Spacer between icon and text
+          //           Text(
+          //             'logout',
+          //             style: TextStyle(
+          //               fontSize: 10,
+          //             ),
+          //           ), // Your text
+          //         ],
+          //       ),
+          //     ),
+          //   ],
+          // ),
           body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.12,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        //add a sizedbox at the front before the date
+                        SizedBox(width: 15),
+                        Text(
+                          DateFormat('EEEE, d MMM').format(selectedDate),
+                          style: TextStyle(
+                            fontSize: 38,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        // Calendar icon button
+                        IconButton(
+                          icon: Icon(Icons.calendar_today, color: Colors.grey, size: 18,),
+                          onPressed: () async {
+                            final DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: selectedDate,
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2101),
+                            );
+                            if (pickedDate != null && pickedDate != selectedDate) {
+                              setState(() {
+                                selectedDate = pickedDate;
+                              });
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 GestureDetector(
                   onTap: () {
                     setState(() {
@@ -134,7 +140,7 @@ class _HomeState extends State<Home> {
                   },
                   child: Container(
                     // color: const Color(0xffeeee00), // Yellow
-                    height: MediaQuery.of(context).size.height * 0.1,
+                    height: MediaQuery.of(context).size.height * 0.12,
                     alignment: Alignment.center,
                     child: DailyAndMonthlyTotal(
                         selectedDate: selectedDate,
@@ -143,7 +149,6 @@ class _HomeState extends State<Home> {
                 ),
                 Container(
                   height: MediaQuery.of(context).size.height * 0.12,
-                  // color: Colors.red,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     itemCount: orderedUserCategoryIds.length,
@@ -158,9 +163,6 @@ class _HomeState extends State<Home> {
                     },
                   ),
                 ),
-                // Container(
-                //     height: MediaQuery.of(context).size.height * 0.001,
-                //     child: Divider()),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
@@ -193,18 +195,5 @@ class _HomeState extends State<Home> {
       // print("set to new date: $newDate");
       selectedDate = newDate;
     });
-  }
-
-  String getSelectedDate() {
-    final now = DateTime.now();
-    final difference = selectedDate.difference(now).inDays;
-
-    if (difference == 0) {
-      return 'Today';
-    } else if (difference == -1) {
-      return 'Yesterday';
-    } else {
-      return '${selectedDate.toLocal()}'.split(' ')[0];
-    }
   }
 }
