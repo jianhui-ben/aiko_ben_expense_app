@@ -72,10 +72,10 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    final User? user= context.read<User?>();
+    final User? user = context.read<User?>();
 
-    return Material(
-      child: Column(
+    return Scaffold(
+      body: Column(
           children: [
             // drag handler
             Padding(
@@ -210,49 +210,6 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
                 // textAlign: TextAlign.center, // Center the text horizontally
               ),
             ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.height * 0.05,
-              margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 6), // Adjust margin as needed
-              child: ElevatedButton(
-                onPressed: () async {
-                  if (transactionAmountInput.text.isEmpty) {
-                    // Show an error message using a SnackBar
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Invalid transaction amount. Please enter a valid number.'),
-                      ),
-                    );
-                  } else {
-                    // new transaction
-                    if (widget.transactionId == null) {
-                      await DatabaseService(uid: user!.uid).addNewTransaction(
-                          widget.category.categoryId,
-                          double.tryParse(transactionAmountInput.text)!,
-                          transactionCommentInput.text,
-                          DateFormat('MM/dd/yyyy').parse(dateInput.text));
-                    } else {
-                      //modify existing transaction by transactionId
-                      await DatabaseService(uid: user!.uid).editTransactionById(
-                          widget.transactionId!,
-                          widget.category.categoryId,
-                          double.tryParse(transactionAmountInput.text)!,
-                          transactionCommentInput.text,
-                          DateFormat('MM/dd/yyyy').parse(dateInput.text));
-                    }
-                    Navigator.pop(context);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF6200EE), // Background color
-                  foregroundColor: Colors.white, // Text color
-                ),
-                child: Text(
-                  widget.transactionId == null ? 'ADD' : 'UPDATE',
-                  style: TextStyle(fontSize: 18.0), // Adjust the text style as needed
-                ),
-              ),
-            ),
             const Spacer(),
             // 6) if hasFocus show keyboard, else show empty container
             // _focus.hasFocus
@@ -264,10 +221,37 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
               padding: EdgeInsets.fromLTRB(0, 10, 0, 50),
               child: NumericKeypad(
                 controller: transactionAmountInput, focusNode: _focus,
+                onSubmit: () => _submitToDatabase(user),
               ),
             )
         ],
       ),
     );
+  }
+
+  void _submitToDatabase(User? user) async {
+    if (transactionAmountInput.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Invalid transaction amount. Please enter a valid number.'),
+        ),
+      );
+    } else {
+      if (widget.transactionId == null) {
+        await DatabaseService(uid: user!.uid).addNewTransaction(
+            widget.category.categoryId,
+            double.tryParse(transactionAmountInput.text)!,
+            transactionCommentInput.text,
+            DateFormat('MM/dd/yyyy').parse(dateInput.text));
+      } else {
+        await DatabaseService(uid: user!.uid).editTransactionById(
+            widget.transactionId!,
+            widget.category.categoryId,
+            double.tryParse(transactionAmountInput.text)!,
+            transactionCommentInput.text,
+            DateFormat('MM/dd/yyyy').parse(dateInput.text));
+      }
+      Navigator.pop(context);
+    }
   }
 }

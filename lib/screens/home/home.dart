@@ -149,7 +149,7 @@ class _HomeState extends State<Home> {
                     itemCount: orderedUserCategoryIds.length,
                     itemBuilder: (context, index) {
                       return Padding(
-                        padding: const EdgeInsets.fromLTRB(11.5, 6, 11.5, 6), // Add some padding
+                        padding: const EdgeInsets.fromLTRB(10, 2, 10, 2), // Add some padding
                         child: CategoryIconButton(
                               category: userCategoriesMap![orderedUserCategoryIds[index]]!,
                               selectedDate: selectedDate,
