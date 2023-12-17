@@ -19,28 +19,31 @@ class TransactionTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         showModalBottomSheet(
-          constraints: BoxConstraints.loose(Size(
-              MediaQuery.of(context).size.width,
-              MediaQuery.of(context).size.height * 0.8)),
-          isScrollControlled: true,
-          context: context,
-          builder: (context) {
-            return ClipRRect(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20.0),
-                topRight: Radius.circular(20.0),
-              ),
-              child: AddOrEditSingleTransaction(
-                category: transactionCategory,
-                transactionComment: transactionComment,
-                transactionAmount: transactionAmount,
-                selectedDate: selectedDate,
-                transactionId: transactionId,
-              ),
-            );
-          },
-        );
-      },
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return ClipRRect(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0),
+                ),
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  child: AddOrEditSingleTransaction(
+                    category: transactionCategory,
+                    transactionComment: transactionComment,
+                    transactionAmount: transactionAmount,
+                    selectedDate: selectedDate,
+                    transactionId: transactionId,
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );},
       child: buildTransactonCard(),
     );
   }

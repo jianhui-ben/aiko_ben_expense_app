@@ -94,80 +94,7 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
                 ),
               ),
             ),
-            // Container(
-            //   width: MediaQuery.of(context).size.width * 0.9,
-            //   height: MediaQuery.of(context).size.height * 0.15,
-            //   child: Row(
-            //     children: [
-            //       SizedBox(
-            //         width: 15,
-            //       ),
-            //       Icon(widget.category.categoryIcon.icon,
-            //           size: 50, //
-            //           color: Color(0xFF6200EE)),
-            //       SizedBox(
-            //         width: 15,
-            //       ),
-            //       Container(
-            //         // padding: EdgeInsets.all(15),
-            //         width: 250,
-            //         child: Padding(
-            //           padding: const EdgeInsets.fromLTRB(15, 32, 15, 32),
-            //           child: TextField(
-            //             controller: dateInput,
-            //             //editing controller of this TextField
-            //             decoration: InputDecoration(
-            //               border: OutlineInputBorder(
-            //                   borderSide: BorderSide(width: 2)),
-            //               hintText: "MM/DD/YYYY",
-            //               labelText: 'Transaction Date',
-            //               suffixIcon: Align(
-            //                 widthFactor: 1.0,
-            //                 heightFactor: 1.0,
-            //                 child: GestureDetector(
-            //                   onTap: () async {
-            //                     DateTime? pickedDate = await showDatePicker(
-            //                       context: context,
-            //                       initialDate: DateTime.now(),
-            //                       firstDate: DateTime(2000),
-            //                       lastDate: DateTime(2101),
-            //                     );
-            //
-            //                     if (pickedDate != null) {
-            //                       String formattedDate =
-            //                           DateFormat('MM/dd/yyyy')
-            //                               .format(pickedDate);
-            //                       setState(() {
-            //                         dateInput.text = formattedDate;
-            //                       });
-            //                     } else {
-            //                       print(
-            //                           "Date is not selected from the day picker, so default today will be used");
-            //                     }
-            //                   },
-            //                   child: CircleAvatar(
-            //                     child: const Icon(Icons.calendar_today,
-            //                         color: Color(0xFF6200EE)),
-            //                   ),
-            //                 ),
-            //               ),
-            //             ),
-            //             readOnly: false,
-            //             //set it true, so that user will not able to edit text
-            //             inputFormatters: [
-            //               // only allow date be input
-            //               // FilteringTextInputFormatter.allow(RegExp(r'^\d{41}-\d{2}-\d{2}$')),
-            //               DateTextFormatter(),
-            //             ],
-            //           ),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-            // SizedBox(height: 30,),
             Container(
-              // color: Colors.blue, //for debugging
               width: MediaQuery.of(context).size.width * 0.9,
               height: MediaQuery.of(context).size.height * 0.15,
               child: Padding(
@@ -194,6 +121,7 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
             ),
             Container(
               width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.height * 0.08,
               child: TextField(
                 controller: transactionCommentInput,
                 decoration: InputDecoration(
@@ -210,7 +138,6 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
                 // textAlign: TextAlign.center, // Center the text horizontally
               ),
             ),
-            const Spacer(),
             // 6) if hasFocus show keyboard, else show empty container
             // _focus.hasFocus
             //     ? NumericKeypad(

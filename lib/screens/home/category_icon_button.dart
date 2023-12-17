@@ -30,7 +30,7 @@ class _CategoryIconButtonState extends State<CategoryIconButton> {
                 //add constraints to the bottom sheet
                 constraints: BoxConstraints.loose(Size(
                     MediaQuery.of(context).size.width,
-                    MediaQuery.of(context).size.height * 0.8)),
+                    MediaQuery.of(context).size.height * 0.6)),
                 isScrollControlled: true, // <= set to true. setting this without constrains may cause full screen bottomsheet.
                 context: context,
                 builder: (context) {
