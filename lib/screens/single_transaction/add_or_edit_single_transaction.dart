@@ -219,9 +219,15 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
             //     : Container(),
             Padding(
               padding: EdgeInsets.fromLTRB(0, 10, 0, 50),
-              child: NumericKeypad(
-                controller: transactionAmountInput, focusNode: _focus,
-                onSubmit: () => _submitToDatabase(user),
+              child: Container(
+                // height: MediaQuery.of(context).size.height * 0.3,
+                child: NumericKeypad(
+                  controller: transactionAmountInput, focusNode: _focus,
+                  onSubmit: () => _submitToDatabase(user),
+                  onSetDate: (DateTime date) {
+                    dateInput.text = DateFormat('MM/dd/yyyy').format(date);
+                  },
+                ),
               ),
             )
         ],

@@ -67,7 +67,6 @@ const appNameTextStyle = TextStyle(
 ThemeData getCustomTheme() {
   return ThemeData(
       useMaterial3: true,
-
       // Define the default background color
       scaffoldBackgroundColor: Color(0xFFF3EDF7),
       buttonTheme: ButtonThemeData(
@@ -86,6 +85,9 @@ ThemeData getCustomTheme() {
       // Define the default `TextTheme`. Use this to specify the default
       // text styling for headlines, titles, bodies of text, and more.
       textTheme: TextTheme(
+        bodyLarge: TextStyle(color: Color(0xFF6200EE)),
+        bodyMedium: TextStyle(color: Color(0xFF42474E)),
+        bodySmall: TextStyle(color: Color(0xFF9CA0A7)),
         labelLarge: TextStyle( // Customize the text style for buttons
           fontSize: 12, // Text size
         ),

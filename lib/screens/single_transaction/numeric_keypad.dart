@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 
 //reference: https://medium.com/@henryifebunandu/create-custom-keyboard-for-your-flutter-app-20926a0aaf19
@@ -7,9 +8,14 @@ class NumericKeypad extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final void Function() onSubmit;
+  final void Function(DateTime) onSetDate;
 
   const NumericKeypad(
-      {super.key, required this.controller, required this.focusNode, required this.onSubmit});
+      {super.key,
+      required this.controller,
+      required this.focusNode,
+      required this.onSubmit,
+      required this.onSetDate});
 
   @override
   State<NumericKeypad> createState() => _NumericKeypadState();
@@ -21,6 +27,7 @@ class _NumericKeypadState extends State<NumericKeypad> {
   late TextEditingController _controller;
   late TextSelection _selection;
   String? operation;
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -55,27 +62,33 @@ class _NumericKeypadState extends State<NumericKeypad> {
       ['.', '0', '⌫'],
     ];
 
-    final List<String> operations = ['=', '+', '-', 'S'];
-
     return Row(
       children: [
         Container(
-          width: MediaQuery.of(context).size.width * 0.75,
+          width: MediaQuery.of(context).size.width * 0.7,
           child: Column(
             children: numericButtons.map((List<String> row) {
               return Row(
                 children: row.map((String button) {
-                  return _buildButton(button, onPressed: button == '⌫' ? _backspace : null);
+                  return _buildButton(button, onPressed: button == '⌫' ? _backspace : null,
+                      iconData: button == '⌫' ? Icons.arrow_back : null);
                 }).toList(),
               );
             }).toList(),
           ),
         ),
         Container(
+          height: MediaQuery.of(context).size.height * 0.22,
+          child: VerticalDivider(
+            color: Colors.grey, // Change the color as needed
+            thickness: 1, // Change the thickness as needed
+          ),
+        ),
+        Container(
           width: MediaQuery.of(context).size.width * 0.25,
           child: Column(
             children: [
-              Row(children: [_buildButton('=', onPressed: _calculate),],),
+              Row(children: [_buildDateButton(onPressed: datePicker),],),
               Row(children: [_buildButton('+', onPressed: _summation),],),
               Row(children: [_buildButton('-', onPressed: _subtract),],),
               Row(children: [submitOrCalculateButton(onSubmit: _submit),],),
@@ -90,11 +103,13 @@ class _NumericKeypadState extends State<NumericKeypad> {
   _hideKeyboard() => _focusNode.unfocus();
 
   // Individual keys
-  Widget _buildButton(String text, {VoidCallback? onPressed}) {
+  Widget _buildButton(String text, {VoidCallback? onPressed, IconData? iconData}) {
     return Expanded(
       child: TextButton(
         onPressed: onPressed ?? () => _input(text),
-        child: Text(
+        child: iconData != null
+            ? Icon(iconData)
+            : Text(
           text,
           style: TextStyle(
             fontSize: 30.0, // Adjust the font size as needed
@@ -104,7 +119,6 @@ class _NumericKeypadState extends State<NumericKeypad> {
       ),
     );
   }
-
   void _backspace() {
     int position = _selection.base.offset; // cursor position
     final value = _controller.text; // string in out textfield
@@ -201,4 +215,52 @@ class _NumericKeypadState extends State<NumericKeypad> {
       );
     }
   }
+
+  Widget _buildDateButton({VoidCallback? onPressed}) {
+    final now = DateTime.now();
+    String pickedDateText = '';
+
+    if (_selectedDate.year == now.year && _selectedDate.month == now.month && _selectedDate.day == now.day) {
+      pickedDateText = 'TODAY';
+    } else {
+      pickedDateText = DateFormat('MM/dd').format(_selectedDate);
+    }
+
+    return Container(
+      child: Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.calendar_today, color: Color(0xFF6200EE)),
+            onPressed: datePicker,
+          ),
+          FittedBox(
+            fit: BoxFit.fitWidth,
+            child: Text(
+              pickedDateText,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge!
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  void datePicker() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        _selectedDate = pickedDate;
+      });
+      widget.onSetDate(pickedDate);
+    }
+  }
 }
+
