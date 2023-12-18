@@ -45,6 +45,7 @@ const inputBoxHintTextStyle = TextStyle(
   letterSpacing: 0.25,
 );
 
+
 //insights page always consider today's date as selectedDate
 final DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
@@ -63,6 +64,13 @@ const appNameTextStyle = TextStyle(
   letterSpacing: 0.18,
 );
 
+const topDateOnHomeTextStyle = TextStyle(
+color: Color(0xFF3A4857),
+fontSize: 24,
+fontFamily: 'Montserrat',
+fontWeight: FontWeight.w400,
+height: 0.06,
+);
 
 ThemeData getCustomTheme() {
   return ThemeData(
@@ -76,7 +84,7 @@ ThemeData getCustomTheme() {
     // Define the default IconTheme. Use this to specify the default
     // color and size for icons in your application.
     iconTheme: IconThemeData(
-      color: Colors.white, // Sets the color for icons
+      color: Color(0xFFB69DF8), // Sets the color for icons
     ),
 
       // Define the default brightness and colors.

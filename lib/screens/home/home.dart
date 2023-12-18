@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../../shared/constants.dart';
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -106,10 +108,7 @@ class _HomeState extends State<Home> {
                         SizedBox(width: 15),
                         Text(
                           DateFormat('EEEE, d MMM').format(selectedDate),
-                          style: TextStyle(
-                            fontSize: 38,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: topDateOnHomeTextStyle,
                         ),
                         // Calendar icon button
                         IconButton(

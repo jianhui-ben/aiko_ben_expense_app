@@ -15,23 +15,41 @@ class CategoryIconButton extends StatefulWidget {
 }
 
 class _CategoryIconButtonState extends State<CategoryIconButton> {
+
+  bool _isSelected = false;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
           width: MediaQuery.of(context).size.width / 6, // Adjust the width here
-          child:
-          IconButton.filled(
+
+          decoration: BoxDecoration(
+            color: _isSelected ?  Color(0xFFB69DF8) : Colors.white,
+            // Set the background color based on the state
+            shape: BoxShape.circle,
+          ),
+          child: IconButton(
             icon: widget.category.categoryIcon,
-            iconSize: MediaQuery.of(context).size.width / 8, // Adjust the icon size here
-            onPressed: () {
-              showModalBottomSheet(
+            iconSize: MediaQuery.of(context).size.width / 8,
+            // Adjust the icon size here
+            color: _isSelected ? Colors.white : Color(0xFFB69DF8),
+            // Set the icon color based on the state
+            onPressed: () async {
+              setState(() {
+                _isSelected =
+                    true; // Toggle the state when the button is pressed
+              });
+
+              // have this showBottomSheet to show different colors on category icon button automatically
+              final showBottomSheet = await showModalBottomSheet(
                 //add constraints to the bottom sheet
                 constraints: BoxConstraints.loose(Size(
                     MediaQuery.of(context).size.width,
                     MediaQuery.of(context).size.height * 0.6)),
-                isScrollControlled: true, // <= set to true. setting this without constrains may cause full screen bottomsheet.
+                isScrollControlled: true,
+                // <= set to true. setting this without constrains may cause full screen bottomsheet.
                 context: context,
                 builder: (context) {
                   // clipRRect is used to make the bottomsheet rounded
@@ -47,6 +65,12 @@ class _CategoryIconButtonState extends State<CategoryIconButton> {
                   );
                 },
               );
+
+              if (showBottomSheet == null) {
+                setState(() {
+                  _isSelected = false;
+                });
+              }
             },
           ),
         ),
