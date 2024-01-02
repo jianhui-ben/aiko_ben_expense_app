@@ -2,7 +2,7 @@
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/home/category_icon_button.dart';
-import 'package:aiko_ben_expense_app/screens/home/daily_and_monthly_total.dart';
+import 'package:aiko_ben_expense_app/screens/home/spending_and_budget/daily_and_monthly_total.dart';
 import 'package:aiko_ben_expense_app/screens/home/transactions_list/transactions_list.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
@@ -39,6 +39,7 @@ class _HomeState extends State<Home> {
     "8"
   ];
 
+
   final numOfCategoriesInARow = 4;
   final numOfCategoriesInAColumn = 2;
 
@@ -47,6 +48,7 @@ class _HomeState extends State<Home> {
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
   bool isDailyView = true;
+
 
   @override
   void initState() {
@@ -70,32 +72,7 @@ class _HomeState extends State<Home> {
       db.setUserCategoriesMap(userCategoriesMap!);
 
       return Scaffold(
-        // for easy sign out debugging purpose
-          // appBar: AppBar(
-          //   actions: <Widget>[
-          //     TextButton(
-          //       onPressed: () async {
-          //         await _auth.signOut();
-          //       },
-          //       child: Column(
-          //         mainAxisAlignment: MainAxisAlignment.center,
-          //         crossAxisAlignment: CrossAxisAlignment.center,
-          //         children: [
-          //           Icon(Icons.person), // Your icon
-          //           SizedBox(height: 1), // Spacer between icon and text
-          //           Text(
-          //             'logout',
-          //             style: TextStyle(
-          //               fontSize: 10,
-          //             ),
-          //           ), // Your text
-          //         ],
-          //       ),
-          //     ),
-          //   ],
-          // ),
-          body: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+          body: Column(mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   height: MediaQuery.of(context).size.height * 0.12,
@@ -112,7 +89,11 @@ class _HomeState extends State<Home> {
                         ),
                         // Calendar icon button
                         IconButton(
-                          icon: Icon(Icons.calendar_today, color: Colors.grey, size: 18,),
+                          icon: Icon(
+                            Icons.calendar_today,
+                            color: Colors.grey,
+                            size: 18,
+                          ),
                           onPressed: () async {
                             final DateTime? pickedDate = await showDatePicker(
                               context: context,
@@ -131,20 +112,9 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      isDailyView = !isDailyView;
-                    });
-                  },
-                  child: Container(
-                    // color: const Color(0xffeeee00), // Yellow
-                    height: MediaQuery.of(context).size.height * 0.12,
-                    alignment: Alignment.center,
-                    child: DailyAndMonthlyTotal(
-                        selectedDate: selectedDate,
-                        isDailyView: isDailyView),
-                  ),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: DailyAndMonthlyTotal(selectedDate: selectedDate),
                 ),
                 Container(
                   height: MediaQuery.of(context).size.height * 0.12,
@@ -153,12 +123,14 @@ class _HomeState extends State<Home> {
                     itemCount: orderedUserCategoryIds.length,
                     itemBuilder: (context, index) {
                       return Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 2, 10, 2), // Add some padding
-                        child: CategoryIconButton(
-                              category: userCategoriesMap![orderedUserCategoryIds[index]]!,
-                              selectedDate: selectedDate,
-                            )// The rest of your CategoryIconButton content
-                      );
+                          padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+                          // Add some padding
+                          child: CategoryIconButton(
+                            category:
+                                userCategoriesMap![orderedUserCategoryIds[index]]!,
+                            selectedDate: selectedDate,
+                          ) // The rest of your CategoryIconButton content
+                          );
                     },
                   ),
                 ),
@@ -171,7 +143,8 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                 ),
-              ])
+              ]
+          )
       );
     }
   }

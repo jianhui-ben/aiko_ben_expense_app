@@ -46,6 +46,7 @@ dependencies:
   keyboard_actions: ^4.2.0
   syncfusion_flutter_charts: ^23.1.43
   mockito: ^5.4.2
+  percent_indicator: ^4.2.3
 
 dev_dependencies:
   flutter_test:
