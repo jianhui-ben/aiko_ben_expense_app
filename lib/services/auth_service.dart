@@ -24,6 +24,12 @@ class AuthService {
     return user != null ? my_app_user.User(uid: user.uid, email: null) : null;
   }
 
+  // helper function to get the current user
+  my_app_user.User? get currentUser {
+    final User? firebaseUser = _auth.currentUser;
+    return firebaseUser != null ? my_app_user.User(uid: firebaseUser.uid, email: null) : null;
+  }
+
   // make a my_app_user.User for auth purpose
   Stream<my_app_user.User?> get user {
     return _auth.authStateChanges().map((user) {
@@ -43,15 +49,28 @@ class AuthService {
 
 
   // register with email & password
-  Future registerWithEmailAndPassword(String email, String password) async {
+  Future registerWithEmailAndPassword(String email, String password, String name) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       User? user = userCredential.user;
       String uid = user!.uid;
 
+      // Update the user's display name after successfully creating the user
+      await updateUserName(name);
+
       return _userFromFireBaseUserCredential(userCredential);
     } catch(e) {
       return e.toString();
+    }
+  }
+
+  // update user display name and photo url
+  Future<void> updateUserName(String name) async {
+    User? user = _auth.currentUser;
+
+    if (user != null) {
+      await user.updateDisplayName(name);
+      await user.reload();
     }
   }
 

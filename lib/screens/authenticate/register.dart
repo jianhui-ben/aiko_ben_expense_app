@@ -1,6 +1,7 @@
 
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
+import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class _RegisterState extends State<Register> {
   final AuthService _auth = AuthService();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController userNameController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final String emailErrorText = "The email can't be empty";
   final String passwordErrorText =
@@ -28,8 +30,9 @@ class _RegisterState extends State<Register> {
   Future<void> signUpWithEmailAndPassword() async {
     final String email = emailController.text;
     final String password = passwordController.text;
+    final String useName = userNameController.text;
 
-    dynamic result = await _auth.registerWithEmailAndPassword(email, password);
+    dynamic result = await _auth.registerWithEmailAndPassword(email, password, useName);
     if (result is! User?) {
       setState(() {
         _errorText = result;
@@ -39,6 +42,10 @@ class _RegisterState extends State<Register> {
       print("user signed up and logged in successfully");
       print("email: $email, password: $password, userId: $result");
     }
+
+    // Save the default user settings to Firestore
+    await DatabaseService(uid: result.uid).addDefaultSetting(useName, email);
+
   }
 
   @override
@@ -98,6 +105,15 @@ class _RegisterState extends State<Register> {
                             labelText: 'Password',
                             errorText:
                             showEmailAndPasswordError ? passwordErrorText : null,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        child: TextFormField(
+                          controller: userNameController,
+                          decoration: textInputDecoration.copyWith(
+                            labelText: 'Name / Alias',
                           ),
                         ),
                       ),

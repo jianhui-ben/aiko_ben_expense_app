@@ -21,7 +21,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final AuthService _auth = AuthService();
   int currentPageIndex = 0;
   NavigationDestinationLabelBehavior labelBehavior =
       NavigationDestinationLabelBehavior.alwaysShow;
@@ -114,7 +113,7 @@ class _HomeState extends State<Home> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: DailyAndMonthlyTotal(selectedDate: selectedDate),
+                  child: DailyAndMonthlyTotal(selectedDate: selectedDate,),
                 ),
                 Container(
                   height: MediaQuery.of(context).size.height * 0.12,

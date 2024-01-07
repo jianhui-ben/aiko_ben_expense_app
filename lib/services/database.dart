@@ -12,6 +12,8 @@ class DatabaseService {
   late Map<String, Category> categoriesMap;
   DatabaseService({this.uid});
 
+  final double DEFAULT_MONTHLY_BUDGET = 2000.0;
+
   // collection reference
   final transactionsCollection = FirebaseFirestore.instance.collection('transactions');
   final settingsCollection = FirebaseFirestore.instance.collection('settings');
@@ -58,8 +60,9 @@ class DatabaseService {
     });
   }
 
-  Future<void> addDefaultCategories() async {
-    final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
+  Future<void> addDefaultSetting(String name, String email) async {
+    final settingsCollection =
+        FirebaseFirestore.instance.collection('settings').doc(uid);
     final Map<String, Map<String, dynamic>> userCategories = {};
 
     defaultCategories.forEach((category) {
@@ -70,8 +73,14 @@ class DatabaseService {
     });
 
     return await settingsCollection.set(
-        {'categories': userCategories}, SetOptions(merge: true))
-        .onError((e, _) => print("Error writing document: $e"));
+      {
+        'categories': userCategories,
+        'name': name,
+        'email': email,
+        'monthlyBudget': DEFAULT_MONTHLY_BUDGET,
+      },
+      SetOptions(merge: true),
+    ).onError((e, _) => print("Error writing document: $e"));
   }
 
   Future addNewTransaction(String categoryId, double transactionAmount, String? transactionComment, DateTime selectedDate) async {

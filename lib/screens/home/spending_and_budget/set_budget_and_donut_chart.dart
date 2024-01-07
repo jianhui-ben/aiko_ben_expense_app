@@ -1,3 +1,7 @@
+import 'package:aiko_ben_expense_app/models/user.dart';
+import 'package:aiko_ben_expense_app/services/auth_service.dart';
+import 'package:aiko_ben_expense_app/services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
@@ -5,17 +9,30 @@ class SetBudgetAndDonutChart extends StatefulWidget {
 
   final double monthlyTransactionTotal;
 
-  const SetBudgetAndDonutChart({super.key, required this.monthlyTransactionTotal});
-
+  const SetBudgetAndDonutChart(
+      {super.key, required this.monthlyTransactionTotal});
 
   @override
-  State<SetBudgetAndDonutChart> createState() => _SetBudgetAndDonutChartState();
+  State<SetBudgetAndDonutChart> createState() => _SetBudgetAndDonutChartState(AuthService().currentUser!.uid);
 }
 
 class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
   //TO-DO: setting budget and sending to firebase
   int budget = 2000;
 
+  final String uid; // User ID
+  final _settingsCollection = FirebaseFirestore.instance.collection('settings');
+
+  _SetBudgetAndDonutChartState(this.uid) {
+    fetchBudget();
+  }
+
+  void fetchBudget() async {
+    final docSnapshot = await _settingsCollection.doc(uid).get();
+    setState(() {
+      budget = docSnapshot['monthlyBudget'];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +63,7 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
                   padding: EdgeInsets.all(0), // remove padding to allow the icon to fill the container
                   icon: Icon(Icons.edit, size: 16), // adjust the icon size to match the height of the Text widget
                   onPressed: () => editBudget(context),
+                  // onPressed: () => DatabaseService(uid: uid).addDefaultSetting('Aiko', 'aikosmiles@gmail.com')
                 ),
               ),
             ],
@@ -134,10 +152,16 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
             ),
             TextButton(
               child: Text('Save'),
-              onPressed: () {
+              onPressed: () async {
                 setState(() {
                   budget = int.parse(controller.text);
                 });
+
+                await _settingsCollection.doc(uid).set(
+                  {'monthlyBudget': budget},
+                  SetOptions(merge: true),
+                );
+
                 Navigator.of(context).pop();
               },
             ),

@@ -4,11 +4,13 @@ import 'package:aiko_ben_expense_app/shared/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../models/user.dart';
+
 class DailyAndMonthlyTotal extends StatelessWidget {
   final DateTime selectedDate;
 
   const DailyAndMonthlyTotal(
-      {super.key, required this.selectedDate});
+      {super.key, required this.selectedDate,});
 
   // calculate the total transaction amount for the current month
   double calculateMonthlyTotal(List<Transaction> transactions) {
@@ -118,7 +120,7 @@ class DailyAndMonthlyTotal extends StatelessWidget {
             ],
           ),
         ),
-        SetBudgetAndDonutChart(monthlyTransactionTotal: monthlyTotal),
+        SetBudgetAndDonutChart(monthlyTransactionTotal: monthlyTotal,),
       ],
     );
   }
