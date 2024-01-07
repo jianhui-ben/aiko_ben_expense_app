@@ -1,7 +1,10 @@
+import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatelessWidget {
-  const Settings({Key? key}) : super(key: key);
+  Settings({Key? key}) : super(key: key);
+
+  final AuthService _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +52,9 @@ class Settings extends StatelessWidget {
             ),
             Spacer(),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 // Implement logout functionality
+                await _auth.signOut();
               },
               child: Text(
                 'Log Out',

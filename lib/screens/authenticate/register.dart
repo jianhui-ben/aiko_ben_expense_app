@@ -46,90 +46,102 @@ class _RegisterState extends State<Register> {
     bool showEmailAndPasswordError = false;
 
     return loading ? Loading() : Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 300,
-          elevation: 0.0,
-          title: const Text("Register"),
-          titleTextStyle: appNameTextStyle,
-        ),
         body: Container(
             padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 50),
-            child: Form(
-              key: _formKey,
-              child: ListView(children: <Widget>[
+            child:
+            Column(
+              children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
-                  child: TextFormField(
-                    controller: emailController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return emailErrorText;
-                      }
-                      return null;
-                    },
-                    decoration: textInputDecoration.copyWith(
-                      labelText: 'Email',
-                      errorText:
-                      showEmailAndPasswordError ? emailErrorText : null,
-                    ),
-                  ),
+                  height: MediaQuery.of(context).size.height * 0.1,
                 ),
                 Container(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: TextFormField(
-                    obscureText: true,
-                    controller: passwordController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty || value.length < 5) {
-                        return passwordErrorText;
-                      }
-                      return null;
-                    },
-                    decoration: textInputDecoration.copyWith(
-                      labelText: 'Password',
-                      errorText:
-                      showEmailAndPasswordError ? passwordErrorText : null,
-                    ),
+                  height: 200,
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Register",
+                    style: appNameTextStyle,
                   ),
                 ),
-                const SizedBox(height: 50),
-                Container(
-                    height: 50,
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: ElevatedButton(
-                      child: const Text('Sign up'),
-                      onPressed: () async {
-                        setState(() {
-                          showEmailAndPasswordError =
-                          true; // Set the flag to show the error text
-                        });
+                Expanded(
+                  child: Form(
+                    key: _formKey,
+                    child: ListView(children: <Widget>[
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        child: TextFormField(
+                          controller: emailController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return emailErrorText;
+                            }
+                            return null;
+                          },
+                          decoration: textInputDecoration.copyWith(
+                            labelText: 'Email',
+                            errorText:
+                            showEmailAndPasswordError ? emailErrorText : null,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                        child: TextFormField(
+                          obscureText: true,
+                          controller: passwordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty || value.length < 5) {
+                              return passwordErrorText;
+                            }
+                            return null;
+                          },
+                          decoration: textInputDecoration.copyWith(
+                            labelText: 'Password',
+                            errorText:
+                            showEmailAndPasswordError ? passwordErrorText : null,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 50),
+                      Container(
+                          height: 50,
+                          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                          child: ElevatedButton(
+                            child: const Text('Sign up'),
+                            onPressed: () async {
+                              setState(() {
+                                showEmailAndPasswordError =
+                                true; // Set the flag to show the error text
+                              });
 
-                        if (_formKey.currentState!.validate()) {
-                          setState(() {loading = true;});
-                          await signUpWithEmailAndPassword();
-                          if (!mounted) return;
-                          setState(() {loading = false;});
-                        }
-                      },
-                    )),
-                TextButton(
-                  child: const Text(
-                    'back to sign in',
-                    style: TextStyle(fontSize: 10),
+                              if (_formKey.currentState!.validate()) {
+                                setState(() {loading = true;});
+                                await signUpWithEmailAndPassword();
+                                if (!mounted) return;
+                                setState(() {loading = false;});
+                              }
+                            },
+                          )),
+                      TextButton(
+                        child: const Text(
+                          'back to sign in',
+                          style: TextStyle(fontSize: 10),
+                        ),
+                        onPressed: () {
+                          widget.toggleView();
+                        },
+                      ),
+                      if (_errorText.isNotEmpty)
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            _errorText,
+                            style: Theme.of(context).inputDecorationTheme.errorStyle, // Customize the error text style
+                          ),
+                        ),
+                    ]),
                   ),
-                  onPressed: () {
-                    widget.toggleView();
-                  },
                 ),
-                if (_errorText.isNotEmpty)
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      _errorText,
-                      style: Theme.of(context).inputDecorationTheme.errorStyle, // Customize the error text style
-                    ),
-                  ),
-              ]),
+              ],
             )));
   }
 }
