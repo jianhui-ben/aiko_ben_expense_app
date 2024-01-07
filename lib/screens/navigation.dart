@@ -3,7 +3,7 @@ import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/home/home.dart';
 import 'package:aiko_ben_expense_app/screens/insights/insights.dart';
-import 'package:aiko_ben_expense_app/screens/settings.dart';
+import 'package:aiko_ben_expense_app/screens/setting/settings.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:flutter/material.dart';

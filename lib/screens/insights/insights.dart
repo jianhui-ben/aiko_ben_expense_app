@@ -68,21 +68,31 @@ class _InsightsState extends State<Insights> {
       db.setUserCategoriesMap(userCategoriesMap!);
       return DefaultTabController(
           length: dashboards.length,
-          child: Scaffold(
-            appBar: AppBar(
-              title: Text('Insights'),
-              bottom: TabBar(
-                tabs: [
-                  Tab(text: 'Week'),
-                  Tab(text: 'Month'),
-                  Tab(text: 'Year'),
-                ],
+          child: Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height * 0.12,
+                child: Column(
+                  children: [
+                    Spacer(),
+                    TabBar(
+                      tabs: [
+                        Tab(text: 'Week'),
+                        Tab(text: 'Month'),
+                        Tab(text: 'Year'),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            body: TabBarView(
-              children: dashboards,
-            ),
-          ));
+              Expanded(
+                child: TabBarView(
+                  children: dashboards,
+                ),
+              ),
+            ],
+          ),
+      );
     }
   }
 }
