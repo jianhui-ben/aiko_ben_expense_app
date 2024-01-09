@@ -186,7 +186,7 @@ class _NumericKeypadState extends State<NumericKeypad> {
       double secondNumber = double.tryParse(numbers[1]) ?? 0;
       double result;
 
-      print("first number: $firstNumber, second number: $secondNumber");
+      // print("first number: $firstNumber, second number: $secondNumber");
 
       if (operation == '+') {
         result = firstNumber + secondNumber;

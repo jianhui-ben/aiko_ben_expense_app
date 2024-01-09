@@ -17,7 +17,7 @@ class SetBudgetAndDonutChart extends StatefulWidget {
 }
 
 class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
-  //TO-DO: setting budget and sending to firebase
+  //set a default here to avoid waiting for the async function to finish
   int budget = 2000;
 
   final String uid; // User ID
@@ -91,9 +91,9 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
                         animationDuration: 500,
                         radius: 30.0, // adjust the size of the donut chart here
                         lineWidth: 10.0, // adjust the width of the donut chart here
-                        percent: widget.monthlyTransactionTotal / budget, // calculate the percentage here
+                        percent: widget.monthlyTransactionTotal / budget!, // calculate the percentage here
                         center: Text(
-                          (widget.monthlyTransactionTotal / budget * 100).toStringAsFixed(0) + '%',
+                          (widget.monthlyTransactionTotal / budget! * 100).toStringAsFixed(0) + '%',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
                         ),
                         progressColor: Colors.green,
@@ -111,7 +111,7 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
                         style: TextStyle(fontSize: 10),
                       ),
                       Text(
-                        '\$${budget.toStringAsFixed(0)}',
+                        '\$${budget!.toStringAsFixed(0)}',
                         // Replace with your monthly total variable
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
