@@ -60,7 +60,9 @@ class DatabaseService {
     });
   }
 
-  Future<void> addDefaultSetting(String name, String email) async {
+  Future<void> addDefaultSetting(String name) async {
+    //only adding the user name for easy debugging, ideally there should be no user name
+    // all the profile infor (user name, email, photourl) should be fetched from firebase auth directly, instead of the Setting collect
     final settingsCollection =
         FirebaseFirestore.instance.collection('settings').doc(uid);
     final Map<String, Map<String, dynamic>> userCategories = {};
@@ -75,8 +77,7 @@ class DatabaseService {
     return await settingsCollection.set(
       {
         'categories': userCategories,
-        'name': name,
-        'email': email,
+        'name': name, // optional; here only for debugging purpose
         'monthlyBudget': DEFAULT_MONTHLY_BUDGET,
       },
       SetOptions(merge: true),

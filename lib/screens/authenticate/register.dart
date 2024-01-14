@@ -43,9 +43,8 @@ class _RegisterState extends State<Register> {
       print("email: $email, password: $password, userId: $result");
     }
 
-    // Save the default user settings to Firestore
-    await DatabaseService(uid: result.uid).addDefaultSetting(useName, email);
-
+    // Save the default user settings to Firestore setting collections
+    await DatabaseService(uid: result.uid).addDefaultSetting(useName);
   }
 
   @override

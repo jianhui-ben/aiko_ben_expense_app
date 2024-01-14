@@ -24,6 +24,11 @@ class AuthService {
     return user != null ? my_app_user.User(uid: user.uid, email: null) : null;
   }
 
+  //helper function to get the firebaseAuthUser
+  User? get firebaseAuthUser {
+    return _auth.currentUser;
+  }
+
   // helper function to get the current user
   my_app_user.User? get currentUser {
     final User? firebaseUser = _auth.currentUser;
@@ -56,16 +61,25 @@ class AuthService {
       String uid = user!.uid;
 
       // Update the user's display name after successfully creating the user
-      await updateUserName(name);
-
+      await updateUserProfile(name, email);
       return _userFromFireBaseUserCredential(userCredential);
     } catch(e) {
       return e.toString();
     }
   }
 
-  // update user display name and photo url
-  Future<void> updateUserName(String name) async {
+  // update user profile
+  Future<void> updateUserProfile(String userName, String userEmail) async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      await user.updateDisplayName(userName);
+      await user.updateEmail(userEmail);
+      await user.reload();
+    }
+  }
+
+  // update user display name
+  Future<void> updateUserProfileName(String name) async {
     User? user = _auth.currentUser;
 
     if (user != null) {
@@ -73,6 +87,17 @@ class AuthService {
       await user.reload();
     }
   }
+
+  // update user photo url
+  Future<void> updateUserProfilePhotoUrl(String? photoUrl) async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      await user.updatePhotoURL(photoUrl);
+      await user.reload();
+    }
+  }
+
+
 
   // sign out
   Future signOut() async {
