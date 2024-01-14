@@ -1,6 +1,4 @@
-import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
-import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
