@@ -12,7 +12,7 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  final AuthService _auth = AuthService();
+  AuthService _auth = AuthService();
   final ImagePicker _picker = ImagePicker();
   String? displayName;
   String? avatarText;
@@ -24,9 +24,9 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   void initState() {
     super.initState();
-    displayName = _auth.firebaseAuthUser!.displayName;
+    displayName = _auth.currentUser!.displayName;
     avatarText = displayName!.isNotEmpty ? displayName![0].toUpperCase() : '';
-    photoUrl = _auth.firebaseAuthUser!.photoURL;
+    photoUrl = _auth.currentUser!.photoURL;
     _displayNameController.text = displayName!;
   }
 
@@ -98,10 +98,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                 ? displayName![0].toUpperCase()
                                 : '';
                           });
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) => Navigation(initialPageIndex: 2)),
-                                (route) => false,
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Username updated')),
                           );
                         }
                       },
@@ -109,7 +107,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     ),
                     SizedBox(height: 20),
                     Text(
-                      'Email: ${_auth.firebaseAuthUser!.email}',
+                      'Email: ${_auth.currentUser!.email}',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 20),

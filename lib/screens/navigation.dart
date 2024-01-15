@@ -10,8 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Navigation extends StatefulWidget {
-  final int initialPageIndex;
-  const Navigation({super.key, this.initialPageIndex = 0});
+  const Navigation({super.key});
 
   @override
   State<Navigation> createState() => _NavigationState();
@@ -36,7 +35,6 @@ class _NavigationState extends State<Navigation> {
   @override
   void initState() {
     super.initState();
-    currentPageIndex = widget.initialPageIndex;
     // Call the asynchronous function
     // in this case, it would only call the getUserCategoriesMap once
     fetchUserCategories();

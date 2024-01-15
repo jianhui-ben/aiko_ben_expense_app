@@ -25,15 +25,19 @@ class AuthService {
   }
 
   //helper function to get the firebaseAuthUser
-  User? get firebaseAuthUser {
+  User? get currentUser {
     return _auth.currentUser;
   }
 
-  // helper function to get the current user
-  my_app_user.User? get currentUser {
-    final User? firebaseUser = _auth.currentUser;
-    return firebaseUser != null ? my_app_user.User(uid: firebaseUser.uid, email: null) : null;
+  Stream<User?> userChanges() {
+    return _auth.userChanges();
   }
+
+  // // helper function to get the current app user
+  // my_app_user.User? get currentUser {
+  //   final User? firebaseUser = _auth.currentUser;
+  //   return firebaseUser != null ? my_app_user.User(uid: firebaseUser.uid, email: null) : null;
+  // }
 
   // make a my_app_user.User for auth purpose
   Stream<my_app_user.User?> get user {
@@ -96,8 +100,6 @@ class AuthService {
       await user.reload();
     }
   }
-
-
 
   // sign out
   Future signOut() async {
