@@ -28,7 +28,8 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
   void fetchBudget() async {
     final docSnapshot = await _settingsCollection.doc(uid).get();
     setState(() {
-      budget = docSnapshot['monthlyBudget'];
+      // cast the budget to int
+      budget = docSnapshot.get('monthlyBudget') as int;
     });
   }
 
