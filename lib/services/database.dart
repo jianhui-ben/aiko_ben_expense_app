@@ -80,7 +80,7 @@ class DatabaseService {
         'categories': userCategories, // here the categories define the actual categories that user want to show on the home page
         'name': name, // optional; here only for debugging purpose
         'monthlyBudget': DEFAULT_MONTHLY_BUDGET,
-        'seletectedCategoryIds': defaultSelectedCategoryIds,
+        'selectedCategoryIds': defaultSelectedCategoryIds,
       },
       SetOptions(merge: true),
     ).onError((e, _) => print("Error writing document: $e"));
@@ -172,9 +172,14 @@ Future<List<String>> getUserSelectedCategoryIds(String uid) async{
 
   final userSetting = await settingsCollection.get();
   if (userSetting.exists) {
-    final List<String> selectedCategoryIds = List<String>.from(userSetting.data()!['seletectedCategoryIds'] ?? []);
+    final List<String> selectedCategoryIds = List<String>.from(userSetting.data()!['selectedCategoryIds'] ?? []);
     return selectedCategoryIds;
   } else {
     throw Exception('Failed to get user selected category ids');
   }
+}
+
+Future<void> updateUserSelectedCategoryIds(String uid, List<String> selectedCategoryIds) async {
+  final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
+  await settingsCollection.update({'selectedCategoryIds': selectedCategoryIds});
 }
