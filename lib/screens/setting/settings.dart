@@ -1,6 +1,7 @@
 import 'package:aiko_ben_expense_app/screens/setting/account_screen.dart';
 import 'package:aiko_ben_expense_app/screens/setting/category_setting_screen.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
+import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -44,79 +45,93 @@ class _SettingsState extends State<Settings> {
             photoUrl = user!.photoURL;
             // Use the user data to build your widget
             return Scaffold(
-              body: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.25,
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: CircleAvatar(
-                          radius: 40,
-                          backgroundImage:
-                              photoUrl != null ? NetworkImage(photoUrl!) : null,
-                          child: photoUrl == null
-                              ? Text(
-                                  avatarText!,
-                                  style: TextStyle(fontSize: 24),
-                                )
-                              : null,
+              body: Stack(
+                children: [
+                  // Positioned image at the bottom right
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Opacity(
+                      opacity: 0.4, // Adjust the opacity as needed
+                      child: Image.asset('assets/images/finance_pig.jpg'), // Replace with your image
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.25,
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: CircleAvatar(
+                              radius: 40,
+                              backgroundImage:
+                                  photoUrl != null ? NetworkImage(photoUrl!) : null,
+                              child: photoUrl == null
+                                  ? Text(
+                                      avatarText!,
+                                      style: TextStyle(fontSize: 24),
+                                    )
+                                  : null,
+                            ),
+                          ),
                         ),
-                      ),
+                        SizedBox(height: 10),
+                        Text(
+                          displayName!,
+                          style:
+                              TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: 20),
+                        _buildListTile(
+                          leadingIcon: Icons.account_circle,
+                          title: 'Account',
+                          onTap: () async {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AccountScreen()),
+                            );
+                            await _auth.currentUser!.reload();
+                          },
+                        ),
+                        _buildListTile(
+                          leadingIcon: Icons.notifications,
+                          title: 'Notification',
+                          onTap: () {
+                            // Navigate to Notification settings
+                          },
+                        ),
+                        _buildListTile(
+                          leadingIcon: Icons.category,
+                          title: 'Category Settings',
+                          onTap: () {
+                            // Navigate to category settings
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CategorySettingScreen()),
+                            );
+                          },
+                        ),
+                        Spacer(),
+                        TextButton(
+                          onPressed: () async {
+                            // Implement logout functionality
+                            await _auth.signOut();
+                          },
+                          child: Text(
+                            'Log Out',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 10),
-                    Text(
-                      displayName!,
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 20),
-                    _buildListTile(
-                      leadingIcon: Icons.account_circle,
-                      title: 'Account',
-                      onTap: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AccountScreen()),
-                        );
-                        await _auth.currentUser!.reload();
-                      },
-                    ),
-                    _buildListTile(
-                      leadingIcon: Icons.notifications,
-                      title: 'Notification',
-                      onTap: () {
-                        // Navigate to Notification settings
-                      },
-                    ),
-                    _buildListTile(
-                      leadingIcon: Icons.category,
-                      title: 'Category Settings',
-                      onTap: () {
-                        // Navigate to category settings
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CategorySettingScreen()),
-                        );
-                      },
-                    ),
-                    Spacer(),
-                    TextButton(
-                      onPressed: () async {
-                        // Implement logout functionality
-                        await _auth.signOut();
-                      },
-                      child: Text(
-                        'Log Out',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           }
@@ -147,7 +162,7 @@ class _SettingsState extends State<Settings> {
       padding: const EdgeInsets.all(8.0), // Add your desired padding here
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius:
               BorderRadius.circular(15), // Adjust the border radius as needed
         ),

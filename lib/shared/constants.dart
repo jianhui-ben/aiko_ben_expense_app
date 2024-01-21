@@ -87,7 +87,6 @@ const inputBoxHintTextStyle = TextStyle(
   letterSpacing: 0.25,
 );
 
-
 //insights page always consider today's date as selectedDate
 final DateTime today = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
@@ -137,7 +136,6 @@ ThemeData getCustomTheme() {
 
       // Define the default brightness and colors.
       // brightness: Brightness.dark,
-      // scaffoldBackgroundColor: const Color.fromARGB(255, 18, 32, 47),
       // Define the default `TextTheme`. Use this to specify the default
       // text styling for headlines, titles, bodies of text, and more.
       textTheme: TextTheme(

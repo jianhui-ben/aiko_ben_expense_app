@@ -59,78 +59,94 @@ class _HomeState extends State<Home> {
       db.setUserCategoriesMap(userCategoriesMap!);
 
       return Scaffold(
-          body: Column(mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.12,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        //add a sizedbox at the front before the date
-                        SizedBox(width: 15),
-                        Text(
-                          DateFormat('EEEE, d MMM').format(selectedDate),
-                          style: topDateOnHomeTextStyle,
-                        ),
-                        // Calendar icon button
-                        IconButton(
-                          icon: Icon(
-                            Icons.calendar_today,
-                            color: Colors.grey,
-                            size: 18,
+          body: Stack(
+            children: [
+              // Positioned image at the bottom right
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Opacity(
+                  opacity: 0.4, // Adjust the opacity as needed
+                  child: Image.asset('assets/images/finance_pig.jpg'), // Replace with your image
+                ),
+              ),
+
+              Column(mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.12,
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          //add a sizedbox at the front before the date
+                          SizedBox(width: 15),
+                          Text(
+                            DateFormat('EEEE, d MMM').format(selectedDate),
+                            style: topDateOnHomeTextStyle,
                           ),
-                          onPressed: () async {
-                            final DateTime? pickedDate = await showDatePicker(
-                              context: context,
-                              initialDate: selectedDate,
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2101),
+                          // Calendar icon button
+                          IconButton(
+                            icon: Icon(
+                              Icons.calendar_today,
+                              color: Colors.grey,
+                              size: 18,
+                            ),
+                            onPressed: () async {
+                              final DateTime? pickedDate = await showDatePicker(
+                                context: context,
+                                initialDate: selectedDate,
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2101),
+                              );
+                              if (pickedDate != null && pickedDate != selectedDate) {
+                                setState(() {
+                                  selectedDate = pickedDate;
+                                });
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: DailyAndMonthlyTotal(selectedDate: selectedDate,),
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.12,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: orderedUserCategoryIds!.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
+                            // Add some padding
+                            child: CategoryIconButton(
+                              category:
+                                  userCategoriesMap![orderedUserCategoryIds![index]]!,
+                              selectedDate: selectedDate,
+                            ) // The rest of your CategoryIconButton content
                             );
-                            if (pickedDate != null && pickedDate != selectedDate) {
-                              setState(() {
-                                selectedDate = pickedDate;
-                              });
-                            }
-                          },
-                        ),
-                      ],
+                      },
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: DailyAndMonthlyTotal(selectedDate: selectedDate,),
-                ),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.12,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: orderedUserCategoryIds!.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                          padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
-                          // Add some padding
-                          child: CategoryIconButton(
-                            category:
-                                userCategoriesMap![orderedUserCategoryIds![index]]!,
-                            selectedDate: selectedDate,
-                          ) // The rest of your CategoryIconButton content
-                          );
-                    },
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
-                    child: TransactionsList(
-                      selectedDate: selectedDate,
-                      isDailyView: isDailyView,
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
+                      child: TransactionsList(
+                        selectedDate: selectedDate,
+                        isDailyView: isDailyView,
+                      ),
                     ),
                   ),
-                ),
-              ]
+                ]
+            ),
+
+            ]
           )
       );
     }

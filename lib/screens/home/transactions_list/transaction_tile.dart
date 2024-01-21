@@ -1,5 +1,6 @@
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/screens/single_transaction/add_or_edit_single_transaction.dart';
+import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -55,7 +56,7 @@ class TransactionTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 5.0),
       child: Card(
-          color: Colors.white,
+          // color: Colors.white,
           margin: EdgeInsets.fromLTRB(0, 2, 0, 0),
           // elevation: 4.0,
           child: ListTile(
