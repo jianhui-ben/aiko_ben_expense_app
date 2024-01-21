@@ -166,3 +166,15 @@ Future<Map<String, Category>> getUserCategoriesMap(String uid) async {
     throw Exception('Failed to get user categories map');
   }
 }
+
+Future<List<String>> getUserSelectedCategoryIds(String uid) async{
+  final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
+
+  final userSetting = await settingsCollection.get();
+  if (userSetting.exists) {
+    final List<String> selectedCategoryIds = List<String>.from(userSetting.data()!['seletectedCategoryIds'] ?? []);
+    return selectedCategoryIds;
+  } else {
+    throw Exception('Failed to get user selected category ids');
+  }
+}

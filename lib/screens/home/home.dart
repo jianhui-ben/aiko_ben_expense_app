@@ -24,20 +24,8 @@ class _HomeState extends State<Home> {
   int currentPageIndex = 0;
   NavigationDestinationLabelBehavior labelBehavior =
       NavigationDestinationLabelBehavior.alwaysShow;
-  Map<String, Category>? userCategoriesMap; // Store user categories here
-
-  // TO-DO the orderedUserCategoryIds should be retrieved from setting collection as well
-  List<String> orderedUserCategoryIds = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8"
-  ];
-
+  Map<String, Category>? userCategoriesMap; // Store user categories (all 50)
+  List<String>? orderedUserCategoryIds; // store the order of the selected categories
 
   final numOfCategoriesInARow = 4;
   final numOfCategoriesInAColumn = 2;
@@ -119,14 +107,14 @@ class _HomeState extends State<Home> {
                   height: MediaQuery.of(context).size.height * 0.12,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: orderedUserCategoryIds.length,
+                    itemCount: orderedUserCategoryIds!.length,
                     itemBuilder: (context, index) {
                       return Padding(
                           padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
                           // Add some padding
                           child: CategoryIconButton(
                             category:
-                                userCategoriesMap![orderedUserCategoryIds[index]]!,
+                                userCategoriesMap![orderedUserCategoryIds![index]]!,
                             selectedDate: selectedDate,
                           ) // The rest of your CategoryIconButton content
                           );
@@ -149,15 +137,18 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> fetchUserCategories() async {
-    final fetchedCategoriesMap = await getUserCategoriesMap(AuthService().currentUser!.uid);
-
+    String uid = AuthService().currentUser!.uid;
+    final fetchedCategoriesMap = await getUserCategoriesMap(uid);
+    final fetchedOrderedUserCategoryIds = await getUserSelectedCategoryIds(uid);
     // TO-DO update orderedUserCategoryIds
 
     // Update the state with the fetched data
     setState(() {
       userCategoriesMap = fetchedCategoriesMap;
+      orderedUserCategoryIds = fetchedOrderedUserCategoryIds;
     });
     // print(userCategoriesMap);
+    // print(fetchedOrderedUserCategoryIds);
   }
 
   void _selectDate(DateTime newDate) {
