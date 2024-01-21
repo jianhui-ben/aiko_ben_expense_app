@@ -183,3 +183,12 @@ Future<void> updateUserSelectedCategoryIds(String uid, List<String> selectedCate
   final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
   await settingsCollection.update({'selectedCategoryIds': selectedCategoryIds});
 }
+
+Future<void> updateUserCategoryName(String uid, String selectedCategoryId, String newCategoryName) async {
+  final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
+  //update category name for this selectedCategoryId
+  await settingsCollection.update({
+    'categories.$selectedCategoryId.categoryName': newCategoryName,
+  });
+}
+

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class Category {
 
   final String categoryId;
-  final String categoryName;
+  String categoryName;
   final Icon categoryIcon;
   // late List<Transaction?> transactionsUnderCategory;
 

@@ -114,6 +114,11 @@ fontWeight: FontWeight.w400,
 height: 0.06,
 );
 
+
+//colors in setting page
+const categoryIconColor = Color(0xFF42474E);
+const categoryNameTextColor = Color(0xFF42474E);
+
 ThemeData getCustomTheme() {
   return ThemeData(
       useMaterial3: true,
