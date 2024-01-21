@@ -1,4 +1,5 @@
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
+import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -29,7 +30,7 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
     final docSnapshot = await _settingsCollection.doc(uid).get();
     setState(() {
       // cast the budget to int
-      budget = docSnapshot.get('monthlyBudget') as int;
+      budget = (docSnapshot.get('monthlyBudget') as num).toInt();
     });
   }
 
@@ -62,7 +63,7 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
                   padding: EdgeInsets.all(0), // remove padding to allow the icon to fill the container
                   icon: Icon(Icons.edit, size: 16), // adjust the icon size to match the height of the Text widget
                   onPressed: () => editBudget(context),
-                  // onPressed: () => DatabaseService(uid: uid).addDefaultSetting('Aiko', 'aikosmiles@gmail.com')
+                  // onPressed: () => DatabaseService(uid: uid).addDefaultSetting('Aiko')
                 ),
               ),
             ],

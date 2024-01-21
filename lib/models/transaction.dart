@@ -26,5 +26,4 @@ class Transaction{
         'transactionComment: $transactionComment'
         ')';
   }
-
 }

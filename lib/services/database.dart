@@ -1,3 +1,4 @@
+import 'package:aiko_ben_expense_app/models/all_categories.dart';
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,7 +41,6 @@ class DatabaseService {
   // }
 
   Stream<List<my_user_transaction.Transaction>?>? get transactions {
-
     return transactionsCollection
         .doc(uid)
         .collection('userTransactions')
@@ -66,19 +66,21 @@ class DatabaseService {
     final settingsCollection =
         FirebaseFirestore.instance.collection('settings').doc(uid);
     final Map<String, Map<String, dynamic>> userCategories = {};
+    final List<String> defaultSelectedCategoryIds = ["1", "2", "3", "4", "5", "6", "7", "8"];
 
-    defaultCategories.forEach((category) {
+    for (var category in allCategories) {
       userCategories[category.categoryId] = {
         'categoryName': category.categoryName,
         'categoryIcon': supportedIconsToStringMap[category.categoryIcon.icon],
       };
-    });
+    }
 
     return await settingsCollection.set(
       {
-        'categories': userCategories,
+        'categories': userCategories, // here the categories define the actual categories that user want to show on the home page
         'name': name, // optional; here only for debugging purpose
         'monthlyBudget': DEFAULT_MONTHLY_BUDGET,
+        'seletectedCategoryIds': defaultSelectedCategoryIds,
       },
       SetOptions(merge: true),
     ).onError((e, _) => print("Error writing document: $e"));
