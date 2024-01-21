@@ -132,6 +132,7 @@ ThemeData getCustomTheme() {
     // color and size for icons in your application.
     iconTheme: IconThemeData(
       color: Color(0xFFB69DF8), // Sets the color for icons
+      size: 24.0, // Sets the size for icons
     ),
 
       // Define the default brightness and colors.
