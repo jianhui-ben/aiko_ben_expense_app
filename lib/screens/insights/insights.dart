@@ -4,6 +4,7 @@ import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/insights/monthly_dashboard.dart';
 import 'package:aiko_ben_expense_app/screens/insights/weekly_dashboard.dart';
 import 'package:aiko_ben_expense_app/screens/insights/yearly_dashboard.dart';
+import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
@@ -32,8 +33,7 @@ class _InsightsState extends State<Insights> {
   }
 
   Future<void> fetchUserCategories() async {
-    final user = Provider.of<User?>(context, listen: false);
-    final fetchedCategoriesMap = await getUserCategoriesMap(user!.uid);
+    final fetchedCategoriesMap = await getUserCategoriesMap(AuthService().currentUser!.uid);
 
     // TO-DO update orderedUserCategoryIds
 

@@ -163,7 +163,6 @@ Future<Map<String, Category>> getUserCategoriesMap(String uid) async {
     });
     return categoriesMap;
   } else {
-    // User document doesn't exist, return default categories as a map
-    return defaultCategoriesMap;
+    throw Exception('Failed to get user categories map');
   }
 }

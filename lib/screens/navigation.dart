@@ -4,6 +4,7 @@ import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/home/home.dart';
 import 'package:aiko_ben_expense_app/screens/insights/insights.dart';
 import 'package:aiko_ben_expense_app/screens/setting/settings.dart';
+import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:flutter/material.dart';
@@ -41,8 +42,7 @@ class _NavigationState extends State<Navigation> {
   }
 
   Future<void> fetchUserCategories() async {
-    final user = Provider.of<User?>(context, listen: false);
-    final fetchedCategoriesMap = await getUserCategoriesMap(user!.uid);
+    final fetchedCategoriesMap = await getUserCategoriesMap(AuthService().currentUser!.uid);
 
     // TO-DO update orderedUserCategoryIds
 
