@@ -91,7 +91,10 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
                         animationDuration: 500,
                         radius: 30.0, // adjust the size of the donut chart here
                         lineWidth: 10.0, // adjust the width of the donut chart here
-                        percent: widget.monthlyTransactionTotal / budget!, // calculate the percentage here
+                        percent: widget.monthlyTransactionTotal / budget! > 1
+                            ? 1
+                            : widget.monthlyTransactionTotal / budget!,
+                        // calculate the percentage here
                         center: Text(
                           (widget.monthlyTransactionTotal / budget! * 100).toStringAsFixed(0) + '%',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
