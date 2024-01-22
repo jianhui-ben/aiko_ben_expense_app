@@ -165,7 +165,7 @@ class _TransactionsListState extends State<TransactionsList> {
                               // optional: Then show a snackbar.
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                   content: Text(
-                                      'transaction ${transaction.transactionId} dismissed')));
+                                      'transaction ${transaction.category.categoryName} removed')));
                             },
                             // Show a red background as the item is swiped away.
                             background: Container(color: Colors.red),

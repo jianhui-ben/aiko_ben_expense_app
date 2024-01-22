@@ -1,5 +1,4 @@
 
-import 'dart:ffi';
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/single_transaction/numeric_keypad.dart';

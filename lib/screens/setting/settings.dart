@@ -1,7 +1,9 @@
 import 'package:aiko_ben_expense_app/screens/setting/account_screen.dart';
 import 'package:aiko_ben_expense_app/screens/setting/category_setting_screen.dart';
+import 'package:aiko_ben_expense_app/screens/setting/notification_settings.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
+import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +37,7 @@ class _SettingsState extends State<Settings> {
         stream: _auth.userChanges(),
         builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator(); // Show a loading spinner while waiting
+            return Loading(); // Show a loading spinner while waiting
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
@@ -102,6 +104,11 @@ class _SettingsState extends State<Settings> {
                           title: 'Notification',
                           onTap: () {
                             // Navigate to Notification settings
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => NotificationSettings()),
+                            );
                           },
                         ),
                         _buildListTile(
