@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:intl/intl.dart';
 
+import '../../services/notification_service.dart';
+
 class NotificationSettings extends StatefulWidget {
   @override
   _NotificationSettingsState createState() => _NotificationSettingsState();
@@ -103,6 +105,13 @@ class _NotificationSettingsState extends State<NotificationSettings> {
                               await settingsDoc
                                   .update({'notificationTime': time});
 
+                              // Call the scheduleNotification method
+                              await NotificationService().scheduleNotification(
+                                title: 'SpendWise Reminder',
+                                body: "Don't forget to log your expenses today",
+                                scheduleNotificationTimeOfDay: selectedTime,
+                              );
+
                               setState(() {
                                 selectedTime = TimeOfDay.fromDateTime(time);
                               }
@@ -111,6 +120,18 @@ class _NotificationSettingsState extends State<NotificationSettings> {
                           ),
                         ),
                       ),
+
+                    // //for debugging the local notfication
+                    ElevatedButton(
+                      onPressed: () {
+                        NotificationService().showNotification(
+                          id: 0,
+                          title: 'SpendWise Reminder',
+                          body: "Don't forget to log your expenses today",
+                        );
+                      },
+                      child: Text('Show Notification'),
+                    ),
                   ],
                 ),
               ),

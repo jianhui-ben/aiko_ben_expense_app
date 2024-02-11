@@ -6,6 +6,8 @@ import 'firebase_options.dart';
 import 'screens/wrapper.dart';
 import 'services/auth_service.dart';
 import 'shared/constants.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 //test
 Future<void> main() async {
@@ -13,6 +15,11 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Initialize the timezone package
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('America/Los_Angeles')); // Set your desired location
+
   runApp(const MyApp());
 }
 
