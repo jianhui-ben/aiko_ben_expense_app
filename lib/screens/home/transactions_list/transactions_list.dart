@@ -162,10 +162,10 @@ class _TransactionsListState extends State<TransactionsList> {
                               await DatabaseService(uid: user!.uid)
                                   .removeTransactionById(transaction.transactionId);
 
-                              // optional: Then show a snackbar.
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                  content: Text(
-                                      'transaction ${transaction.category.categoryName} removed')));
+                              // // optional: Then show a snackbar. this could show some flutter error
+                              // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              //     content: Text(
+                              //         'transaction ${transaction.category.categoryName} removed')));
                             },
                             // Show a red background as the item is swiped away.
                             background: Container(color: Colors.red),

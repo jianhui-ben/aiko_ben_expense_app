@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "234947154935-60591qqaoua5k7sq20uq773e50dtpcjh.apps.googleusercontent.com",
+          "client_id": "234947154935-pkmbvqebj8pobd2tbv8odtd7vj6e6lma.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.aiko_ben_expense_app",
+            "certificate_hash": "039a0823e3a7d091de5823b9aefaf10438309320"
+          }
+        },
+        {
+          "client_id": "234947154935-bmal4d59p1h0nt5s6n4c72oosdanf61u.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -29,6 +37,13 @@
             {
               "client_id": "234947154935-60591qqaoua5k7sq20uq773e50dtpcjh.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "234947154935-74cavt9vp1lc9a92430bi9naau3l4atd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.aikoBenExpenseApp.RunnerTests"
+              }
             }
           ]
         }
