@@ -122,16 +122,16 @@ class _NotificationSettingsState extends State<NotificationSettings> {
                       ),
 
                     // //for debugging the local notfication
-                    ElevatedButton(
-                      onPressed: () {
-                        NotificationService().showNotification(
-                          id: 0,
-                          title: 'SpendWise Reminder',
-                          body: "Don't forget to log your expenses today",
-                        );
-                      },
-                      child: Text('Show Notification'),
-                    ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     NotificationService().showNotification(
+                    //       id: 0,
+                    //       title: 'SpendWise Reminder',
+                    //       body: "Don't forget to log your expenses today",
+                    //     );
+                    //   },
+                    //   child: Text('Show Notification'),
+                    // ),
                   ],
                 ),
               ),
