@@ -56,7 +56,7 @@ class _SettingsState extends State<Settings> {
                     bottom: 0,
                     child: Opacity(
                       opacity: 0.4, // Adjust the opacity as needed
-                      child: Image.asset('assets/images/finance_pig.jpg'), // Replace with your image
+                      child: Image.asset('assets/images/finance_pig.jpg'),
                     ),
                   ),
                   Padding(
