@@ -40,7 +40,7 @@ class _YearExpenseSplineChartState extends State<YearExpenseSplineChart> {
       primaryYAxis: NumericAxis(
           numberFormat: NumberFormat.simpleCurrency(decimalDigits: 0),
           majorGridLines: const MajorGridLines(color: Colors.transparent)),
-      series: <ChartSeries<_ChartData, DateTime>>[
+      series: <CartesianSeries<_ChartData, DateTime>>[
         SplineSeries<_ChartData, DateTime>(
           name: 'expense',
           animationDuration: 0,

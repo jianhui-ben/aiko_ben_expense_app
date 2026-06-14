@@ -6,7 +6,7 @@ import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:flutter/material.dart';
 
 class Register extends StatefulWidget {
-  final Function toggleView;
+  final VoidCallback toggleView;
 
   const Register({super.key, required this.toggleView});
 
@@ -26,24 +26,28 @@ class _RegisterState extends State<Register> {
   String _errorText = '';
   bool loading = false;
 
+  String _formatAuthError(dynamic error) {
+    final message = error.toString();
+    final match = RegExp(r'\] (.+)$').firstMatch(message);
+    return match?.group(1) ?? message;
+  }
+
   Future<void> signUpWithEmailAndPassword() async {
     final String email = emailController.text;
     final String password = passwordController.text;
     final String useName = userNameController.text;
 
-    dynamic result =
+    final dynamic result =
         await _auth.registerWithEmailAndPassword(email, password, useName);
-    if (result is! User?) {
-      setState(() {
-        _errorText = result;
-      });
-    } else {
-      _errorText = '';
-      print("user signed up and logged in successfully");
-      print("email: $email, password: $password, userId: $result");
+    if (result is! User) {
+      if (mounted) {
+        setState(() {
+          _errorText = _formatAuthError(result);
+        });
+      }
+      return;
     }
 
-    // Save the default user settings to Firestore setting collections
     await DatabaseService(uid: result.uid).addDefaultSetting(useName);
   }
 
@@ -148,14 +152,12 @@ class _RegisterState extends State<Register> {
                                     });
 
                                     if (_formKey.currentState!.validate()) {
-                                      setState(() {
-                                        loading = true;
-                                      });
-                                      await signUpWithEmailAndPassword();
-                                      if (!mounted) return;
-                                      setState(() {
-                                        loading = false;
-                                      });
+                                      setState(() => loading = true);
+                                      try {
+                                        await signUpWithEmailAndPassword();
+                                      } finally {
+                                        if (mounted) setState(() => loading = false);
+                                      }
                                     }
                                   },
                                 )),

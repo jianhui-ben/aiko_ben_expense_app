@@ -43,15 +43,22 @@ class _NavigationState extends State<Navigation> {
   }
 
   Future<void> fetchUserCategories() async {
-    final fetchedCategoriesMap = await getUserCategoriesMap(AuthService().currentUser!.uid);
+    final uid = AuthService().currentUser!.uid;
+    Map<String, Category> fetchedCategoriesMap;
 
-    // TO-DO update orderedUserCategoryIds
+    try {
+      fetchedCategoriesMap = await getUserCategoriesMap(uid);
+    } catch (_) {
+      // New signups can reach Navigation before settings are written.
+      final name = AuthService().currentUser?.displayName ?? '';
+      await DatabaseService(uid: uid).addDefaultSetting(name);
+      fetchedCategoriesMap = await getUserCategoriesMap(uid);
+    }
 
-    // Update the state with the fetched data
+    if (!mounted) return;
     setState(() {
       userCategoriesMap = fetchedCategoriesMap;
     });
-    // print(userCategoriesMap);
   }
 
 

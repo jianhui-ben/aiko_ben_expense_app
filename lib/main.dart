@@ -1,11 +1,11 @@
+import 'package:aiko_ben_expense_app/core/theme/app_theme.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'screens/wrapper.dart';
 import 'services/auth_service.dart';
-import 'shared/constants.dart';
+import 'screens/wrapper.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       value: AuthService().user,
       initialData: null,
       child: MaterialApp(
-          theme: getCustomTheme(),
+          theme: AppTheme.light,
           home: Wrapper()
       ),
     );

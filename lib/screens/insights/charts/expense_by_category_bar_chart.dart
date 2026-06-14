@@ -39,7 +39,7 @@ class _ExpenseByCategoryBarChartState extends State<ExpenseByCategoryBarChart> {
           majorGridLines: const MajorGridLines(color: Colors.transparent),
           title: AxisTitle(text: 'Expense amount'),
       ),
-      series: <ChartSeries>[
+      series: <CartesianSeries>[
         BarSeries<_ChartData, String>(
           name: 'expense',
           animationDuration: 0,

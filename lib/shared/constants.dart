@@ -1,9 +1,9 @@
-
 import 'dart:math';
 
+import 'package:aiko_ben_expense_app/core/theme/app_colors.dart';
+import 'package:aiko_ben_expense_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 
 // for easy Icondata storing in firebase
@@ -71,20 +71,16 @@ Map<IconData, String> reverseIconsToStringMap(Map<String, IconData> inputMap) {
 final supportedIconsToStringMap = reverseIconsToStringMap(stringToSupportedIconsMap);
 
 const transactionAmountInputTextStyle = TextStyle(
-  color: Color(0xFF6750A4),
-  fontSize: 57,
-  fontFamily: 'Montserrat',
-  fontWeight: FontWeight.w400,
-  letterSpacing: -0.25,
+  color: AppColors.primary,
+  fontSize: 48,
+  fontWeight: FontWeight.w600,
+  letterSpacing: -0.5,
 );
 
 const inputBoxHintTextStyle = TextStyle(
-  color: Color(0xFFCAC4D0),
+  color: AppColors.textTertiary,
   fontSize: 14,
-  fontFamily: 'Montserrat',
   fontWeight: FontWeight.w400,
-  height: 0.10,
-  letterSpacing: 0.25,
 );
 
 //insights page always consider today's date as selectedDate
@@ -97,70 +93,22 @@ const textInputDecoration = InputDecoration(
 );
 
 const appNameTextStyle = TextStyle(
-  color: Color(0xFF23036A),
+  color: AppColors.textPrimary,
   fontSize: 28,
-  fontFamily: 'RockSalt',
-  fontWeight: FontWeight.w400,
-  height: 0.80,
-  letterSpacing: 0.18,
+  fontWeight: FontWeight.w600,
 );
 
 const topDateOnHomeTextStyle = TextStyle(
-color: Color(0xFF3A4857),
-fontSize: 24,
-fontFamily: 'Montserrat',
-fontWeight: FontWeight.w400,
-height: 0.06,
+  color: AppColors.textSecondary,
+  fontSize: 14,
+  fontWeight: FontWeight.w500,
 );
 
-
 //colors in setting page
-const categoryIconColor = Color(0xFF42474E);
-const categoryNameTextColor = Color(0xFF42474E);
+const categoryIconColor = AppColors.textPrimary;
+const categoryNameTextColor = AppColors.textPrimary;
 
-ThemeData getCustomTheme() {
-  return ThemeData(
-      useMaterial3: true,
-      // Define the default background color
-      scaffoldBackgroundColor: Color(0xFFF3EDF7),
-      buttonTheme: ButtonThemeData(
-        buttonColor: Color(0xFFB69DF8),
-        // textTheme: ButtonTextTheme.primary,
-      ),
-    // Define the default IconTheme. Use this to specify the default
-    // color and size for icons in your application.
-    iconTheme: IconThemeData(
-      color: Color(0xFFB69DF8), // Sets the color for icons
-      size: 24.0, // Sets the size for icons
-    ),
-
-      // Define the default brightness and colors.
-      // brightness: Brightness.dark,
-      // Define the default `TextTheme`. Use this to specify the default
-      // text styling for headlines, titles, bodies of text, and more.
-      textTheme: TextTheme(
-        bodyLarge: TextStyle(color: Color(0xFF6200EE)),
-        bodyMedium: TextStyle(color: Color(0xFF42474E)),
-        bodySmall: TextStyle(color: Color(0xFF9CA0A7)),
-        labelLarge: TextStyle( // Customize the text style for buttons
-          fontSize: 12, // Text size
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderSide: BorderSide(width: 5, color: Color(0xFF23036A)),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        errorStyle: TextStyle(
-          fontSize: 12.0, // Customize error text font size
-          color: Colors.red, // Customize error text color
-        ),
-        labelStyle: TextStyle(fontWeight: FontWeight.bold, // Make the font bold
-            color: Color(0xFF6200EE)), // Adjust the font size
-        // You can customize other InputDecoration properties here
-      ),
-  );
-}
+ThemeData getCustomTheme() => AppTheme.light;
 
 class DateTextFormatter extends TextInputFormatter {
   static const _maxChars = 8;

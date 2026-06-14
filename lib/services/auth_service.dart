@@ -106,7 +106,6 @@ class AuthService {
     User? user = _auth.currentUser;
     if (user != null) {
       await user.updateDisplayName(userName);
-      await user.updateEmail(userEmail);
       await user.reload();
     }
   }
