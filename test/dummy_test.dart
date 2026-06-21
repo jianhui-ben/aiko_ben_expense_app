@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('AppColors defines core palette', () {
-    expect(AppColors.primary.value, 0xFF4F46E5);
-    expect(AppColors.background.value, 0xFFF7F6F3);
+    expect(AppColors.primary.toARGB32(), 0xFF4F46E5);
+    expect(AppColors.background.toARGB32(), 0xFFF7F6F3);
   });
 }

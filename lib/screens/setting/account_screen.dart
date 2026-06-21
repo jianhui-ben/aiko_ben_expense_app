@@ -1,7 +1,6 @@
 
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -11,8 +10,7 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountScreenState extends State<AccountScreen> {
-  AuthService _auth = AuthService();
-  final ImagePicker _picker = ImagePicker();
+  final AuthService _auth = AuthService();
   String? displayName;
   String? avatarText;
   String? photoUrl;
@@ -23,9 +21,9 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   void initState() {
     super.initState();
-    displayName = _auth.currentUser!.displayName;
-    avatarText = displayName!.isNotEmpty ? displayName![0].toUpperCase() : '';
-    photoUrl = _auth.currentUser!.photoURL;
+    displayName = _auth.currentUser?.displayName ?? 'User';
+    avatarText = displayName!.isNotEmpty ? displayName![0].toUpperCase() : 'U';
+    photoUrl = _auth.currentUser?.photoURL;
     _displayNameController.text = displayName!;
   }
 

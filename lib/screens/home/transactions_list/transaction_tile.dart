@@ -1,6 +1,5 @@
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/screens/single_transaction/add_or_edit_single_transaction.dart';
-import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 

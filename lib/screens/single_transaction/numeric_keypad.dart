@@ -23,7 +23,6 @@ class NumericKeypad extends StatefulWidget {
 
 class _NumericKeypadState extends State<NumericKeypad> {
 
-  late FocusNode _focusNode;
   late TextEditingController _controller;
   late TextSelection _selection;
   String? operation;
@@ -35,7 +34,6 @@ class _NumericKeypadState extends State<NumericKeypad> {
     // add listener to controller
     _controller = widget.controller..addListener(_onSelectionChanged);
     _selection = _controller.selection;
-    _focusNode = widget.focusNode;
   }
 
   @override
@@ -98,9 +96,6 @@ class _NumericKeypadState extends State<NumericKeypad> {
       ],
     );
   }
-
-  // hide keyboard for future usage
-  _hideKeyboard() => _focusNode.unfocus();
 
   // Individual keys
   Widget _buildButton(String text, {VoidCallback? onPressed, IconData? iconData}) {

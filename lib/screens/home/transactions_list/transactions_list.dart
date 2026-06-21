@@ -38,7 +38,7 @@ class _TransactionsListState extends State<TransactionsList> {
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
 
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       scrollToTransaction(widget.selectedDate);
     });
   }

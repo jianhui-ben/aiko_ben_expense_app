@@ -2,7 +2,6 @@ import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
-import 'package:intl/intl.dart';
 
 import '../../services/notification_service.dart';
 

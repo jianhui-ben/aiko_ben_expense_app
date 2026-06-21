@@ -47,9 +47,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final isToday = selectedDate.isAtSameMomentAs(DateTime(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day));
-
     final user = Provider.of<User?>(context);
     DatabaseService db = DatabaseService(uid: user?.uid);
 
@@ -167,10 +164,4 @@ class _HomeState extends State<Home> {
     // print(fetchedOrderedUserCategoryIds);
   }
 
-  void _selectDate(DateTime newDate) {
-    setState(() {
-      // print("set to new date: $newDate");
-      selectedDate = newDate;
-    });
-  }
 }

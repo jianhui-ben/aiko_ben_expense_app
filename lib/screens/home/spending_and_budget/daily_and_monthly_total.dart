@@ -4,8 +4,6 @@ import 'package:aiko_ben_expense_app/shared/util.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../models/user.dart';
-
 class DailyAndMonthlyTotal extends StatelessWidget {
   final DateTime selectedDate;
 
@@ -42,11 +40,6 @@ class DailyAndMonthlyTotal extends StatelessWidget {
     }
 
     List<Transaction> filteredTransactionsList = Util.filterTransactionListToDate(transactionStream, selectedDate);
-
-    if (transactionStream == null) {
-      // return const Loading(); // or some other better loading widget
-      return Container();
-    }
 
     double monthlyTotal = calculateMonthlyTotal(transactionStream);
     double dailyTotal = calculateDailyTotal(filteredTransactionsList);

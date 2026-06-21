@@ -1,6 +1,7 @@
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
+import 'package:aiko_ben_expense_app/services/user_bootstrap.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:flutter/material.dart';
@@ -48,13 +49,16 @@ class _RegisterState extends State<Register> {
       return;
     }
 
+    await UserBootstrap().ensureUserDocument(
+      result.uid,
+      displayName: useName,
+      email: email,
+    );
     await DatabaseService(uid: result.uid).addDefaultSetting(useName);
   }
 
   @override
   Widget build(BuildContext context) {
-    bool showEmailAndPasswordError = false;
-
     return loading
         ? Loading()
         : Scaffold(
@@ -102,9 +106,6 @@ class _RegisterState extends State<Register> {
                                 },
                                 decoration: textInputDecoration.copyWith(
                                   labelText: 'Email',
-                                  errorText: showEmailAndPasswordError
-                                      ? emailErrorText
-                                      : null,
                                 ),
                               ),
                             ),
@@ -123,9 +124,6 @@ class _RegisterState extends State<Register> {
                                 },
                                 decoration: textInputDecoration.copyWith(
                                   labelText: 'Password',
-                                  errorText: showEmailAndPasswordError
-                                      ? passwordErrorText
-                                      : null,
                                 ),
                               ),
                             ),
@@ -146,11 +144,6 @@ class _RegisterState extends State<Register> {
                                 child: ElevatedButton(
                                   child: const Text('Sign up'),
                                   onPressed: () async {
-                                    setState(() {
-                                      showEmailAndPasswordError =
-                                          true; // Set the flag to show the error text
-                                    });
-
                                     if (_formKey.currentState!.validate()) {
                                       setState(() => loading = true);
                                       try {

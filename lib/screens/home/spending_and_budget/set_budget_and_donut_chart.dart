@@ -1,5 +1,4 @@
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
-import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
@@ -91,12 +90,12 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
                         animationDuration: 500,
                         radius: 30.0, // adjust the size of the donut chart here
                         lineWidth: 10.0, // adjust the width of the donut chart here
-                        percent: widget.monthlyTransactionTotal / budget! > 1
+                        percent: widget.monthlyTransactionTotal / budget > 1
                             ? 1
-                            : widget.monthlyTransactionTotal / budget!,
+                            : widget.monthlyTransactionTotal / budget,
                         // calculate the percentage here
                         center: Text(
-                          (widget.monthlyTransactionTotal / budget! * 100).toStringAsFixed(0) + '%',
+                          '${(widget.monthlyTransactionTotal / budget * 100).toStringAsFixed(0)}%',
                           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.0),
                         ),
                         progressColor: Colors.green,
@@ -110,14 +109,18 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Balance',
+                        'Remaining',
                         style: TextStyle(fontSize: 10),
                       ),
                       Text(
-                        '\$${budget!.toStringAsFixed(0)}',
-                        // Replace with your monthly total variable
+                        '\$${(budget - widget.monthlyTransactionTotal).toStringAsFixed(0)}',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: (budget - widget.monthlyTransactionTotal) < 0
+                              ? Colors.red
+                              : null,
+                        ),
                       ),
                     ],
                   ),

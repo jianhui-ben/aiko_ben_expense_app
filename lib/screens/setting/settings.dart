@@ -2,9 +2,7 @@ import 'package:aiko_ben_expense_app/screens/setting/account_screen.dart';
 import 'package:aiko_ben_expense_app/screens/setting/category_setting_screen.dart';
 import 'package:aiko_ben_expense_app/screens/setting/notification_settings.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
-import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -16,18 +14,17 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  AuthService _auth = AuthService();
+  final AuthService _auth = AuthService();
   String? displayName;
   String? avatarText;
   String? photoUrl;
-  final _settingsCollection = FirebaseFirestore.instance.collection('settings');
 
   @override
   void initState() {
     super.initState();
-    displayName = _auth.currentUser!.displayName;
-    avatarText = displayName!.isNotEmpty ? displayName![0].toUpperCase() : '';
-    photoUrl = _auth.currentUser!.photoURL;
+    displayName = _auth.currentUser?.displayName ?? 'User';
+    avatarText = displayName!.isNotEmpty ? displayName![0].toUpperCase() : 'U';
+    photoUrl = _auth.currentUser?.photoURL;
   }
 
   @override
@@ -42,23 +39,14 @@ class _SettingsState extends State<Settings> {
             return Text('Error: ${snapshot.error}');
           } else {
             User? user = snapshot.data;
-            displayName = user!.displayName;
-            avatarText = displayName!.isNotEmpty ? displayName![0].toUpperCase() : '';
-            photoUrl = user!.photoURL;
+            displayName = user?.displayName ?? 'User';
+            avatarText =
+                displayName!.isNotEmpty ? displayName![0].toUpperCase() : 'U';
+            photoUrl = user?.photoURL;
             // Use the user data to build your widget
             return Scaffold(
               body: Stack(
                 children: [
-                  // Positioned image at the bottom right
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    child: Opacity(
-                      opacity: 0.4, // Adjust the opacity as needed
-                      child: Image.asset('assets/images/finance_pig.jpg'),
-                    ),
-                  ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(

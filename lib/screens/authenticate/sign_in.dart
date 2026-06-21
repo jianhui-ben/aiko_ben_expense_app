@@ -2,6 +2,7 @@ import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
+import 'package:aiko_ben_expense_app/services/user_bootstrap.dart';
 import 'package:flutter/material.dart';
 
 import '../../shared/loading.dart';
@@ -33,23 +34,38 @@ class _SignInState extends State<SignIn> {
 
     dynamic result = await _auth.signInWithEmailAndPassword(email, password);
     if (result is! User?) {
-      setState(() {
-        _errorText = result;
-      });
-    } else {
+      if (mounted) {
+        setState(() {
+          _errorText = result.toString();
+        });
+      }
+    } else if (result != null) {
       _errorText = '';
+      await UserBootstrap().ensureUserDocument(
+        result.uid,
+        displayName: _auth.currentUser?.displayName,
+        email: _auth.currentUser?.email,
+      );
     }
   }
 
   Future<void> signInWithGoogle() async {
     dynamic result = await _auth.signInWithGoogle();
     if (result is! User?) {
-      setState(() {
-        _errorText = result.toString();
-      });
-    } else {
+      if (mounted) {
+        setState(() {
+          _errorText = result.toString();
+        });
+      }
+    } else if (result != null) {
       _errorText = '';
-      await DatabaseService(uid: result!.uid).addDefaultSetting('google signin');
+      final name = _auth.currentUser?.displayName ?? 'google signin';
+      await UserBootstrap().ensureUserDocument(
+        result.uid,
+        displayName: name,
+        email: _auth.currentUser?.email,
+      );
+      await DatabaseService(uid: result.uid).addDefaultSetting(name);
     }
   }
 

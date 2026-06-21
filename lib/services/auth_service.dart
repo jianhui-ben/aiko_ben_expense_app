@@ -90,8 +90,6 @@ class AuthService {
   Future registerWithEmailAndPassword(String email, String password, String name) async {
     try {
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-      User? user = userCredential.user;
-      String uid = user!.uid;
 
       // Update the user's display name after successfully creating the user
       await updateUserProfile(name, email);
