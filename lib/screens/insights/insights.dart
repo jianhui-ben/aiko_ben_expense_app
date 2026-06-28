@@ -4,7 +4,6 @@ import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/insights/monthly_dashboard.dart';
 import 'package:aiko_ben_expense_app/screens/insights/weekly_dashboard.dart';
 import 'package:aiko_ben_expense_app/screens/insights/yearly_dashboard.dart';
-import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
@@ -33,21 +32,19 @@ class _InsightsState extends State<Insights> {
   }
 
   Future<void> fetchUserCategories() async {
-    final fetchedCategoriesMap = await getUserCategoriesMap(AuthService().currentUser!.uid);
+    final householdId = Provider.of<User?>(context, listen: false)!.householdId!;
+    final fetchedCategoriesMap = await getHouseholdCategoriesMap(householdId);
 
-    // TO-DO update orderedUserCategoryIds
-
-    // Update the state with the fetched data
+    if (!mounted) return;
     setState(() {
       userCategoriesMap = fetchedCategoriesMap;
     });
-    // print(userCategoriesMap);
   }
 
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
-    DatabaseService db = DatabaseService(uid: user?.uid);
+    DatabaseService db = DatabaseService(householdId: user?.householdId);
 
     final transactionStream = Provider.of<List<Transaction>?>(context);
 

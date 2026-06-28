@@ -19,11 +19,11 @@ class _NotificationSettingsState extends State<NotificationSettings> {
   Widget build(BuildContext context) {
 
     String uid = AuthService().currentUser!.uid;
-    DocumentReference settingsDoc = FirebaseFirestore.instance.collection('settings').doc(uid);
+    DocumentReference settingsDoc = FirebaseFirestore.instance.collection('users').doc(uid);
 
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance
-            .collection('settings')
+            .collection('users')
             .doc(uid)
             .snapshots(),
         builder:

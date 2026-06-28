@@ -1,4 +1,7 @@
 
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user.dart' as my_app_user;
 import 'package:google_sign_in/google_sign_in.dart';
@@ -41,11 +44,58 @@ class AuthService {
   //   return firebaseUser != null ? my_app_user.User(uid: firebaseUser.uid, email: null) : null;
   // }
 
-  // make a my_app_user.User for auth purpose
+  // make a my_app_user.User for auth purpose.
+  // Combines auth state with the users/{uid} doc so householdId updates live
+  // (e.g. right after creating or joining a household).
   Stream<my_app_user.User?> get user {
-    return _auth.authStateChanges().map((user) {
-      return user != null ? my_app_user.User(uid: user.uid, email: null) : null;
-    });
+    // "Switch" the user-doc listener whenever auth state changes. We can't use
+    // authStateChanges().asyncExpand(...) here: asyncExpand waits for each inner
+    // stream to COMPLETE before handling the next auth event, but the
+    // users/{uid} snapshot stream never completes. That means a later sign-out
+    // (auth -> null) would never be delivered and the app could never return to
+    // the sign-in screen. So we manage subscriptions manually instead.
+    late StreamController<my_app_user.User?> controller;
+    StreamSubscription<User?>? authSub;
+    StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? docSub;
+
+    void handleAuthChange(User? firebaseUser) {
+      docSub?.cancel();
+      docSub = null;
+
+      if (firebaseUser == null) {
+        controller.add(null);
+        return;
+      }
+
+      docSub = FirebaseFirestore.instance
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .snapshots()
+          .listen(
+        (doc) {
+          controller.add(my_app_user.User(
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            householdId: doc.data()?['householdId'] as String?,
+          ));
+        },
+        // The doc listener briefly errors with permission-denied on sign-out;
+        // ignore it since authStateChanges will emit null right after.
+        onError: (_) {},
+      );
+    }
+
+    controller = StreamController<my_app_user.User?>(
+      onListen: () {
+        authSub = _auth.authStateChanges().listen(handleAuthChange);
+      },
+      onCancel: () async {
+        await docSub?.cancel();
+        await authSub?.cancel();
+      },
+    );
+
+    return controller.stream;
   }
 
   // sign in with email & password

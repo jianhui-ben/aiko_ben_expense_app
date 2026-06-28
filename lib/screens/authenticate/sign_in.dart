@@ -1,7 +1,6 @@
 import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
-import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/services/user_bootstrap.dart';
 import 'package:flutter/material.dart';
 
@@ -65,7 +64,6 @@ class _SignInState extends State<SignIn> {
         displayName: name,
         email: _auth.currentUser?.email,
       );
-      await DatabaseService(uid: result.uid).addDefaultSetting(name);
     }
   }
 

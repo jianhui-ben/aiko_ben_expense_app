@@ -1,4 +1,3 @@
-import 'package:aiko_ben_expense_app/models/all_categories.dart';
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,46 +5,29 @@ import 'package:aiko_ben_expense_app/models/transaction.dart' as my_user_transac
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
+/// All shared ledger data lives under `households/{householdId}`:
+/// - transactions in the `transactions` subcollection
+/// - budget / categories / selectedCategoryIds as fields on the household doc
 class DatabaseService {
 
-  String? uid;
+  final String? householdId;
   final Uuid uuid = Uuid();
   late Map<String, Category> categoriesMap;
-  DatabaseService({this.uid});
 
-  final double DEFAULT_MONTHLY_BUDGET = 2000.0;
+  DatabaseService({this.householdId});
 
-  // collection reference
-  final transactionsCollection = FirebaseFirestore.instance.collection('transactions');
-  final settingsCollection = FirebaseFirestore.instance.collection('settings');
+  DocumentReference<Map<String, dynamic>> get _householdDoc =>
+      FirebaseFirestore.instance.collection('households').doc(householdId);
+
+  CollectionReference<Map<String, dynamic>> get _transactionsCollection =>
+      _householdDoc.collection('transactions');
 
   void setUserCategoriesMap(Map<String, Category> categoriesMapFromHome) {
     categoriesMap = categoriesMapFromHome;
   }
 
-
-  // // this stream of categories may not be needed, since it's not constantly changing.
-  // Stream<Map<String, Category>?>? get categoriesMap {
-  //   return settingsCollection.doc(uid).snapshots().map((docSnapshot) {
-  //     Map<String, Category> userCategoriesMap = {};
-  //     final categoriesData = docSnapshot['categories'];
-  //     categoriesData.forEach((categoryId, categoryData) {
-  //       userCategoriesMap[categoryId] = Category(
-  //           categoryId: categoryId,
-  //           categoryName: categoryData["categoryName"],
-  //           categoryIcon:
-  //               Icon(stringToSupportedIconsMap[categoryData["categoryIcon"]]));
-  //     });
-  //     return userCategoriesMap;
-  //   });
-  // }
-
   Stream<List<my_user_transaction.Transaction>?>? get transactions {
-    return transactionsCollection
-        .doc(uid)
-        .collection('userTransactions')
-        .snapshots()
-        .map((docSnapshot) {
+    return _transactionsCollection.snapshots().map((docSnapshot) {
       List<my_user_transaction.Transaction> userTransactions = [];
       for (QueryDocumentSnapshot<Map<String, dynamic>> doc in docSnapshot.docs) {
         userTransactions.add(my_user_transaction.Transaction(
@@ -54,89 +36,62 @@ class DatabaseService {
           transactionAmount: doc["transactionAmount"],
           transactionComment: doc["transactionComment"],
           dateTime: doc["dateTime"].toDate(),
+          createdByUid: doc.data().containsKey("createdByUid")
+              ? doc["createdByUid"]
+              : null,
+          createdByName: doc.data().containsKey("createdByName")
+              ? doc["createdByName"]
+              : null,
         ));
       }
       return userTransactions;
     });
   }
 
-  Future<void> addDefaultSetting(String name) async {
-    //only adding the user name for easy debugging, ideally there should be no user name
-    // all the profile infor (user name, email, photourl) should be fetched from firebase auth directly, instead of the Setting collect
-    final settingsCollection =
-        FirebaseFirestore.instance.collection('settings').doc(uid);
-    final Map<String, Map<String, dynamic>> userCategories = {};
-    final List<String> defaultSelectedCategoryIds = ["1", "2", "3", "4", "5", "6", "7", "8"];
-
-    for (var category in allCategories) {
-      userCategories[category.categoryId] = {
-        'categoryName': category.categoryName,
-        'categoryIcon': supportedIconsToStringMap[category.categoryIcon.icon],
-      };
-    }
-
-    return await settingsCollection.set(
-      {
-        'categories': userCategories, // here the categories define the actual categories that user want to show on the home page
-        'name': name, // optional; here only for debugging purpose
-        'monthlyBudget': DEFAULT_MONTHLY_BUDGET,
-        'selectedCategoryIds': defaultSelectedCategoryIds,
-      },
-      SetOptions(merge: true),
-    ).onError((e, _) => print("Error writing document: $e"));
-  }
-
-  Future addNewTransaction(String categoryId, double transactionAmount, String? transactionComment, DateTime selectedDate) async {
-    // Create a new user with a first and last name
+  Future addNewTransaction(
+    String categoryId,
+    double transactionAmount,
+    String? transactionComment,
+    DateTime selectedDate, {
+    String? createdByUid,
+    String? createdByName,
+  }) async {
     var newTransaction = <String, dynamic>{
       "transactionId": generateTransactionId(),
       "dateTime": selectedDate,
       "categoryId": categoryId,
       "transactionAmount": transactionAmount,
       "transactionComment": transactionComment ?? "Shopping",
+      "createdByUid": createdByUid,
+      "createdByName": createdByName,
     };
-    return await transactionsCollection
-        .doc(uid)
-        .collection('userTransactions')
+    return await _transactionsCollection
         .doc(newTransaction["transactionId"])
         .set(newTransaction)
-        .catchError((e) => print("Error adding document: $e"));
+        .catchError((e) => debugPrint("Error adding document: $e"));
   }
 
   Future editTransactionById(String transactionId, String categoryId, double newTransactionAmount, String? newTransactionComment, DateTime newSelectedDate) async {
     try {
-      final DocumentReference documentReference = transactionsCollection
-          .doc(uid)
-          .collection('userTransactions')
-          .doc(transactionId);
+      final DocumentReference documentReference =
+          _transactionsCollection.doc(transactionId);
 
-      // Update the document with the new values
       await documentReference.update({
         "dateTime": newSelectedDate,
         "transactionAmount": newTransactionAmount,
         "transactionComment": newTransactionComment,
         "categoryId": categoryId,
       });
-      print('Document with transaction ID $transactionId updated successfully');
     } catch (e) {
-      print('Error updating transaction document: $e');
+      debugPrint('Error updating transaction document: $e');
     }
   }
 
   Future removeTransactionById(String transactionId) async {
     try {
-      // Reference to the Firestore collection and document with the given ID
-      final DocumentReference documentReference = transactionsCollection
-          .doc(uid)
-          .collection('userTransactions')
-          .doc(transactionId);
-
-      // Delete the document
-      await documentReference.delete();
-
-      print('Document with transaction ID $transactionId deleted successfully');
+      await _transactionsCollection.doc(transactionId).delete();
     } catch (e) {
-      print('Error deleting transaction document: $e');
+      debugPrint('Error deleting transaction document: $e');
     }
   }
 
@@ -145,13 +100,15 @@ class DatabaseService {
   }
 }
 
-Future<Map<String, Category>> getUserCategoriesMap(String uid) async {
-  final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
+DocumentReference<Map<String, dynamic>> _householdDocRef(String householdId) =>
+    FirebaseFirestore.instance.collection('households').doc(householdId);
 
-  final userSetting = await settingsCollection.get();
-  if (userSetting.exists) {
+Future<Map<String, Category>> getHouseholdCategoriesMap(
+    String householdId) async {
+  final household = await _householdDocRef(householdId).get();
+  if (household.exists) {
     final Map<String, dynamic> categoriesData =
-    Map<String, dynamic>.from(userSetting.data()!['categories'] ?? {});
+        Map<String, dynamic>.from(household.data()!['categories'] ?? {});
 
     final Map<String, Category> categoriesMap = {};
     categoriesData.forEach((categoryId, categoryData) {
@@ -159,36 +116,32 @@ Future<Map<String, Category>> getUserCategoriesMap(String uid) async {
           categoryId: categoryId,
           categoryName: categoryData["categoryName"],
           categoryIcon:
-          Icon(stringToSupportedIconsMap[categoryData["categoryIcon"]]));
+              Icon(stringToSupportedIconsMap[categoryData["categoryIcon"]]));
     });
     return categoriesMap;
   } else {
-    throw Exception('Failed to get user categories map');
+    throw Exception('Failed to get household categories map');
   }
 }
 
-Future<List<String>> getUserSelectedCategoryIds(String uid) async{
-  final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
-
-  final userSetting = await settingsCollection.get();
-  if (userSetting.exists) {
-    final List<String> selectedCategoryIds = List<String>.from(userSetting.data()!['selectedCategoryIds'] ?? []);
-    return selectedCategoryIds;
+Future<List<String>> getHouseholdSelectedCategoryIds(String householdId) async {
+  final household = await _householdDocRef(householdId).get();
+  if (household.exists) {
+    return List<String>.from(household.data()!['selectedCategoryIds'] ?? []);
   } else {
-    throw Exception('Failed to get user selected category ids');
+    throw Exception('Failed to get household selected category ids');
   }
 }
 
-Future<void> updateUserSelectedCategoryIds(String uid, List<String> selectedCategoryIds) async {
-  final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
-  await settingsCollection.update({'selectedCategoryIds': selectedCategoryIds});
+Future<void> updateHouseholdSelectedCategoryIds(
+    String householdId, List<String> selectedCategoryIds) async {
+  await _householdDocRef(householdId)
+      .update({'selectedCategoryIds': selectedCategoryIds});
 }
 
-Future<void> updateUserCategoryName(String uid, String selectedCategoryId, String newCategoryName) async {
-  final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
-  //update category name for this selectedCategoryId
-  await settingsCollection.update({
+Future<void> updateHouseholdCategoryName(
+    String householdId, String selectedCategoryId, String newCategoryName) async {
+  await _householdDocRef(householdId).update({
     'categories.$selectedCategoryId.categoryName': newCategoryName,
   });
 }
-

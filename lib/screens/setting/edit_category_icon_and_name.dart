@@ -1,8 +1,9 @@
 import 'package:aiko_ben_expense_app/models/category.dart';
-import 'package:aiko_ben_expense_app/services/auth_service.dart';
+import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EditCategoryIconAndName extends StatefulWidget {
   final Map<String, Category> userCategoriesMap;
@@ -26,6 +27,7 @@ class _EditCategoryIconAndNameState extends State<EditCategoryIconAndName> {
 
   @override
   Widget build(BuildContext context) {
+    final householdId = Provider.of<User?>(context)!.householdId!;
     categoryNameController.text = selectedCategory?.categoryName ?? '';
     return Column(
       children: [
@@ -82,8 +84,8 @@ class _EditCategoryIconAndNameState extends State<EditCategoryIconAndName> {
                             icon: Icon(Icons.check),
                             onPressed: () {
                               // Update the category name in Firebase here
-                              updateUserCategoryName(
-                                  AuthService().currentUser!.uid,
+                              updateHouseholdCategoryName(
+                                  householdId,
                                   selectedCategory!.categoryId,
                                   categoryNameController.text);
                               setState(() {

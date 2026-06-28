@@ -221,21 +221,30 @@ class _NumericKeypadState extends State<NumericKeypad> {
       pickedDateText = DateFormat('MM/dd').format(_selectedDate);
     }
 
-    return Container(
+    // Returned into a `Row(children: [...])`; use Expanded so this gets a
+    // bounded width (the keypad's right column is narrow ~100px), then let the
+    // label scale down to fit alongside the icon.
+    return Expanded(
       child: Row(
         children: [
           IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
             icon: Icon(Icons.calendar_today, color: Color(0xFF6200EE)),
             onPressed: datePicker,
           ),
-          FittedBox(
-            fit: BoxFit.fitWidth,
-            child: Text(
-              pickedDateText,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge!
-                  .copyWith(fontWeight: FontWeight.bold),
+          const SizedBox(width: 4),
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                pickedDateText,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyLarge!
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],

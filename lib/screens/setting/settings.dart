@@ -1,10 +1,13 @@
+import 'package:aiko_ben_expense_app/models/user.dart' as my_app_user;
 import 'package:aiko_ben_expense_app/screens/setting/account_screen.dart';
 import 'package:aiko_ben_expense_app/screens/setting/category_setting_screen.dart';
+import 'package:aiko_ben_expense_app/screens/setting/household_settings_screen.dart';
 import 'package:aiko_ben_expense_app/screens/setting/notification_settings.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {
   Settings({super.key});
@@ -79,12 +82,12 @@ class _SettingsState extends State<Settings> {
                           leadingIcon: Icons.account_circle,
                           title: 'Account',
                           onTap: () async {
-                            Navigator.push(
+                            await Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => AccountScreen()),
                             );
-                            await _auth.currentUser!.reload();
+                            await _auth.currentUser?.reload();
                           },
                         ),
                         _buildListTile(
@@ -111,6 +114,24 @@ class _SettingsState extends State<Settings> {
                             );
                           },
                         ),
+                        Builder(builder: (context) {
+                          final householdId =
+                              Provider.of<my_app_user.User?>(context)
+                                  ?.householdId;
+                          if (householdId == null) return const SizedBox.shrink();
+                          return _buildListTile(
+                            leadingIcon: Icons.home,
+                            title: 'Household',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => HouseholdSettingsScreen(
+                                        householdId: householdId)),
+                              );
+                            },
+                          );
+                        }),
                         Spacer(),
                         TextButton(
                           onPressed: () async {
@@ -155,18 +176,16 @@ class _SettingsState extends State<Settings> {
   }) {
     return Padding(
       padding: const EdgeInsets.all(8.0), // Add your desired padding here
-      child: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius:
-              BorderRadius.circular(15), // Adjust the border radius as needed
-        ),
+      child: Material(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(15),
+        clipBehavior: Clip.antiAlias,
         child: ListTile(
           leading: Icon(leadingIcon),
           title: Text(title),
           onTap: () {
             onTap();
-          }
+          },
         ),
       ),
     );

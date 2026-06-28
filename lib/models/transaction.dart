@@ -8,13 +8,17 @@ class Transaction{
   final Category category;
   final double transactionAmount;
   final String? transactionComment;
+  final String? createdByUid;
+  final String? createdByName;
 
   Transaction(
       {required this.transactionId,
       required this.category,
       required this.transactionAmount,
       this.transactionComment,
-      this.dateTime});
+      this.dateTime,
+      this.createdByUid,
+      this.createdByName});
 
   @override
   String toString() {
@@ -23,7 +27,8 @@ class Transaction{
         'dateTime: $dateTime, '
         'category: $category, '
         'transactionAmount: $transactionAmount, '
-        'transactionComment: $transactionComment'
+        'transactionComment: $transactionComment, '
+        'createdByName: $createdByName'
         ')';
   }
 }

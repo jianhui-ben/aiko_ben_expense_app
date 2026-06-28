@@ -1,4 +1,5 @@
 
+import 'package:aiko_ben_expense_app/screens/household/household_setup_screen.dart';
 import 'package:aiko_ben_expense_app/screens/navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -10,15 +11,14 @@ class Wrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User?>(context);
 
-    //check the userCredential stream
-    final userCredential = Provider.of<User?>(context);
-
-    //return either Home or Authenticate widget
-    if (userCredential == null) {
+    if (user == null) {
       return Authenticate();
-    } else {
-      return Navigation();
     }
+    if (user.householdId == null) {
+      return const HouseholdSetupScreen();
+    }
+    return Navigation(householdId: user.householdId!);
   }
 }

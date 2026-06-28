@@ -1,11 +1,12 @@
 import 'package:aiko_ben_expense_app/models/category.dart';
+import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/setting/edit_category_icon_and_name.dart';
-import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CategorySettingScreen extends StatefulWidget {
   const CategorySettingScreen({super.key});
@@ -15,19 +16,20 @@ class CategorySettingScreen extends StatefulWidget {
 }
 
 class _CategorySettingScreenState extends State<CategorySettingScreen> {
-  String uid = AuthService().currentUser!.uid;
   Map<String, bool> checkboxStates = {};
 
   @override
   Widget build(BuildContext context) {
-    final settingsCollection = FirebaseFirestore.instance.collection('settings').doc(uid);
+    final householdId = Provider.of<User?>(context)!.householdId!;
+    final householdDoc =
+        FirebaseFirestore.instance.collection('households').doc(householdId);
     return StreamBuilder(
-        stream: settingsCollection.snapshots(),
+        stream: householdDoc.snapshots(),
         builder: (context, _) {
           return FutureBuilder(
             future: Future.wait([
-              getUserCategoriesMap(uid),
-              getUserSelectedCategoryIds(uid),
+              getHouseholdCategoriesMap(householdId),
+              getHouseholdSelectedCategoryIds(householdId),
             ]),
             builder:
                 (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
@@ -80,8 +82,8 @@ class _CategorySettingScreenState extends State<CategorySettingScreen> {
                                     .remove(category.categoryId);
                               }
                               //Save the updated userSelectedCategoryIds to Firebase here
-                              updateUserSelectedCategoryIds(
-                                  uid, userSelectedCategoryIds);
+                              updateHouseholdSelectedCategoryIds(
+                                  householdId, userSelectedCategoryIds);
                             });
                           },
                         ),

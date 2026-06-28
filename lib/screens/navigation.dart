@@ -1,17 +1,17 @@
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/transaction.dart';
-import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/home/home.dart';
 import 'package:aiko_ben_expense_app/screens/insights/insights.dart';
 import 'package:aiko_ben_expense_app/screens/setting/settings.dart';
-import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Navigation extends StatefulWidget {
-  const Navigation({super.key});
+  final String householdId;
+
+  const Navigation({super.key, required this.householdId});
 
   @override
   State<Navigation> createState() => _NavigationState();
@@ -31,28 +31,17 @@ class _NavigationState extends State<Navigation> {
   ];
 
 
-  Map<String, Category>? userCategoriesMap; // Store user categories here
+  Map<String, Category>? userCategoriesMap; // Store household categories here
 
   @override
   void initState() {
     super.initState();
-    // Call the asynchronous function
-    // in this case, it would only call the getUserCategoriesMap once
     fetchUserCategories();
   }
 
   Future<void> fetchUserCategories() async {
-    final uid = AuthService().currentUser!.uid;
-    Map<String, Category> fetchedCategoriesMap;
-
-    try {
-      fetchedCategoriesMap = await getUserCategoriesMap(uid);
-    } catch (_) {
-      // New signups can reach Navigation before settings are written.
-      final name = AuthService().currentUser?.displayName ?? '';
-      await DatabaseService(uid: uid).addDefaultSetting(name);
-      fetchedCategoriesMap = await getUserCategoriesMap(uid);
-    }
+    final fetchedCategoriesMap =
+        await getHouseholdCategoriesMap(widget.householdId);
 
     if (!mounted) return;
     setState(() {
@@ -61,12 +50,9 @@ class _NavigationState extends State<Navigation> {
   }
 
 
-  //To-do: maybe move some authentification here
   @override
   Widget build(BuildContext context) {
-
-    final user = Provider.of<User?>(context);
-    DatabaseService db = DatabaseService(uid: user?.uid);
+    DatabaseService db = DatabaseService(householdId: widget.householdId);
 
     if (userCategoriesMap == null) {
       return Loading();

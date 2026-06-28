@@ -159,7 +159,7 @@ class _TransactionsListState extends State<TransactionsList> {
                             // Provide a function that tells the app
                             // what to do after an item has been swiped away.
                             onDismissed: (direction) async {
-                              await DatabaseService(uid: user!.uid)
+                              await DatabaseService(householdId: user!.householdId)
                                   .removeTransactionById(transaction.transactionId);
 
                               // // optional: Then show a snackbar. this could show some flutter error

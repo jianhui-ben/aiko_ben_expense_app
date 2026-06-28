@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isMember(householdId) {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/households/$(householdId)/members/$(request.auth.uid));
+    }
+
+    // Per-user document: only the owner can read/write.
+    match /users/{uid} {
+      allow read, write: if isSignedIn() && request.auth.uid == uid;
+    }
+
+    // Flat invite-code lookup used by the join flow.
+    match /inviteCodes/{code} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    match /households/{householdId} {
+      // A signed-in user can fetch a single household by id (needed to join
+      // via invite code, before they are a member). Listing/querying the
+      // collection is not allowed. Mutating the household requires membership.
+      allow get: if isSignedIn();
+      allow update: if isMember(householdId);
+      allow create: if isSignedIn();
+
+      match /members/{memberId} {
+        // Signed-in users can read members (needed to enforce the join cap
+        // before membership exists).
+        allow read: if isSignedIn();
+        // A user may only add or remove their own membership record.
+        allow create: if isSignedIn() && request.auth.uid == memberId;
+        allow delete: if isSignedIn() && request.auth.uid == memberId;
+      }
+
+      match /transactions/{txId} {
+        allow read, write: if isMember(householdId);
+      }
+    }
+  }
+}

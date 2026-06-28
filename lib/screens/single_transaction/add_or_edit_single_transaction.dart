@@ -2,6 +2,7 @@
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/single_transaction/numeric_keypad.dart';
+import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:flutter/material.dart';
@@ -170,13 +171,15 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
       );
     } else {
       if (widget.transactionId == null) {
-        await DatabaseService(uid: user!.uid).addNewTransaction(
+        await DatabaseService(householdId: user!.householdId).addNewTransaction(
             widget.category.categoryId,
             double.tryParse(transactionAmountInput.text)!,
             transactionCommentInput.text,
-            DateFormat('MM/dd/yyyy').parse(dateInput.text));
+            DateFormat('MM/dd/yyyy').parse(dateInput.text),
+            createdByUid: AuthService().currentUser?.uid,
+            createdByName: AuthService().currentUser?.displayName);
       } else {
-        await DatabaseService(uid: user!.uid).editTransactionById(
+        await DatabaseService(householdId: user!.householdId).editTransactionById(
             widget.transactionId!,
             widget.category.categoryId,
             double.tryParse(transactionAmountInput.text)!,

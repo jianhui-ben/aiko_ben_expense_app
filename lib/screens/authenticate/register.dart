@@ -1,6 +1,5 @@
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
-import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/services/user_bootstrap.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
@@ -54,7 +53,6 @@ class _RegisterState extends State<Register> {
       displayName: useName,
       email: email,
     );
-    await DatabaseService(uid: result.uid).addDefaultSetting(useName);
   }
 
   @override

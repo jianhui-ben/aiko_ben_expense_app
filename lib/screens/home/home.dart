@@ -4,7 +4,6 @@ import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/home/category_icon_button.dart';
 import 'package:aiko_ben_expense_app/screens/home/spending_and_budget/daily_and_monthly_total.dart';
 import 'package:aiko_ben_expense_app/screens/home/transactions_list/transactions_list.dart';
-import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +47,7 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
-    DatabaseService db = DatabaseService(uid: user?.uid);
+    DatabaseService db = DatabaseService(householdId: user?.householdId);
 
     if (userCategoriesMap == null) {
       return Loading();
@@ -150,18 +149,16 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> fetchUserCategories() async {
-    String uid = AuthService().currentUser!.uid;
-    final fetchedCategoriesMap = await getUserCategoriesMap(uid);
-    final fetchedOrderedUserCategoryIds = await getUserSelectedCategoryIds(uid);
-    // TO-DO update orderedUserCategoryIds
+    final householdId = Provider.of<User?>(context, listen: false)!.householdId!;
+    final fetchedCategoriesMap = await getHouseholdCategoriesMap(householdId);
+    final fetchedOrderedUserCategoryIds =
+        await getHouseholdSelectedCategoryIds(householdId);
 
-    // Update the state with the fetched data
+    if (!mounted) return;
     setState(() {
       userCategoriesMap = fetchedCategoriesMap;
       orderedUserCategoryIds = fetchedOrderedUserCategoryIds;
     });
-    // print(userCategoriesMap);
-    // print(fetchedOrderedUserCategoryIds);
   }
 
 }

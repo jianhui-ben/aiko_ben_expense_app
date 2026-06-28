@@ -1,7 +1,8 @@
-import 'package:aiko_ben_expense_app/services/auth_service.dart';
+import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class SetBudgetAndDonutChart extends StatefulWidget {
 
@@ -11,24 +12,31 @@ class SetBudgetAndDonutChart extends StatefulWidget {
       {super.key, required this.monthlyTransactionTotal});
 
   @override
-  State<SetBudgetAndDonutChart> createState() => _SetBudgetAndDonutChartState(AuthService().currentUser!.uid);
+  State<SetBudgetAndDonutChart> createState() => _SetBudgetAndDonutChartState();
 }
 
 class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
   //set a default here to avoid waiting for the async function to finish
   int budget = 2000;
 
-  final String uid; // User ID
-  final _settingsCollection = FirebaseFirestore.instance.collection('settings');
+  String? householdId;
+  final _households = FirebaseFirestore.instance.collection('households');
 
-  _SetBudgetAndDonutChartState(this.uid) {
-    fetchBudget();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final id = Provider.of<User?>(context)?.householdId;
+    if (id != null && id != householdId) {
+      householdId = id;
+      fetchBudget();
+    }
   }
 
   void fetchBudget() async {
-    final docSnapshot = await _settingsCollection.doc(uid).get();
+    if (householdId == null) return;
+    final docSnapshot = await _households.doc(householdId).get();
+    if (!mounted || !docSnapshot.exists) return;
     setState(() {
-      // cast the budget to int
       budget = (docSnapshot.get('monthlyBudget') as num).toInt();
     });
   }
@@ -62,7 +70,6 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
                   padding: EdgeInsets.all(0), // remove padding to allow the icon to fill the container
                   icon: Icon(Icons.edit, size: 16), // adjust the icon size to match the height of the Text widget
                   onPressed: () => editBudget(context),
-                  // onPressed: () => DatabaseService(uid: uid).addDefaultSetting('Aiko')
                 ),
               ),
             ],
@@ -163,10 +170,12 @@ class _SetBudgetAndDonutChartState extends State<SetBudgetAndDonutChart> {
                   budget = int.parse(controller.text);
                 });
 
-                await _settingsCollection.doc(uid).set(
-                  {'monthlyBudget': budget},
-                  SetOptions(merge: true),
-                );
+                if (householdId != null) {
+                  await _households.doc(householdId).set(
+                    {'monthlyBudget': budget},
+                    SetOptions(merge: true),
+                  );
+                }
 
                 Navigator.of(context).pop();
               },
