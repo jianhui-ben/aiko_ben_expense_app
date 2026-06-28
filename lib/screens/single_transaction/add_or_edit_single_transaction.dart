@@ -122,6 +122,7 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
               controller: transactionAmountInput,
               keyboardType: TextInputType.none,
               focusNode: _focus,
+              showCursor: false,
               textAlign: TextAlign.center,
               decoration: const InputDecoration(
                 prefixText: '\$ ',
