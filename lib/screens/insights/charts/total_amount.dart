@@ -11,18 +11,14 @@ class TotalAmount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
-      // crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          title,
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        Text(title, style: theme.textTheme.labelMedium),
         Text(
           '\$${Util.sumTotal(transactions).toStringAsFixed(0)}',
-          // Round to closest integer and add $
-          style: TextStyle(fontSize: 24), // Adjust the font size as needed
+          style: theme.textTheme.headlineLarge,
         ),
       ],
     );

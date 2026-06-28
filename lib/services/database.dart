@@ -103,6 +103,11 @@ class DatabaseService {
 DocumentReference<Map<String, dynamic>> _householdDocRef(String householdId) =>
     FirebaseFirestore.instance.collection('households').doc(householdId);
 
+Future<String> getHouseholdName(String householdId) async {
+  final household = await _householdDocRef(householdId).get();
+  return (household.data()?['name'] as String?) ?? 'Home';
+}
+
 Future<Map<String, Category>> getHouseholdCategoriesMap(
     String householdId) async {
   final household = await _householdDocRef(householdId).get();

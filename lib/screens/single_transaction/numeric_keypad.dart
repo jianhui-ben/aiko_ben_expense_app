@@ -1,3 +1,5 @@
+import 'package:aiko_ben_expense_app/core/theme/app_colors.dart';
+import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -61,10 +63,12 @@ class _NumericKeypadState extends State<NumericKeypad> {
     ];
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          width: MediaQuery.of(context).size.width * 0.7,
+        Expanded(
+          flex: 3,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: numericButtons.map((List<String> row) {
               return Row(
                 children: row.map((String button) {
@@ -75,21 +79,22 @@ class _NumericKeypadState extends State<NumericKeypad> {
             }).toList(),
           ),
         ),
-        Container(
-          height: MediaQuery.of(context).size.height * 0.22,
+        const SizedBox(
+          height: 200,
           child: VerticalDivider(
-            color: Colors.grey, // Change the color as needed
-            thickness: 1, // Change the thickness as needed
+            color: AppColors.border,
+            thickness: 1,
           ),
         ),
-        Container(
-          width: MediaQuery.of(context).size.width * 0.25,
+        Expanded(
+          flex: 1,
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Row(children: [_buildDateButton(onPressed: datePicker),],),
-              Row(children: [_buildButton('+', onPressed: _summation),],),
-              Row(children: [_buildButton('-', onPressed: _subtract),],),
-              Row(children: [submitOrCalculateButton(onSubmit: _submit),],),
+              Row(children: [_buildDateButton(onPressed: datePicker)]),
+              Row(children: [_buildButton('+', onPressed: _summation)]),
+              Row(children: [_buildButton('-', onPressed: _subtract)]),
+              Row(children: [submitOrCalculateButton(onSubmit: _submit)]),
             ],
           ),
         ),
@@ -102,15 +107,20 @@ class _NumericKeypadState extends State<NumericKeypad> {
     return Expanded(
       child: TextButton(
         onPressed: onPressed ?? () => _input(text),
-        child: iconData != null
-            ? Icon(iconData)
-            : Text(
-          text,
-          style: TextStyle(
-            fontSize: 30.0, // Adjust the font size as needed
-            fontWeight: FontWeight.bold, // Make the text bold
-          ),
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.textPrimary,
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
         ),
+        child: iconData != null
+            ? Icon(iconData, color: AppColors.textSecondary)
+            : Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 26.0,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
       ),
     );
   }
@@ -200,13 +210,23 @@ class _NumericKeypadState extends State<NumericKeypad> {
     if (operation != null) {
       return _buildButton('=', onPressed: _calculate);
     } else {
-      return ElevatedButton(
-        onPressed: onSubmit,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF6200EE), // Background color
-          foregroundColor: Colors.white, // Text color
+      return Expanded(
+        child: ElevatedButton(
+          onPressed: onSubmit,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.md,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppRadius.md),
+            ),
+          ),
+          child: const Text('Submit'),
         ),
-        child: Text('Submit'),
       );
     }
   }
@@ -230,7 +250,7 @@ class _NumericKeypadState extends State<NumericKeypad> {
           IconButton(
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
-            icon: Icon(Icons.calendar_today, color: Color(0xFF6200EE)),
+            icon: const Icon(Icons.calendar_today, color: AppColors.primary),
             onPressed: datePicker,
           ),
           const SizedBox(width: 4),

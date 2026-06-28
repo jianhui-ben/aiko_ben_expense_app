@@ -1,3 +1,4 @@
+import 'package:aiko_ben_expense_app/core/theme/app_colors.dart';
 import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -52,9 +53,8 @@ class _WeekExpenseSplineChartState extends State<WeekExpenseSplineChart> {
           yValueMapper: (_ChartData transactions, _) => transactions.y,
           dataLabelSettings: DataLabelSettings(isVisible: true),
           enableTooltip: true,
-          color: Color(0xFF6200EE),
+          color: AppColors.secondary,
           width: 5,
-          opacity: 0.4,
           dashArray: const <double>[5, 8],
           splineType: SplineType.cardinal,
           cardinalSplineTension: 1.5,

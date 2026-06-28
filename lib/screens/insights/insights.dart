@@ -1,3 +1,5 @@
+import 'package:aiko_ben_expense_app/core/theme/app_colors.dart';
+import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
@@ -8,6 +10,7 @@ import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:aiko_ben_expense_app/shared/util.dart';
+import 'package:aiko_ben_expense_app/shared/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -63,23 +66,42 @@ class _InsightsState extends State<Insights> {
       return Loading();
     } else {
       db.setUserCategoriesMap(userCategoriesMap!);
-      return DefaultTabController(
+      return AppScaffold(
+        title: 'Insights',
+        body: DefaultTabController(
           length: dashboards.length,
           child: Column(
             children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.12,
-                child: Column(
-                  children: [
-                    Spacer(),
-                    TabBar(
-                      tabs: [
-                        Tab(text: 'Week'),
-                        Tab(text: 'Month'),
-                        Tab(text: 'Year'),
-                      ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                  AppSpacing.lg,
+                  AppSpacing.md,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceVariant,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  padding: const EdgeInsets.all(AppSpacing.xs),
+                  child: TabBar(
+                    dividerColor: Colors.transparent,
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    indicator: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
+                      border: Border.all(color: AppColors.border),
                     ),
-                  ],
+                    labelColor: AppColors.primary,
+                    unselectedLabelColor: AppColors.textSecondary,
+                    labelStyle: Theme.of(context).textTheme.labelMedium,
+                    tabs: const [
+                      Tab(text: 'Week'),
+                      Tab(text: 'Month'),
+                      Tab(text: 'Year'),
+                    ],
+                  ),
                 ),
               ),
               Expanded(
@@ -89,6 +111,7 @@ class _InsightsState extends State<Insights> {
               ),
             ],
           ),
+        ),
       );
     }
   }

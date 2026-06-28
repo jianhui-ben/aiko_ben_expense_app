@@ -1,123 +1,111 @@
 import 'package:aiko_ben_expense_app/models/transaction.dart';
-import 'package:aiko_ben_expense_app/screens/home/spending_and_budget/set_budget_and_donut_chart.dart';
-import 'package:aiko_ben_expense_app/shared/util.dart';
+import 'package:aiko_ben_expense_app/models/user.dart';
+import 'package:aiko_ben_expense_app/shared/widgets/summary_card.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Transaction;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class DailyAndMonthlyTotal extends StatelessWidget {
+/// Unified spending summary card: daily + monthly totals and budget remaining.
+/// Tapping the card lets either household member edit the shared monthly budget.
+class SpendingSummary extends StatelessWidget {
   final DateTime selectedDate;
 
-  const DailyAndMonthlyTotal(
-      {super.key, required this.selectedDate,});
+  const SpendingSummary({super.key, required this.selectedDate});
 
-  // calculate the total transaction amount for the current month
-  double calculateMonthlyTotal(List<Transaction> transactions) {
+  double _monthlyTotal(List<Transaction> transactions) {
     return transactions
-        .where((transaction) =>
-            transaction.dateTime!.year == selectedDate.year &&
-            transaction.dateTime!.month == selectedDate.month)
-        .fold(0.0,
-            (double sum, transaction) => sum + transaction.transactionAmount);
+        .where((t) =>
+            t.dateTime != null &&
+            t.dateTime!.year == selectedDate.year &&
+            t.dateTime!.month == selectedDate.month)
+        .fold(0.0, (acc, t) => acc + t.transactionAmount);
   }
 
-  // calculate the total transaction amount for the current day
-  double calculateDailyTotal(List<Transaction> transactions) {
+  double _dailyTotal(List<Transaction> transactions) {
     return transactions
-        .where((transaction) =>
-            transaction.dateTime!.year == selectedDate.year &&
-            transaction.dateTime!.month == selectedDate.month &&
-            transaction.dateTime!.day == selectedDate.day)
-        .fold(0.0,
-            (double sum, transaction) => sum + transaction.transactionAmount);
+        .where((t) =>
+            t.dateTime != null &&
+            t.dateTime!.year == selectedDate.year &&
+            t.dateTime!.month == selectedDate.month &&
+            t.dateTime!.day == selectedDate.day)
+        .fold(0.0, (acc, t) => acc + t.transactionAmount);
   }
 
   @override
   Widget build(BuildContext context) {
-    final transactionStream = Provider.of<List<Transaction>?>(context);
+    final transactions = Provider.of<List<Transaction>?>(context) ?? [];
+    final householdId = Provider.of<User?>(context)?.householdId;
 
-    if (transactionStream == null) {
-      return Container();
-    }
+    final dailyTotal = _dailyTotal(transactions);
+    final monthlyTotal = _monthlyTotal(transactions);
 
-    List<Transaction> filteredTransactionsList = Util.filterTransactionListToDate(transactionStream, selectedDate);
+    final householdDoc =
+        FirebaseFirestore.instance.collection('households').doc(householdId);
 
-    double monthlyTotal = calculateMonthlyTotal(transactionStream);
-    double dailyTotal = calculateDailyTotal(filteredTransactionsList);
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: householdDoc.snapshots(),
+      builder: (context, snapshot) {
+        final budget =
+            (snapshot.data?.data()?['monthlyBudget'] as num?)?.toDouble() ??
+                2000.0;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          // height: MediaQuery.of(context).size.height * 0.12,
-          width: MediaQuery.of(context).size.width * 0.42,
-          decoration: ShapeDecoration(
-            color: Color(0xFFCEEAFF),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
+        return GestureDetector(
+          onTap: householdId == null
+              ? null
+              : () => _editBudget(context, householdDoc, budget),
+          child: SummaryCard(
+            dailyTotal: dailyTotal,
+            monthlyTotal: monthlyTotal,
+            monthlyBudget: budget,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Spending',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Container(
-                  width: MediaQuery.of(context).size.width * 0.42,
-                  height: 70,
-                  decoration: ShapeDecoration(
-                    color: Color(0xFFFCFCFF),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10),
-                      ),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Daily',
-                            style: TextStyle(fontSize: 10),
-                          ),
-                          Text(
-                            '\$${dailyTotal.toStringAsFixed(0)}',
-                            // Replace with your daily total variable
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Monthly',
-                            style: TextStyle(fontSize: 10),
-                          ),
-                          Text(
-                            '\$${monthlyTotal.toStringAsFixed(0)}',
-                            // Replace with your monthly total variable
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ],
-                  )),
-            ],
-          ),
-        ),
-        SetBudgetAndDonutChart(monthlyTransactionTotal: monthlyTotal,),
-      ],
+        );
+      },
     );
   }
 
+  void _editBudget(
+    BuildContext context,
+    DocumentReference<Map<String, dynamic>> householdDoc,
+    double currentBudget,
+  ) {
+    final controller =
+        TextEditingController(text: currentBudget.toStringAsFixed(0));
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Monthly budget'),
+          content: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            autofocus: true,
+            decoration: const InputDecoration(
+              prefixText: '\$ ',
+              hintText: 'Enter monthly budget',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                final value = double.tryParse(controller.text);
+                if (value != null) {
+                  await householdDoc.set(
+                    {'monthlyBudget': value},
+                    SetOptions(merge: true),
+                  );
+                }
+                if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
-
-

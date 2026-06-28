@@ -162,38 +162,72 @@ flutter test integration_test/household_e2e_test.dart \
 
 ---
 
-## Phase 3 — UI redesign (remaining screens)
+## Phase 3 — UI redesign (remaining screens) ✅
 
-### Task 9: Home screen
+**Status:** Complete. `flutter analyze` clean (only pre-existing infos); E2E suite
+`All tests passed!` (2/2) on iPhone 17 Pro against the emulator, zero RenderFlex
+overflows / zero caught exceptions.
 
-**Files:**
-
-- Modify: `lib/screens/home/home.dart`, `daily_and_monthly_total.dart`, `transaction_tile.dart`, `category_icon_button.dart`
-
-- [ ] Use `AppScaffold` with household name header
-- [ ] Replace spending boxes with `SummaryCard`
-- [ ] Use `CategoryChip` horizontal list
-- [ ] `AppCard` transaction rows with `MemberAvatar` for `createdByName`
-- [ ] `EmptyState` when no transactions
-- [ ] Remove pig watermark
-
-### Task 10: Add/edit transaction sheet
+### Task 9: Home screen ✅
 
 **Files:**
 
-- Modify: `add_or_edit_single_transaction.dart`, `numeric_keypad.dart`
+- Rewrote: `lib/screens/home/home.dart` — `AppScaffold` with live household-name
+  header (via `getHouseholdName`) + date subtitle + calendar trailing button.
+- Rewrote: `daily_and_monthly_total.dart` → `SpendingSummary` widget rendering the
+  shared `SummaryCard` (daily/monthly/budget ring); tap opens an edit-budget dialog
+  writing `monthlyBudget` on the household doc (live via `snapshots()`).
+- Rewrote: `transaction_tile.dart` — `AppCard` row, category icon chip, `AmountText`,
+  and `MemberAvatar` + name for `createdByName`.
+- Updated: `transactions_list.dart` — themed date-group headers (`Today`/`Yesterday`/
+  date + group total), per-row `Dismissible` with rounded delete background, threads
+  `createdByName`, and `EmptyState` ("No expenses yet — tap a category above…").
+- Deleted: `category_icon_button.dart` (replaced by `CategoryChip` whose `onTap`
+  opens the add sheet) and `set_budget_and_donut_chart.dart` (folded into
+  `SpendingSummary`).
 
-- [ ] Theme-aligned amount display, keypad buttons, save button
+- [x] Use `AppScaffold` with household name header
+- [x] Replace spending boxes with `SummaryCard`
+- [x] Use `CategoryChip` horizontal list
+- [x] `AppCard` transaction rows with `MemberAvatar` for `createdByName`
+- [x] `EmptyState` when no transactions
+- [x] Remove pig watermark
 
-### Task 11: Insights + Settings
+### Task 10: Add/edit transaction sheet ✅
 
 **Files:**
 
-- Modify: `insights.dart`, chart widgets, `settings.dart`, `register.dart`
+- `add_or_edit_single_transaction.dart` — drag handle, centered category label,
+  centered `displayLarge` amount with `$` prefix, themed description field
+  (`surfaceVariant` fill), keypad pinned to bottom. Field order preserved
+  (amount index 0, description index 1) for the E2E harness.
+- `numeric_keypad.dart` — theme tokens throughout; **made the keypad flex-based**
+  (`Expanded` 3:1 columns) instead of `MediaQuery` width fractions, fixing a 28px
+  horizontal overflow once the sheet gained side padding. Digit keys stay
+  `TextButton`, Submit stays `ElevatedButton` (E2E finders).
 
-- [ ] Chart colors from AppColors
-- [ ] Grouped settings sections
-- [ ] Register matches sign-in layout
+- [x] Theme-aligned amount display, keypad buttons, save button
+
+### Task 11: Insights + Settings ✅
+
+**Files:**
+
+- `insights.dart` — `AppScaffold` title + pill/segmented `TabBar`
+  (surfaceVariant track, surface indicator).
+- Chart widgets (`expense_by_category_bar_chart`, `month/week/year_expense_spline_chart`,
+  `total_amount`) — replaced hardcoded `0xFF6200EE` with palette
+  (`primary`/`secondary`/`categoryAccent`); themed total hero text.
+- `settings.dart` — rewrote with `AppScaffold`, `MemberAvatar` profile header
+  (null-safe), grouped `ACCOUNT` / `PREFERENCES` sections in `AppCard` (tiles
+  wrapped in a transparent `Material` to avoid the ListTile-ink assertion), themed
+  destructive `Log Out` (kept as `TextButton` for E2E).
+- `register.dart` — rebuilt to mirror `sign_in.dart` (SafeArea + scroll, headline
+  "Create account", themed fields, `FilledButton` "Sign up", "Sign in" toggle);
+  removed pig watermark. Updated E2E `_signUp` finders accordingly.
+
+- [x] Chart colors from AppColors
+- [x] Grouped settings sections
+- [x] Register matches sign-in layout
 
 ---
 

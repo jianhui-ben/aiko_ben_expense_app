@@ -1,3 +1,5 @@
+import 'package:aiko_ben_expense_app/core/theme/app_colors.dart';
+import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
 import 'package:aiko_ben_expense_app/models/user.dart' as my_app_user;
 import 'package:aiko_ben_expense_app/screens/setting/account_screen.dart';
 import 'package:aiko_ben_expense_app/screens/setting/category_setting_screen.dart';
@@ -5,12 +7,16 @@ import 'package:aiko_ben_expense_app/screens/setting/household_settings_screen.d
 import 'package:aiko_ben_expense_app/screens/setting/notification_settings.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
+import 'package:aiko_ben_expense_app/shared/widgets/app_card.dart';
+import 'package:aiko_ben_expense_app/shared/widgets/app_scaffold.dart';
+import 'package:aiko_ben_expense_app/shared/widgets/member_avatar.dart';
+import 'package:aiko_ben_expense_app/shared/widgets/section_header.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {
-  Settings({super.key});
+  const Settings({super.key});
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -18,175 +24,173 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   final AuthService _auth = AuthService();
-  String? displayName;
-  String? avatarText;
-  String? photoUrl;
-
-  @override
-  void initState() {
-    super.initState();
-    displayName = _auth.currentUser?.displayName ?? 'User';
-    avatarText = displayName!.isNotEmpty ? displayName![0].toUpperCase() : 'U';
-    photoUrl = _auth.currentUser?.photoURL;
-  }
 
   @override
   Widget build(BuildContext context) {
-
     return StreamBuilder<User?>(
-        stream: _auth.userChanges(),
-        builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Loading(); // Show a loading spinner while waiting
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else {
-            User? user = snapshot.data;
-            displayName = user?.displayName ?? 'User';
-            avatarText =
-                displayName!.isNotEmpty ? displayName![0].toUpperCase() : 'U';
-            photoUrl = user?.photoURL;
-            // Use the user data to build your widget
-            return Scaffold(
-              body: Stack(
+      stream: _auth.userChanges(),
+      builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Loading();
+        }
+
+        final User? user = snapshot.data;
+        final displayName = (user?.displayName?.trim().isNotEmpty ?? false)
+            ? user!.displayName!
+            : 'User';
+        final email = user?.email ?? '';
+
+        return AppScaffold(
+          body: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.xxl,
+              AppSpacing.lg,
+              AppSpacing.xxl,
+            ),
+            children: [
+              Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.25,
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: CircleAvatar(
-                              radius: 40,
-                              backgroundImage:
-                                  photoUrl != null ? NetworkImage(photoUrl!) : null,
-                              child: photoUrl == null
-                                  ? Text(
-                                      avatarText!,
-                                      style: TextStyle(fontSize: 24),
-                                    )
-                                  : null,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          displayName!,
-                          style:
-                              TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 20),
-                        _buildListTile(
-                          leadingIcon: Icons.account_circle,
-                          title: 'Account',
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AccountScreen()),
-                            );
-                            await _auth.currentUser?.reload();
-                          },
-                        ),
-                        _buildListTile(
-                          leadingIcon: Icons.notifications,
-                          title: 'Notification',
-                          onTap: () {
-                            // Navigate to Notification settings
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => NotificationSettings()),
-                            );
-                          },
-                        ),
-                        _buildListTile(
-                          leadingIcon: Icons.category,
-                          title: 'Category Settings',
-                          onTap: () {
-                            // Navigate to category settings
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CategorySettingScreen()),
-                            );
-                          },
-                        ),
-                        Builder(builder: (context) {
-                          final householdId =
-                              Provider.of<my_app_user.User?>(context)
-                                  ?.householdId;
-                          if (householdId == null) return const SizedBox.shrink();
-                          return _buildListTile(
-                            leadingIcon: Icons.home,
-                            title: 'Household',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => HouseholdSettingsScreen(
-                                        householdId: householdId)),
-                              );
-                            },
-                          );
-                        }),
-                        Spacer(),
-                        TextButton(
-                          onPressed: () async {
-                            // Implement logout functionality
-                            await _auth.signOut();
-                          },
-                          child: Text(
-                            'Log Out',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
+                  MemberAvatar(name: displayName, size: 72),
+                  const SizedBox(height: AppSpacing.md),
+                  Text(displayName,
+                      style: Theme.of(context).textTheme.headlineSmall),
+                  if (email.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(email,
+                        style: Theme.of(context).textTheme.bodyMedium),
+                  ],
+                ],
+              ),
+              const SectionHeader(title: 'ACCOUNT'),
+              _SettingsGroup(
+                children: [
+                  _SettingsTile(
+                    icon: Icons.account_circle_outlined,
+                    title: 'Account',
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AccountScreen()),
+                      );
+                      await _auth.currentUser?.reload();
+                    },
+                  ),
+                  const Divider(height: 1, indent: AppSpacing.huge),
+                  _SettingsTile(
+                    icon: Icons.notifications_outlined,
+                    title: 'Notification',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => NotificationSettings()),
+                      );
+                    },
                   ),
                 ],
               ),
-            );
-          }
-      }
+              const SectionHeader(title: 'PREFERENCES'),
+              _SettingsGroup(
+                children: [
+                  _SettingsTile(
+                    icon: Icons.category_outlined,
+                    title: 'Category Settings',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CategorySettingScreen()),
+                      );
+                    },
+                  ),
+                  Builder(builder: (context) {
+                    final householdId =
+                        Provider.of<my_app_user.User?>(context)?.householdId;
+                    if (householdId == null) return const SizedBox.shrink();
+                    return Column(
+                      children: [
+                        const Divider(height: 1, indent: AppSpacing.huge),
+                        _SettingsTile(
+                          icon: Icons.home_outlined,
+                          title: 'Household',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HouseholdSettingsScreen(
+                                    householdId: householdId),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  }),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.xxl),
+              TextButton(
+                onPressed: () async {
+                  await _auth.signOut();
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: AppColors.error,
+                  textStyle: Theme.of(context).textTheme.titleMedium,
+                ),
+                child: const Text('Log Out'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
+}
 
-  // Future<String> fetchUserName() async {
-  //
-  //   // final docSnapshot =
-  //   //     await _settingsCollection.doc(_auth.currentUser!.uid).get();
-  //   // print('profile email: ${_auth.firebaseAuthUser!.displayName}');
-  //   // print("profile disaplay name:${_auth.firebaseAuthUser!.email}");
-  //   // //print photourl
-  //   // print("profile photo:${_auth.firebaseAuthUser!.photoURL}");
-  //   // return docSnapshot['name'];
-  //
-  //   return _auth.firebaseAuthUser!.displayName;
-  //
-  // }
+class _SettingsGroup extends StatelessWidget {
+  final List<Widget> children;
 
-  Widget _buildListTile({
-    required IconData leadingIcon,
-    required String title,
-    required VoidCallback onTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0), // Add your desired padding here
-      child: Material(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(15),
-        clipBehavior: Clip.antiAlias,
-        child: ListTile(
-          leading: Icon(leadingIcon),
-          title: Text(title),
-          onTap: () {
-            onTap();
-          },
+  const _SettingsGroup({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      padding: EdgeInsets.zero,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Material(
+          color: Colors.transparent,
+          child: Column(children: children),
         ),
+      ),
+    );
+  }
+}
+
+class _SettingsTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const _SettingsTile({
+    required this.icon,
+    required this.title,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon, color: AppColors.primary),
+      title: Text(title, style: Theme.of(context).textTheme.bodyLarge),
+      trailing: const Icon(
+        Icons.chevron_right,
+        color: AppColors.textTertiary,
+      ),
+      onTap: onTap,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
     );
   }

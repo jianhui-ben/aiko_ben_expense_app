@@ -1,3 +1,4 @@
+import 'package:aiko_ben_expense_app/core/theme/app_colors.dart';
 import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -48,8 +49,8 @@ class _ExpenseByCategoryBarChartState extends State<ExpenseByCategoryBarChart> {
           yValueMapper: (_ChartData transactions, _) => transactions.transactionAmount,
           dataLabelSettings: DataLabelSettings(isVisible: true),
           enableTooltip: true,
-          color: Color(0xFF6200EE),
-          opacity: 0.4,
+          color: AppColors.categoryAccent,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
         ),
       ],));
   }

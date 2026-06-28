@@ -1,4 +1,6 @@
 
+import 'package:aiko_ben_expense_app/core/theme/app_colors.dart';
+import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/single_transaction/numeric_keypad.dart';
@@ -74,89 +76,114 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
   Widget build(BuildContext context) {
     final User? user = context.read<User?>();
 
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: AppColors.surface,
       body: Column(
-          children: [
-            // drag handler
-            Padding(
-              padding: const EdgeInsets.only(top: 15.0),
-              child: Opacity(
-                opacity: 0.40,
-                child: Container(
-                  width: 32,
-                  height: 4,
-                  decoration: ShapeDecoration(
-                    color: Color(0xFF79747E),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                  ),
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // drag handle
+          Padding(
+            padding: const EdgeInsets.only(top: AppSpacing.md),
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.border,
+                borderRadius: BorderRadius.circular(100),
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          // category label
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconTheme(
+                data: const IconThemeData(
+                  color: AppColors.categoryAccent,
+                  size: 20,
+                ),
+                child: widget.category.categoryIcon,
+              ),
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                widget.category.categoryName,
+                style: theme.textTheme.titleMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          // amount entry
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
+            child: TextField(
+              controller: transactionAmountInput,
+              keyboardType: TextInputType.none,
+              focusNode: _focus,
+              textAlign: TextAlign.center,
+              decoration: const InputDecoration(
+                prefixText: '\$ ',
+                prefixStyle: transactionAmountInputTextStyle,
+                hintText: '0',
+                hintStyle: transactionAmountInputTextStyle,
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                filled: false,
+                contentPadding: EdgeInsets.zero,
+              ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                    RegExp(r'^\$?\d+\.?\d{0,2}')),
+              ],
+              style: transactionAmountInputTextStyle,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          // description
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
+            child: TextField(
+              controller: transactionCommentInput,
+              decoration: InputDecoration(
+                hintText: 'Description: ex. Trader Joes',
+                hintStyle: inputBoxHintTextStyle,
+                filled: true,
+                fillColor: AppColors.surfaceVariant,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.md,
                 ),
               ),
             ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.height * 0.15,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(80, 0, 50, 0),
-                child: TextField(
-                  controller: transactionAmountInput,
-                  keyboardType: TextInputType.none,
-                  focusNode: _focus, // pass focusNode to our textfield
-                  decoration: InputDecoration(
-                    prefix: Text('\$ '), // Add a dollar sign as a prefix
-                    border: InputBorder.none, // Remove the outline border
-                    // border: OutlineInputBorder(), //for debugging
-                  ),
-                  // keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  // Allow decimal input
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r'^\$?\d+\.?\d{0,2}')), // Format as currency
-                  ],
-                  style: transactionAmountInputTextStyle, // Style for entered text
-                  // textAlign: TextAlign.center, // Center the text horizontally
-                ),
-              ),
+          ),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.md,
+              AppSpacing.lg,
+              AppSpacing.xxxl,
             ),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.8,
-              height: MediaQuery.of(context).size.height * 0.08,
-              child: TextField(
-                controller: transactionCommentInput,
-                decoration: InputDecoration(
-                  hintText: "Description: ex. Trader Joes",
-                  hintStyle: inputBoxHintTextStyle,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none, // Remove the underline
-                  ),
-                  filled: true,
-                  fillColor: Color(0xFFE6E0E9),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),                    ),
-                // style: TextStyle(fontSize: 5.0,), // Style for entered text
-                // textAlign: TextAlign.center, // Center the text horizontally
-              ),
+            child: NumericKeypad(
+              controller: transactionAmountInput,
+              focusNode: _focus,
+              onSubmit: () => _submitToDatabase(user),
+              onSetDate: (DateTime date) {
+                dateInput.text = DateFormat('MM/dd/yyyy').format(date);
+              },
             ),
-            // 6) if hasFocus show keyboard, else show empty container
-            // _focus.hasFocus
-            //     ? NumericKeypad(
-            //   controller: transactionAmountInput, focusNode: _focus,
-            // )
-            //     : Container(),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 50),
-              child: Container(
-                // height: MediaQuery.of(context).size.height * 0.3,
-                child: NumericKeypad(
-                  controller: transactionAmountInput, focusNode: _focus,
-                  onSubmit: () => _submitToDatabase(user),
-                  onSetDate: (DateTime date) {
-                    dateInput.text = DateFormat('MM/dd/yyyy').format(date);
-                  },
-                ),
-              ),
-            )
+          ),
         ],
       ),
     );

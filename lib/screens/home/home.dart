@@ -1,16 +1,16 @@
-
+import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
-import 'package:aiko_ben_expense_app/screens/home/category_icon_button.dart';
+import 'package:aiko_ben_expense_app/screens/single_transaction/add_or_edit_single_transaction.dart';
 import 'package:aiko_ben_expense_app/screens/home/spending_and_budget/daily_and_monthly_total.dart';
 import 'package:aiko_ben_expense_app/screens/home/transactions_list/transactions_list.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
+import 'package:aiko_ben_expense_app/shared/widgets/app_scaffold.dart';
+import 'package:aiko_ben_expense_app/shared/widgets/category_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
-import '../../shared/constants.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -20,145 +20,112 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int currentPageIndex = 0;
-  NavigationDestinationLabelBehavior labelBehavior =
-      NavigationDestinationLabelBehavior.alwaysShow;
-  Map<String, Category>? userCategoriesMap; // Store user categories (all 50)
-  List<String>? orderedUserCategoryIds; // store the order of the selected categories
-
-  final numOfCategoriesInARow = 4;
-  final numOfCategoriesInAColumn = 2;
+  Map<String, Category>? userCategoriesMap;
+  List<String>? orderedUserCategoryIds;
+  String householdName = 'Home';
 
   // by default select today's date
   DateTime selectedDate =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
-  bool isDailyView = true;
-
-
   @override
   void initState() {
     super.initState();
-    // Call the asynchronous function
-    // in this case, it would only call the getUserCategoriesMap once
-    fetchUserCategories();
+    fetchHomeData();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final user = Provider.of<User?>(context);
-    DatabaseService db = DatabaseService(householdId: user?.householdId);
-
-    if (userCategoriesMap == null) {
-      return Loading();
-    } else {
-      db.setUserCategoriesMap(userCategoriesMap!);
-
-      return Scaffold(
-          body: Stack(
-            children: [
-              // Positioned image at the bottom right
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Opacity(
-                  opacity: 0.4, // Adjust the opacity as needed
-                  child: Image.asset('assets/images/finance_pig.jpg'),
-                ),
-              ),
-
-              Column(mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.12,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          //add a sizedbox at the front before the date
-                          SizedBox(width: 15),
-                          Text(
-                            DateFormat('EEEE, d MMM').format(selectedDate),
-                            style: topDateOnHomeTextStyle,
-                          ),
-                          // Calendar icon button
-                          IconButton(
-                            icon: Icon(
-                              Icons.calendar_today,
-                              color: Colors.grey,
-                              size: 18,
-                            ),
-                            onPressed: () async {
-                              final DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: selectedDate,
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2101),
-                              );
-                              if (pickedDate != null && pickedDate != selectedDate) {
-                                setState(() {
-                                  selectedDate = pickedDate;
-                                });
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: DailyAndMonthlyTotal(selectedDate: selectedDate,),
-                  ),
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.12,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: orderedUserCategoryIds!.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                            padding: const EdgeInsets.fromLTRB(10, 2, 10, 2),
-                            // Add some padding
-                            child: CategoryIconButton(
-                              category:
-                                  userCategoriesMap![orderedUserCategoryIds![index]]!,
-                              selectedDate: selectedDate,
-                            ) // The rest of your CategoryIconButton content
-                            );
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(6, 0, 6, 0),
-                      child: TransactionsList(
-                        selectedDate: selectedDate,
-                        isDailyView: isDailyView,
-                      ),
-                    ),
-                  ),
-                ]
-            ),
-
-            ]
-          )
-      );
-    }
-  }
-
-  Future<void> fetchUserCategories() async {
+  Future<void> fetchHomeData() async {
     final householdId = Provider.of<User?>(context, listen: false)!.householdId!;
     final fetchedCategoriesMap = await getHouseholdCategoriesMap(householdId);
-    final fetchedOrderedUserCategoryIds =
-        await getHouseholdSelectedCategoryIds(householdId);
+    final fetchedOrderedIds = await getHouseholdSelectedCategoryIds(householdId);
+    final fetchedName = await getHouseholdName(householdId);
 
     if (!mounted) return;
     setState(() {
       userCategoriesMap = fetchedCategoriesMap;
-      orderedUserCategoryIds = fetchedOrderedUserCategoryIds;
+      orderedUserCategoryIds = fetchedOrderedIds;
+      householdName = fetchedName;
     });
   }
 
+  Future<void> _pickDate() async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null && pickedDate != selectedDate) {
+      setState(() => selectedDate = pickedDate);
+    }
+  }
+
+  void _openAddSheet(Category category) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      constraints: BoxConstraints.loose(
+        Size(
+          MediaQuery.of(context).size.width,
+          MediaQuery.of(context).size.height * 0.6,
+        ),
+      ),
+      builder: (context) {
+        return AddOrEditSingleTransaction(
+          category: category,
+          selectedDate: selectedDate,
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (userCategoriesMap == null || orderedUserCategoryIds == null) {
+      return const Loading();
+    }
+
+    return AppScaffold(
+      title: householdName,
+      subtitle: DateFormat('EEEE, d MMM').format(selectedDate),
+      trailing: IconButton(
+        icon: const Icon(Icons.calendar_today_outlined, size: 22),
+        onPressed: _pickDate,
+        tooltip: 'Pick date',
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: SpendingSummary(selectedDate: selectedDate),
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          SizedBox(
+            height: 88,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              itemCount: orderedUserCategoryIds!.length,
+              itemBuilder: (context, index) {
+                final category =
+                    userCategoriesMap![orderedUserCategoryIds![index]]!;
+                return CategoryChip(
+                  category: category,
+                  onTap: () => _openAddSheet(category),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Expanded(
+            child: TransactionsList(
+              selectedDate: selectedDate,
+              isDailyView: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

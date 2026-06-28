@@ -1,10 +1,14 @@
 
+import 'package:aiko_ben_expense_app/core/theme/app_colors.dart';
+import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
 import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/home/transactions_list/transaction_tile.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/util.dart';
+import 'package:aiko_ben_expense_app/shared/widgets/amount_text.dart';
+import 'package:aiko_ben_expense_app/shared/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -120,74 +124,99 @@ class _TransactionsListState extends State<TransactionsList> {
     filteredTransactionsList = Util.sortTransactionsByDateAndAmount(filteredTransactionsList);
     _groupedTransactionsList = groupTransactionsByDate(filteredTransactionsList);
 
+    final theme = Theme.of(context);
+
     return filteredTransactionsList.isEmpty
-        ? DefaultEmptyTransactionList()
+        ? const DefaultEmptyTransactionList()
         : ListView.builder(
-        controller:  _scrollController,
+            controller: _scrollController,
             shrinkWrap: true,
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.lg,
+              AppSpacing.sm,
+              AppSpacing.lg,
+              AppSpacing.xxxl,
+            ),
             itemCount: _groupedTransactionsList.length,
             itemBuilder: (context, index) {
               final entry = _groupedTransactionsList.entries.elementAt(index);
               return Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.only(bottom: AppSpacing.lg),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      // color: Colors.blue,
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: AppSpacing.xs,
+                        right: AppSpacing.xs,
+                        bottom: AppSpacing.sm,
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            DateFormat('MMM d, yyyy').format(entry.key),
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                            _formatGroupLabel(entry.key),
+                            style: theme.textTheme.labelMedium,
                           ),
-                          Text(
-                            "Total: \$${Util.sumTotal(entry.value).toStringAsFixed(0)}",
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          AmountText(
+                            amount: Util.sumTotal(entry.value),
+                            style: theme.textTheme.labelMedium,
                           ),
                         ],
                       ),
                     ),
-                    Divider(height: 1),
-                    Column(
-                      children: entry.value.map((transaction) {
-                        return Dismissible(
-                          // Each Dismissible must contain a Key. Keys allow Flutter to
-                          // uniquely identify widgets.
-                            key: Key(transaction.transactionId),
-                            // Provide a function that tells the app
-                            // what to do after an item has been swiped away.
-                            onDismissed: (direction) async {
-                              await DatabaseService(householdId: user!.householdId)
-                                  .removeTransactionById(transaction.transactionId);
-
-                              // // optional: Then show a snackbar. this could show some flutter error
-                              // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              //     content: Text(
-                              //         'transaction ${transaction.category.categoryName} removed')));
-                            },
-                            // Show a red background as the item is swiped away.
-                            background: Container(color: Colors.red),
-                            child: TransactionTile(
-                                transactionId: transaction.transactionId,
-                                selectedDate:
-                                    transaction.dateTime ?? widget.selectedDate,
-                                transactionCategory: transaction.category,
-                                transactionComment:
-                                    (transaction.transactionComment != null &&
-                                            transaction
-                                                .transactionComment!.isNotEmpty)
-                                        ? transaction.transactionComment!
-                                        : transaction.category.categoryName,
-                                transactionAmount:
-                                    transaction.transactionAmount));
-                      }).toList(),
-                    ),
+                    ...entry.value.map((transaction) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                        child: Dismissible(
+                          key: Key(transaction.transactionId),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (direction) async {
+                            await DatabaseService(householdId: user!.householdId)
+                                .removeTransactionById(transaction.transactionId);
+                          },
+                          background: _dismissBackground(),
+                          child: TransactionTile(
+                            transactionId: transaction.transactionId,
+                            selectedDate:
+                                transaction.dateTime ?? widget.selectedDate,
+                            transactionCategory: transaction.category,
+                            transactionComment:
+                                (transaction.transactionComment != null &&
+                                        transaction.transactionComment!.isNotEmpty)
+                                    ? transaction.transactionComment!
+                                    : transaction.category.categoryName,
+                            transactionAmount: transaction.transactionAmount,
+                            createdByName: transaction.createdByName,
+                          ),
+                        ),
+                      );
+                    }),
                   ],
                 ),
               );
             });
+  }
+
+  String _formatGroupLabel(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    if (date == today) return 'Today';
+    if (date == yesterday) return 'Yesterday';
+    return DateFormat('EEEE, MMM d').format(date);
+  }
+
+  Widget _dismissBackground() {
+    return Container(
+      alignment: Alignment.centerRight,
+      padding: const EdgeInsets.only(right: AppSpacing.xl),
+      decoration: BoxDecoration(
+        color: AppColors.error,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+      ),
+      child: const Icon(Icons.delete_outline, color: Colors.white),
+    );
   }
 
   Map<DateTime, List<Transaction>> groupTransactionsByDate(
@@ -233,21 +262,14 @@ class _TransactionsListState extends State<TransactionsList> {
 }
 
 class DefaultEmptyTransactionList extends StatelessWidget {
+  const DefaultEmptyTransactionList({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.info_outline, size: 48, color: Colors.grey),
-          SizedBox(height: 16),
-          Text(
-            'No transactions this month.',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-        ],
-      ),
+    return const EmptyState(
+      icon: Icons.receipt_long_outlined,
+      title: 'No expenses yet',
+      subtitle: 'Tap a category above to add your first expense.',
     );
   }
 }

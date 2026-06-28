@@ -142,7 +142,7 @@ Future<void> _signUp(
 }) async {
   // Toggle from sign-in to the register screen.
   await _tap(tester, find.widgetWithText(TextButton, 'Sign up'));
-  await _pumpUntilFound(tester, find.text('Register'));
+  await _pumpUntilFound(tester, find.text('Create account'));
 
   final fields = find.byType(TextFormField);
   await tester.enterText(fields.at(0), email);
@@ -150,7 +150,7 @@ Future<void> _signUp(
   await tester.enterText(fields.at(2), name);
   await tester.pump();
 
-  await _tap(tester, find.widgetWithText(ElevatedButton, 'Sign up'));
+  await _tap(tester, find.widgetWithText(FilledButton, 'Sign up'));
 }
 
 Future<void> _createHousehold(WidgetTester tester, String householdName) async {
