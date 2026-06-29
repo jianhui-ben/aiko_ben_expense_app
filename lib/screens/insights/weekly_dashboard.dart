@@ -1,34 +1,35 @@
-import 'package:aiko_ben_expense_app/models/transaction.dart';
-import 'package:aiko_ben_expense_app/screens/insights/charts/expense_by_category_bar_chart.dart';
-import 'package:aiko_ben_expense_app/screens/insights/charts/total_amount.dart';
-import 'package:aiko_ben_expense_app/screens/insights/charts/week_expense_spline_chart.dart';
+import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
+import 'package:aiko_ben_expense_app/screens/insights/charts/category_breakdown.dart';
+import 'package:aiko_ben_expense_app/screens/insights/charts/household_split.dart';
+import 'package:aiko_ben_expense_app/screens/insights/charts/week_daily_trend.dart';
+import 'package:aiko_ben_expense_app/screens/insights/charts/week_overview.dart';
+import 'package:aiko_ben_expense_app/screens/insights/period_range.dart';
 import 'package:flutter/material.dart';
 
-class WeeklyDashboard extends StatefulWidget {
+/// Week view: a recent, fast-moving lens — how this week compares to last,
+/// daily spend, and where it went. Drops the longer-horizon trend modules.
+class WeeklyDashboard extends StatelessWidget {
+  const WeeklyDashboard({super.key});
 
-  final List<Transaction> transactions;
-  const WeeklyDashboard({super.key, required this.transactions});
-
-  @override
-  State<WeeklyDashboard> createState() => _WeeklyDashboardState();
-}
-
-class _WeeklyDashboardState extends State<WeeklyDashboard> {
   @override
   Widget build(BuildContext context) {
-
-    List<Widget> charts = [
-      TotalAmount(title: 'Week Total:', transactions: widget.transactions),
-      WeekExpenseSplineChart(transactions: widget.transactions),
-      ExpenseByCategoryBarChart(transactions: widget.transactions),
-    ];
-
     return Scaffold(
-      body: ListView.builder(
-        itemCount: charts.length,
-        itemBuilder: (BuildContext context, int index) {
-          return charts[index];
-        },
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.sm,
+          AppSpacing.lg,
+          AppSpacing.xxxl,
+        ),
+        children: const [
+          WeekOverview(),
+          SizedBox(height: AppSpacing.lg),
+          WeekDailyTrend(),
+          SizedBox(height: AppSpacing.lg),
+          CategoryBreakdown(period: InsightPeriod.week),
+          SizedBox(height: AppSpacing.lg),
+          HouseholdSplit(period: InsightPeriod.week),
+        ],
       ),
     );
   }

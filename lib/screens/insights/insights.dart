@@ -7,9 +7,7 @@ import 'package:aiko_ben_expense_app/screens/insights/monthly_dashboard.dart';
 import 'package:aiko_ben_expense_app/screens/insights/weekly_dashboard.dart';
 import 'package:aiko_ben_expense_app/screens/insights/yearly_dashboard.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
-import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
-import 'package:aiko_ben_expense_app/shared/util.dart';
 import 'package:aiko_ben_expense_app/shared/widgets/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -57,9 +55,9 @@ class _InsightsState extends State<Insights> {
 
     // List of dashboard widgets for each tab
     final List<Widget> dashboards = [
-      WeeklyDashboard(transactions: Util.filterTransactionListToLastSevenDays(transactionStream, today)),
-      MonthlyDashboard(transactions: Util.filterTransactionListToMonth(transactionStream, today)),
-      YearlyDashboard(transactions: Util.filterTransactionListToYear(transactionStream, today)),
+      const WeeklyDashboard(),
+      const MonthlyDashboard(),
+      const YearlyDashboard(),
     ];
 
     if (userCategoriesMap == null) {
