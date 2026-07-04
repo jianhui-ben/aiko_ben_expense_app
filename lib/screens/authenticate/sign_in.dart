@@ -1,5 +1,6 @@
 import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
+import 'package:aiko_ben_expense_app/screens/authenticate/auth_header.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
 import 'package:aiko_ben_expense_app/services/user_bootstrap.dart';
 import 'package:flutter/material.dart';
@@ -83,9 +84,10 @@ class _SignInState extends State<SignIn> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: AppSpacing.huge),
-                Text('Aiko', style: theme.textTheme.headlineLarge),
-                const SizedBox(height: AppSpacing.sm),
-                Text('Track together', style: theme.textTheme.bodyMedium),
+                const AuthHeader(
+                  title: 'Welcome back',
+                  subtitle: 'Sign in to your account',
+                ),
                 const SizedBox(height: AppSpacing.xxxl),
                 TextFormField(
                   controller: emailController,

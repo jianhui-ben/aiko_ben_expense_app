@@ -77,7 +77,7 @@ void main() {
       // Logout returns to the sign-in screen.
       await _pumpUntilFound(tester, find.widgetWithText(TextButton, 'Log Out'));
       await _tap(tester, find.widgetWithText(TextButton, 'Log Out'));
-      await _pumpUntilFound(tester, find.text('Track together'));
+      await _pumpUntilFound(tester, find.text('Welcome back'));
     },
   );
 
@@ -131,7 +131,7 @@ void main() {
 
 Future<void> _launchApp(WidgetTester tester) async {
   await app.main();
-  await _pumpUntilFound(tester, find.text('Track together'));
+  await _pumpUntilFound(tester, find.text('Welcome back'));
 }
 
 Future<void> _signUp(
@@ -192,7 +192,7 @@ Future<void> _logoutViaUi(WidgetTester tester) async {
   await _openTab(tester, 'Settings');
   await _pumpUntilFound(tester, find.widgetWithText(TextButton, 'Log Out'));
   await _tap(tester, find.widgetWithText(TextButton, 'Log Out'));
-  await _pumpUntilFound(tester, find.text('Track together'));
+  await _pumpUntilFound(tester, find.text('Welcome back'));
 }
 
 Future<void> _openTab(WidgetTester tester, String label) async {

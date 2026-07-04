@@ -53,6 +53,7 @@ flutter:
 
   assets:
     - assets/images/finance_pig.jpg
+    - assets/icon/app_icon.png
 
 dependency_overrides:
   win32: ^5.15.0
