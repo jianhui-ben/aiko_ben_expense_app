@@ -235,9 +235,18 @@ overflows / zero caught exceptions.
 
 ### Task 12: Bundle ID + Firebase
 
-- [ ] Change iOS bundle ID to `com.aikoben.expense` in Xcode + `android/app/build.gradle`
-- [ ] Run `flutterfire configure` for new bundle ID
-- [ ] Regenerate app icon
+- [x] Change iOS bundle ID to `com.aikoben.expense` (Runner + RunnerTests in
+  `project.pbxproj`) and Android `applicationId` to `com.aikoben.expense` in
+  `android/app/build.gradle` (Kotlin `namespace` left as-is so `MainActivity`
+  doesn't move; `applicationId` is what the store/Firebase use).
+- [x] Regenerate app icon — generated `assets/icon/app_icon.png` (1024², two
+  overlapping circles + `$` on indigo) and wired `flutter_launcher_icons`
+  (`remove_alpha_ios: true`, indigo adaptive icon). Ran the generator → all iOS
+  + Android icons regenerated. Also removed the unused `finance_pig.jpg` asset.
+- [ ] **Pending (user, interactive):** `flutterfire configure` for the new bundle
+  ID to re-register the iOS/Android apps and regenerate `firebase_options.dart` +
+  `GoogleService-Info.plist`. Build will not run on device until this + signing
+  Team are set. The app will NOT build/connect to Firebase until this is done.
 
 ### Task 13: TestFlight upload
 
