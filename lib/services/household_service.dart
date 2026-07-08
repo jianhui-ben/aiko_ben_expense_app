@@ -2,8 +2,10 @@ import 'dart:math';
 
 import 'package:aiko_ben_expense_app/models/all_categories.dart';
 import 'package:aiko_ben_expense_app/models/household.dart';
+import 'package:aiko_ben_expense_app/shared/category_icon_library.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart' show Icons;
 
 /// Raised when a household operation fails for a user-visible reason.
 class HouseholdException implements Exception {
@@ -37,7 +39,9 @@ class HouseholdService {
     for (final category in allCategories) {
       categories[category.categoryId] = {
         'categoryName': category.categoryName,
-        'categoryIcon': supportedIconsToStringMap[category.categoryIcon.icon],
+        'categoryIcon': supportedIconsToStringMap[category.categoryIcon.icon] ??
+            iconKeyForIconData(category.categoryIcon.icon ?? Icons.more_horiz),
+        'isHidden': false,
       };
     }
     return categories;
@@ -73,6 +77,7 @@ class HouseholdService {
       'inviteCode': inviteCode,
       'monthlyBudget': defaultMonthlyBudget,
       'selectedCategoryIds': _defaultSelectedCategoryIds,
+      'pinnedCategoryIds': _defaultSelectedCategoryIds,
       'categories': _defaultCategories(),
       'createdBy': uid,
       'createdAt': FieldValue.serverTimestamp(),
