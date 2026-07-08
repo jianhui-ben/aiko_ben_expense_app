@@ -45,7 +45,7 @@ const topDateOnHomeTextStyle = TextStyle(
 );
 
 //colors in setting page
-const categoryIconColor = AppColors.textPrimary;
+const categoryIconColor = AppColors.categoryAccent;
 const categoryNameTextColor = AppColors.textPrimary;
 
 ThemeData getCustomTheme() => AppTheme.light;
