@@ -5,9 +5,7 @@ import 'package:aiko_ben_expense_app/screens/setting/account_screen.dart';
 import 'package:aiko_ben_expense_app/screens/setting/category_setting_screen.dart';
 import 'package:aiko_ben_expense_app/screens/setting/household_settings_screen.dart';
 import 'package:aiko_ben_expense_app/screens/setting/notification_settings.dart';
-import 'package:aiko_ben_expense_app/models/household.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
-import 'package:aiko_ben_expense_app/services/household_service.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:aiko_ben_expense_app/shared/widgets/app_card.dart';
 import 'package:aiko_ben_expense_app/shared/widgets/app_scaffold.dart';
@@ -113,25 +111,16 @@ class _SettingsState extends State<Settings> {
                     return Column(
                       children: [
                         const Divider(height: 1, indent: AppSpacing.huge),
-                        StreamBuilder<Household?>(
-                          stream: HouseholdService()
-                              .householdStream(householdId),
-                          builder: (context, snapshot) {
-                            final name = snapshot.data?.name;
-                            return _SettingsTile(
-                              icon: Icons.home_outlined,
-                              title: 'Household',
-                              subtitle: name,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        HouseholdSettingsScreen(
-                                            householdId: householdId),
-                                  ),
-                                );
-                              },
+                        _SettingsTile(
+                          icon: Icons.home_outlined,
+                          title: 'Household',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => HouseholdSettingsScreen(
+                                    householdId: householdId),
+                              ),
                             );
                           },
                         ),
@@ -182,13 +171,11 @@ class _SettingsGroup extends StatelessWidget {
 class _SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String? subtitle;
   final VoidCallback onTap;
 
   const _SettingsTile({
     required this.icon,
     required this.title,
-    this.subtitle,
     required this.onTap,
   });
 
@@ -197,9 +184,6 @@ class _SettingsTile extends StatelessWidget {
     return ListTile(
       leading: Icon(icon, color: AppColors.primary),
       title: Text(title, style: Theme.of(context).textTheme.bodyLarge),
-      subtitle: subtitle != null
-          ? Text(subtitle!, style: Theme.of(context).textTheme.bodyMedium)
-          : null,
       trailing: const Icon(
         Icons.chevron_right,
         color: AppColors.textTertiary,

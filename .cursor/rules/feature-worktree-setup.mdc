@@ -1,0 +1,20 @@
+---
+description: Require isolated git worktree before starting new feature work
+alwaysApply: true
+---
+
+# Feature isolation with git worktrees
+
+When the user asks to implement a **new feature**, start a plan, or begin non-trivial feature work on this repo:
+
+1. **Read and follow** the `using-git-worktrees` skill:
+   `~/.claude/plugins/cache/claude-plugins-official/superpowers/6.1.1/skills/using-git-worktrees/SKILL.md`
+2. **Announce** at the start: "I'm using the using-git-worktrees skill to set up an isolated workspace."
+3. Run **Step 0 detection** (already in a worktree? submodule?) before creating anything.
+4. **One feature per branch + worktree.** Do not stack unrelated features on the same branch.
+5. **Never commit feature work on `main`.** Use `feature/<short-name>` in a dedicated worktree.
+6. **Default layout** (sibling directories, outside the repo):
+   - Path: `/Users/benben/Projects/aiko_ben_expense_app-<feature-slug>`
+   - Branch: `feature/<feature-slug>`
+7. After creating a worktree, run project setup (`flutter pub get`) and verify a clean baseline before editing.
+8. If the working tree already mixes **two unrelated features**, stop and split into separate worktrees before continuing (commit WIP → two worktrees → revert unrelated files per worktree).

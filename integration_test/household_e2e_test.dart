@@ -43,7 +43,7 @@ void main() {
       await _signUp(tester, email: email, password: 'test1234', name: 'Alice E2E');
 
       // New user is gated into household setup.
-      await _pumpUntilFound(tester, find.text('Choose a household'));
+      await _pumpUntilFound(tester, find.text('Set up your household'));
 
       await _createHousehold(tester, 'Ben & Aiko');
 
@@ -69,71 +69,15 @@ void main() {
 
       // Household settings shows the invite code.
       await _openTab(tester, 'Settings');
-      expect(find.text('Ben & Aiko'), findsOneWidget,
-          reason: 'settings tile should show household name');
       await _tap(tester, find.text('Household'));
       await _pumpUntilFound(tester, find.text('Invite code'));
       expect(find.text('Members'), findsOneWidget);
-      expect(find.text('Leave household'), findsOneWidget);
-      expect(find.text('Alice E2E (You)'), findsOneWidget);
-      final leaveCta = find.widgetWithText(
-        FilledButton,
-        'Switch to a different household',
-      );
-      await tester.ensureVisible(leaveCta.first);
-      expect(tester.widget<FilledButton>(leaveCta).onPressed, isNotNull,
-          reason: 'sole owner should be able to leave');
       await _tap(tester, find.byType(BackButton));
 
       // Logout returns to the sign-in screen.
       await _pumpUntilFound(tester, find.widgetWithText(TextButton, 'Log Out'));
       await _tap(tester, find.widgetWithText(TextButton, 'Log Out'));
       await _pumpUntilFound(tester, find.text('Welcome back'));
-    },
-  );
-
-  testWidgets(
-    'household settings shows ownership controls when owner has a partner',
-    (tester) async {
-      await _launchApp(tester);
-
-      final ownerEmail = _uniqueEmail('uiowner');
-      await _signUp(tester,
-          email: ownerEmail, password: 'test1234', name: 'UiOwner');
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-      await _createHousehold(tester, 'UI Test Home');
-      await _pumpUntilFound(tester, find.text('Insights'));
-
-      final householdId = await _householdIdForCurrentUser();
-      final inviteCode = await _inviteCodeFor(householdId);
-      await _logoutViaUi(tester);
-
-      await _signUp(tester,
-          email: _uniqueEmail('uipartner'), password: 'test1234', name: 'UiPartner');
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-      await _joinHousehold(tester, inviteCode);
-      await _pumpUntilFound(tester, find.text('Insights'));
-      await _logoutViaUi(tester);
-
-      await _signIn(tester, email: ownerEmail, password: 'test1234');
-      await _pumpUntilFound(tester, find.text('Insights'));
-
-      await _openHouseholdSettings(tester);
-      expect(find.text('Ownership'), findsOneWidget);
-      expect(
-        find.widgetWithText(OutlinedButton, 'Make UiPartner the owner'),
-        findsOneWidget,
-      );
-      expect(find.textContaining('Transfer ownership to UiPartner'),
-          findsOneWidget);
-
-      final leaveCta = find.widgetWithText(
-        FilledButton,
-        'Switch to a different household',
-      );
-      await tester.ensureVisible(leaveCta.first);
-      expect(tester.widget<FilledButton>(leaveCta).onPressed, isNull,
-          reason: 'owner with partner should be blocked until transfer');
     },
   );
 
@@ -145,7 +89,7 @@ void main() {
       // Owner creates a household.
       await _signUp(tester,
           email: _uniqueEmail('owner2'), password: 'test1234', name: 'Owner');
-      await _pumpUntilFound(tester, find.text('Choose a household'));
+      await _pumpUntilFound(tester, find.text('Set up your household'));
       await _createHousehold(tester, 'Shared Home');
       await _pumpUntilFound(tester, find.text('Insights'));
 
@@ -156,7 +100,7 @@ void main() {
       // Second member joins with the code.
       await _signUp(tester,
           email: _uniqueEmail('member'), password: 'test1234', name: 'Member');
-      await _pumpUntilFound(tester, find.text('Choose a household'));
+      await _pumpUntilFound(tester, find.text('Set up your household'));
       await _joinHousehold(tester, inviteCode);
       await _pumpUntilFound(tester, find.text('Insights'));
 
@@ -174,165 +118,9 @@ void main() {
       // A third member is rejected by the 2-member cap.
       await _signUp(tester,
           email: _uniqueEmail('third'), password: 'test1234', name: 'Third');
-      await _pumpUntilFound(tester, find.text('Choose a household'));
+      await _pumpUntilFound(tester, find.text('Set up your household'));
       await _joinHousehold(tester, inviteCode);
       await _pumpUntilFound(tester, find.textContaining('full'));
-    },
-  );
-
-  testWidgets(
-    'member leaves and rejoins the same household with prior transactions',
-    (tester) async {
-      await _launchApp(tester);
-
-      await _signUp(tester,
-          email: _uniqueEmail('rejoin'), password: 'test1234', name: 'Rejoiner');
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-      await _createHousehold(tester, 'Rejoin Home');
-      await _pumpUntilFound(tester, find.text('Insights'));
-
-      await _addTransaction(tester, amountDigits: '25', comment: 'Before leave');
-      final householdId = await _householdIdForCurrentUser();
-      final inviteCode = await _inviteCodeFor(householdId);
-
-      await _leaveHouseholdViaUi(tester);
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-
-      final uid = FirebaseAuth.instance.currentUser!.uid;
-      final userDoc =
-          await FirebaseFirestore.instance.collection('users').doc(uid).get();
-      expect(userDoc.data()?['householdId'], isNull);
-
-      await _joinHousehold(tester, inviteCode);
-      await _pumpUntilFound(tester, find.text('Insights'));
-      expect(await _householdIdForCurrentUser(), householdId);
-
-      final txns = await FirebaseFirestore.instance
-          .collection('households')
-          .doc(householdId)
-          .collection('transactions')
-          .get();
-      expect(txns.docs.any((d) => d.data()['transactionComment'] == 'Before leave'),
-          isTrue);
-    },
-  );
-
-  testWidgets(
-    'member leaves and creates a different household',
-    (tester) async {
-      await _launchApp(tester);
-
-      await _signUp(tester,
-          email: _uniqueEmail('switch'), password: 'test1234', name: 'Switcher');
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-      await _createHousehold(tester, 'House One');
-      await _pumpUntilFound(tester, find.text('Insights'));
-
-      await _addTransaction(tester, amountDigits: '10', comment: 'House one txn');
-      final firstHouseholdId = await _householdIdForCurrentUser();
-
-      await _leaveHouseholdViaUi(tester);
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-      await _createHousehold(tester, 'House Two');
-      await _pumpUntilFound(tester, find.text('Insights'));
-
-      final secondHouseholdId = await _householdIdForCurrentUser();
-      expect(secondHouseholdId, isNot(firstHouseholdId));
-
-      final txns = await FirebaseFirestore.instance
-          .collection('households')
-          .doc(secondHouseholdId)
-          .collection('transactions')
-          .get();
-      expect(txns.docs, isEmpty);
-    },
-  );
-
-  testWidgets(
-    'owner must transfer ownership before leaving when partner remains',
-    (tester) async {
-      await _launchApp(tester);
-
-      final ownerEmail = _uniqueEmail('owner3');
-      await _signUp(tester,
-          email: ownerEmail, password: 'test1234', name: 'Owner3');
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-      await _createHousehold(tester, 'Transfer Home');
-      await _pumpUntilFound(tester, find.text('Insights'));
-
-      final householdId = await _householdIdForCurrentUser();
-      final inviteCode = await _inviteCodeFor(householdId);
-      await _logoutViaUi(tester);
-
-      await _signUp(tester,
-          email: _uniqueEmail('partner3'), password: 'test1234', name: 'Partner3');
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-      await _joinHousehold(tester, inviteCode);
-      await _pumpUntilFound(tester, find.text('Insights'));
-      await _logoutViaUi(tester);
-
-      await _signIn(tester, email: ownerEmail, password: 'test1234');
-      await _pumpUntilFound(tester, find.text('Insights'));
-
-      await _openHouseholdSettings(tester);
-      final leaveButton = find.widgetWithText(
-        FilledButton,
-        'Switch to a different household',
-      );
-      await tester.ensureVisible(leaveButton.first);
-      await tester.pump();
-      expect(leaveButton, findsOneWidget);
-      final widget = tester.widget<FilledButton>(leaveButton);
-      expect(widget.onPressed, isNull,
-          reason: 'owner should be blocked from leaving');
-
-      await _transferOwnershipViaUi(tester, partnerName: 'Partner3');
-      await _leaveHouseholdViaUi(tester, confirmOnly: true);
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-
-      final members = await FirebaseFirestore.instance
-          .collection('households')
-          .doc(householdId)
-          .collection('members')
-          .get();
-      expect(members.size, 1);
-      expect(members.docs.first.data()['role'], 'owner');
-      expect(members.docs.first.data()['displayName'], 'Partner3');
-    },
-  );
-
-  testWidgets(
-    'non-owner can leave while owner remains in the household',
-    (tester) async {
-      await _launchApp(tester);
-
-      final ownerEmail = _uniqueEmail('owner4');
-      await _signUp(tester,
-          email: ownerEmail, password: 'test1234', name: 'Owner4');
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-      await _createHousehold(tester, 'Stay Home');
-      await _pumpUntilFound(tester, find.text('Insights'));
-
-      final householdId = await _householdIdForCurrentUser();
-      final inviteCode = await _inviteCodeFor(householdId);
-      await _logoutViaUi(tester);
-
-      await _signUp(tester,
-          email: _uniqueEmail('member4'), password: 'test1234', name: 'Member4');
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-      await _joinHousehold(tester, inviteCode);
-      await _pumpUntilFound(tester, find.text('Insights'));
-
-      await _leaveHouseholdViaUi(tester);
-      await _pumpUntilFound(tester, find.text('Choose a household'));
-
-      final members = await FirebaseFirestore.instance
-          .collection('households')
-          .doc(householdId)
-          .collection('members')
-          .get();
-      expect(members.size, 1);
-      expect(members.docs.first.data()['displayName'], 'Owner4');
     },
   );
 }
@@ -363,62 +151,6 @@ Future<void> _signUp(
   await tester.pump();
 
   await _tap(tester, find.widgetWithText(FilledButton, 'Sign up'));
-}
-
-Future<void> _signIn(
-  WidgetTester tester, {
-  required String email,
-  required String password,
-}) async {
-  await _pumpUntilFound(tester, find.text('Welcome back'));
-  final fields = find.byType(TextFormField);
-  await tester.enterText(fields.at(0), email);
-  await tester.enterText(fields.at(1), password);
-  await tester.pump();
-  await _tap(tester, find.widgetWithText(FilledButton, 'Sign in'));
-}
-
-Future<void> _openHouseholdSettings(WidgetTester tester) async {
-  await _openTab(tester, 'Settings');
-  await _tap(tester, find.text('Household'));
-  await _pumpUntilFound(tester, find.text('Invite code'));
-}
-
-Future<void> _transferOwnershipViaUi(
-  WidgetTester tester, {
-  required String partnerName,
-}) async {
-  await _tap(
-    tester,
-    find.widgetWithText(OutlinedButton, 'Make $partnerName the owner'),
-  );
-  await _pumpUntilFound(
-    tester,
-    find.widgetWithText(FilledButton, 'Transfer ownership'),
-  );
-  await _tap(tester, find.widgetWithText(FilledButton, 'Transfer ownership'));
-  await _pumpUntilGone(tester, find.text('Ownership'));
-}
-
-Future<void> _leaveHouseholdViaUi(
-  WidgetTester tester, {
-  bool confirmOnly = false,
-}) async {
-  if (!confirmOnly) {
-    await _openHouseholdSettings(tester);
-  }
-  final leaveCta = find.widgetWithText(
-    FilledButton,
-    'Switch to a different household',
-  );
-  await _pumpUntilFound(tester, leaveCta);
-  await tester.ensureVisible(leaveCta.first);
-  await _tap(tester, leaveCta);
-  await _pumpUntilFound(
-    tester,
-    find.widgetWithText(FilledButton, 'Leave household'),
-  );
-  await _tap(tester, find.widgetWithText(FilledButton, 'Leave household'));
 }
 
 Future<void> _createHousehold(WidgetTester tester, String householdName) async {
@@ -513,18 +245,5 @@ Future<void> _pumpUntilFound(
     await tester.pump(const Duration(milliseconds: 150));
     if (finder.evaluate().isNotEmpty) return;
   }
-  throw TestFailure('Timed out waiting for: ${finder.describeMatch(Plurality.one)}');
-}
-
-Future<void> _pumpUntilGone(
-  WidgetTester tester,
-  Finder finder, {
-  Duration timeout = const Duration(seconds: 30),
-}) async {
-  final end = DateTime.now().add(timeout);
-  while (DateTime.now().isBefore(end)) {
-    await tester.pump(const Duration(milliseconds: 150));
-    if (finder.evaluate().isEmpty) return;
-  }
-  throw TestFailure('Timed out waiting for removal of: ${finder.describeMatch(Plurality.one)}');
+  throw TestFailure('Timed out waiting for: ${finder.description}');
 }
