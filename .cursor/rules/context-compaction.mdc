@@ -1,0 +1,12 @@
+---
+description: Proactive context compaction at ~50% usage in long Cursor Agent sessions
+alwaysApply: true
+---
+
+# Context compaction
+
+When the chat context usage indicator appears to be at or above ~50%, pause and tell the user to run `/summarize` before continuing with large tasks.
+
+After summarization (or if the user declines), preserve task state explicitly: current goal, files changed, open TODOs, and next steps.
+
+Do not start unrelated work in the same chat after context has been heavily used; suggest a new chat for unrelated tasks.
