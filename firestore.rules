@@ -11,6 +11,11 @@ service cloud.firestore {
         exists(/databases/$(database)/documents/households/$(householdId)/members/$(request.auth.uid));
     }
 
+    function isOwner(householdId) {
+      return isMember(householdId) &&
+        get(/databases/$(database)/documents/households/$(householdId)/members/$(request.auth.uid)).data.role == 'owner';
+    }
+
     // Per-user document: only the owner can read/write.
     match /users/{uid} {
       allow read, write: if isSignedIn() && request.auth.uid == uid;
@@ -37,6 +42,12 @@ service cloud.firestore {
         // A user may only add or remove their own membership record.
         allow create: if isSignedIn() && request.auth.uid == memberId;
         allow delete: if isSignedIn() && request.auth.uid == memberId;
+        allow update: if isSignedIn() && (
+          (isOwner(householdId) &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role']))
+          || (request.auth.uid == memberId &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName']))
+        );
       }
 
       match /transactions/{txId} {
