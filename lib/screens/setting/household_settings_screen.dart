@@ -171,6 +171,7 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
           return StreamBuilder<List<HouseholdMember>>(
             stream: _service.membersStream(widget.householdId),
             builder: (context, membersSnap) {
+              final membersLoaded = membersSnap.hasData;
               final members = membersSnap.data ?? [];
               HouseholdMember? currentMember;
               for (final m in members) {
@@ -183,7 +184,7 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
               final otherMembers =
                   members.where((m) => m.uid != _currentUid).toList();
               final hasPartner = otherMembers.isNotEmpty;
-              final canLeave = !isOwner || !hasPartner;
+              final canLeave = membersLoaded && (!isOwner || !hasPartner);
               final partner = hasPartner ? otherMembers.first : null;
 
               return ListView(
@@ -249,7 +250,12 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
                   const SizedBox(height: AppSpacing.lg),
                   Text('Members', style: theme.textTheme.headlineSmall),
                   const SizedBox(height: AppSpacing.sm),
-                  if (members.isEmpty)
+                  if (!membersLoaded)
+                    const Padding(
+                      padding: EdgeInsets.all(AppSpacing.md),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else if (members.isEmpty)
                     const Padding(
                       padding: EdgeInsets.all(AppSpacing.md),
                       child: Text('No members yet.'),
@@ -290,7 +296,7 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
                             ),
                           ),
                         )),
-                  if (isOwner && hasPartner && partner != null) ...[
+                  if (membersLoaded && isOwner && hasPartner && partner != null) ...[
                     const SizedBox(height: AppSpacing.lg),
                     Text('Ownership', style: theme.textTheme.headlineSmall),
                     const SizedBox(height: AppSpacing.sm),
@@ -315,6 +321,7 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
                       ),
                     ),
                   ],
+                  if (membersLoaded) ...[
                   const SizedBox(height: AppSpacing.lg),
                   Text('Leave household', style: theme.textTheme.headlineSmall),
                   const SizedBox(height: AppSpacing.sm),
@@ -343,7 +350,16 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
                                     household,
                                     members.length <= 1,
                                   ),
-                          child: const Text('Switch to a different household'),
+                          child: _actionLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text('Switch to a different household'),
                         ),
                         const SizedBox(height: AppSpacing.sm),
                         TextButton(
@@ -361,6 +377,7 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
                       ],
                     ),
                   ),
+                  ],
                 ],
               );
             },
@@ -393,6 +410,7 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
         ],
       ),
     );
+    controller.dispose();
     if (newName != null && newName.isNotEmpty) {
       await _service.updateHouseholdName(household.id, newName);
     }

@@ -208,11 +208,9 @@ class HouseholdService {
 
     final batch = _firestore.batch();
     batch.delete(membersRef.doc(uid));
-    batch.set(
-      _userDoc(uid),
-      {'householdId': null},
-      SetOptions(merge: true),
-    );
+    batch.update(_userDoc(uid), {
+      'householdId': FieldValue.delete(),
+    });
     await batch.commit();
   }
 }

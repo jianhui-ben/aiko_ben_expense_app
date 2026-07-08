@@ -69,13 +69,11 @@ void main() {
 
       // Household settings shows the invite code.
       await _openTab(tester, 'Settings');
-      expect(find.text('Ben & Aiko'), findsOneWidget,
-          reason: 'settings tile should show household name');
-      await _tap(tester, find.text('Household'));
+      await _pumpUntilFound(tester, find.text('Ben & Aiko'));
+      await _tap(tester, find.widgetWithText(ListTile, 'Household'));
       await _pumpUntilFound(tester, find.text('Invite code'));
+      await _pumpUntilFound(tester, find.text('Alice E2E (You)'));
       expect(find.text('Members'), findsOneWidget);
-      expect(find.text('Leave household'), findsOneWidget);
-      expect(find.text('Alice E2E (You)'), findsOneWidget);
       final leaveCta = find.widgetWithText(
         FilledButton,
         'Switch to a different household',
@@ -119,6 +117,7 @@ void main() {
       await _pumpUntilFound(tester, find.text('Insights'));
 
       await _openHouseholdSettings(tester);
+      await _pumpUntilFound(tester, find.text('Ownership'));
       expect(find.text('Ownership'), findsOneWidget);
       expect(
         find.widgetWithText(OutlinedButton, 'Make UiPartner the owner'),
@@ -275,6 +274,7 @@ void main() {
       await _pumpUntilFound(tester, find.text('Insights'));
 
       await _openHouseholdSettings(tester);
+      await _pumpUntilFound(tester, find.text('Ownership'));
       final leaveButton = find.widgetWithText(
         FilledButton,
         'Switch to a different household',
@@ -286,7 +286,11 @@ void main() {
       expect(widget.onPressed, isNull,
           reason: 'owner should be blocked from leaving');
 
-      await _transferOwnershipViaUi(tester, partnerName: 'Partner3');
+      await _transferOwnershipViaUi(
+        tester,
+        partnerName: 'Partner3',
+        householdId: householdId,
+      );
       await _leaveHouseholdViaUi(tester, confirmOnly: true);
       await _pumpUntilFound(tester, find.text('Choose a household'));
 
@@ -380,24 +384,69 @@ Future<void> _signIn(
 
 Future<void> _openHouseholdSettings(WidgetTester tester) async {
   await _openTab(tester, 'Settings');
-  await _tap(tester, find.text('Household'));
+  await _tap(tester, find.widgetWithText(ListTile, 'Household'));
   await _pumpUntilFound(tester, find.text('Invite code'));
 }
 
 Future<void> _transferOwnershipViaUi(
   WidgetTester tester, {
   required String partnerName,
+  String? householdId,
 }) async {
-  await _tap(
-    tester,
-    find.widgetWithText(OutlinedButton, 'Make $partnerName the owner'),
+  final transferButton = find.widgetWithText(
+    OutlinedButton,
+    'Make $partnerName the owner',
   );
+  await _pumpUntilFound(tester, transferButton);
+  await tester.ensureVisible(transferButton.first);
+  await _tap(tester, transferButton);
   await _pumpUntilFound(
     tester,
     find.widgetWithText(FilledButton, 'Transfer ownership'),
   );
   await _tap(tester, find.widgetWithText(FilledButton, 'Transfer ownership'));
-  await _pumpUntilGone(tester, find.text('Ownership'));
+  if (householdId != null) {
+    await _waitForOwnerInFirestore(householdId, partnerName);
+  }
+  await _pumpUntilLeaveEnabled(tester);
+}
+
+Future<void> _waitForOwnerInFirestore(
+  String householdId,
+  String ownerDisplayName,
+) async {
+  final end = DateTime.now().add(const Duration(seconds: 15));
+  while (DateTime.now().isBefore(end)) {
+    final members = await FirebaseFirestore.instance
+        .collection('households')
+        .doc(householdId)
+        .collection('members')
+        .get();
+    final owners = members.docs
+        .where((doc) => doc.data()['displayName'] == ownerDisplayName)
+        .where((doc) => doc.data()['role'] == 'owner');
+    if (owners.isNotEmpty) return;
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+  }
+  throw TestFailure(
+    'Timed out waiting for $ownerDisplayName to become owner in Firestore',
+  );
+}
+
+Future<void> _pumpUntilLeaveEnabled(WidgetTester tester) async {
+  final leaveCta = find.widgetWithText(
+    FilledButton,
+    'Switch to a different household',
+  );
+  final end = DateTime.now().add(const Duration(seconds: 15));
+  while (DateTime.now().isBefore(end)) {
+    await tester.pump(const Duration(milliseconds: 150));
+    if (leaveCta.evaluate().isEmpty) continue;
+    await tester.ensureVisible(leaveCta.first);
+    final button = tester.widget<FilledButton>(leaveCta);
+    if (button.onPressed != null) return;
+  }
+  throw TestFailure('Timed out waiting for leave to be enabled');
 }
 
 Future<void> _leaveHouseholdViaUi(
@@ -419,6 +468,21 @@ Future<void> _leaveHouseholdViaUi(
     find.widgetWithText(FilledButton, 'Leave household'),
   );
   await _tap(tester, find.widgetWithText(FilledButton, 'Leave household'));
+  await _waitUntilCurrentUserHasNoHousehold();
+  await _pumpUntilFound(tester, find.text('Choose a household'));
+}
+
+Future<void> _waitUntilCurrentUserHasNoHousehold() async {
+  final uid = FirebaseAuth.instance.currentUser!.uid;
+  final end = DateTime.now().add(const Duration(seconds: 15));
+  while (DateTime.now().isBefore(end)) {
+    final doc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final householdId = doc.data()?['householdId'];
+    if (householdId == null) return;
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+  }
+  throw TestFailure('Timed out waiting for user householdId to clear');
 }
 
 Future<void> _createHousehold(WidgetTester tester, String householdName) async {

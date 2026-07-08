@@ -69,9 +69,16 @@ class MyApp extends StatelessWidget {
     return StreamProvider<User?>.value(
       value: AuthService().user,
       initialData: null,
-      child: MaterialApp(
-          theme: AppTheme.light,
-          home: Wrapper()
+      child: Consumer<User?>(
+        builder: (context, user, _) {
+          // Reset the navigator when the active household changes so pushed
+          // routes (e.g. HouseholdSettingsScreen) don't cover the setup gate.
+          return MaterialApp(
+            key: ValueKey(user?.householdId ?? 'no-household'),
+            theme: AppTheme.light,
+            home: const Wrapper(),
+          );
+        },
       ),
     );
   }
