@@ -2,109 +2,80 @@
 import 'package:aiko_ben_expense_app/core/theme/app_colors.dart';
 import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
 import 'package:aiko_ben_expense_app/models/category.dart';
-import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/single_transaction/numeric_keypad.dart';
 import 'package:aiko_ben_expense_app/services/auth_service.dart';
-import 'package:aiko_ben_expense_app/services/category_preferences.dart';
-import 'package:aiko_ben_expense_app/services/category_usage_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/constants.dart';
-import 'package:aiko_ben_expense_app/shared/widgets/category_picker_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class AddOrEditSingleTransaction extends StatefulWidget {
+
   final Category category;
   final DateTime selectedDate;
   final double? transactionAmount;
   final String? transactionComment;
   final String? transactionId;
 
-  const AddOrEditSingleTransaction({
-    super.key,
-    required this.category,
-    required this.selectedDate,
-    this.transactionAmount,
-    this.transactionComment,
-    this.transactionId,
-  });
+  const AddOrEditSingleTransaction(
+      {super.key,
+      required this.category,
+      required this.selectedDate,
+      this.transactionAmount,
+      this.transactionComment,
+      this.transactionId});
 
   @override
-  State<AddOrEditSingleTransaction> createState() =>
-      _AddOrEditSingleTransaction();
+  State<AddOrEditSingleTransaction> createState() => _AddOrEditSingleTransaction();
 }
 
 class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
-  final FocusNode _focus = FocusNode();
 
-  late Category _selectedCategory;
+  final FocusNode _focus = FocusNode(); // 1) init _focus to let user directly input number from keypad
+
+  late Map data;
   TextEditingController dateInput = TextEditingController();
   TextEditingController transactionAmountInput = TextEditingController();
   TextEditingController transactionCommentInput = TextEditingController();
 
   @override
   void initState() {
-    super.initState();
-    _selectedCategory = widget.category;
     dateInput.text = DateFormat('MM/dd/yyyy').format(widget.selectedDate);
 
+    // if transactionId exists, it's not a new transaction
     if (widget.transactionId != null) {
       transactionAmountInput.text = widget.transactionAmount.toString();
       transactionCommentInput.text = widget.transactionComment.toString();
     }
+    super.initState();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    FocusScope.of(context).requestFocus(_focus);
+    FocusScope.of(context).requestFocus(_focus); // Request focus for the transaction amount field when the screen loads
     _focus.addListener(_onFocusChange);
   }
 
   @override
   void dispose() {
+    super.dispose();
     _focus
       ..removeListener(_onFocusChange)
-      ..dispose();
-    super.dispose();
+      ..dispose(); // 3) removeListener and dispose
   }
 
   void _onFocusChange() {
     setState(() {});
   }
 
-  Future<void> _changeCategory() async {
-    final user = context.read<User?>();
-    if (user?.householdId == null) return;
-
-    final householdId = user!.householdId!;
-    final categories = await getHouseholdCategoriesMap(householdId);
-    final pinnedIds = await getHouseholdPinnedCategoryIds(householdId);
-    if (!mounted) return;
-    final transactions = context.read<List<Transaction>?>() ?? const [];
-    final usageCounts = computeUsageCounts(transactions);
-    final lastUsed = await CategoryPreferences.getLastUsedCategory(householdId);
-
-    if (!mounted) return;
-    await showCategoryPickerSheet(
-      context: context,
-      householdId: householdId,
-      categories: categories,
-      pinnedCategoryIds: pinnedIds,
-      usageCounts: usageCounts,
-      lastUsedCategoryId: lastUsed,
-      onCategorySelected: (category) {
-        setState(() => _selectedCategory = category);
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final User? user = context.read<User?>();
+
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -112,6 +83,7 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // drag handle
           Padding(
             padding: const EdgeInsets.only(top: AppSpacing.md),
             child: Container(
@@ -124,41 +96,26 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
-          InkWell(
-            onTap: _changeCategory,
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.lg,
-                vertical: AppSpacing.sm,
+          // category label
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconTheme(
+                data: const IconThemeData(
+                  color: AppColors.categoryAccent,
+                  size: 20,
+                ),
+                child: widget.category.categoryIcon,
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconTheme(
-                    data: const IconThemeData(
-                      color: AppColors.categoryAccent,
-                      size: 20,
-                    ),
-                    child: _selectedCategory.categoryIcon,
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    _selectedCategory.categoryName,
-                    style: theme.textTheme.titleMedium,
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                  Icon(
-                    Icons.expand_more,
-                    size: 20,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ],
+              const SizedBox(width: AppSpacing.sm),
+              Text(
+                widget.category.categoryName,
+                style: theme.textTheme.titleMedium,
               ),
-            ),
+            ],
           ),
           const SizedBox(height: AppSpacing.sm),
+          // amount entry
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
             child: TextField(
@@ -186,6 +143,7 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
+          // description
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
             child: TextField(
@@ -235,39 +193,28 @@ class _AddOrEditSingleTransaction extends State<AddOrEditSingleTransaction> {
   void _submitToDatabase(User? user) async {
     if (transactionAmountInput.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Invalid transaction amount. Please enter a valid number.',
-          ),
+        SnackBar(
+          content: Text('Invalid transaction amount. Please enter a valid number.'),
         ),
       );
-      return;
-    }
-
-    final householdId = user!.householdId!;
-    await CategoryPreferences.saveLastUsedCategory(
-      householdId,
-      _selectedCategory.categoryId,
-    );
-
-    if (widget.transactionId == null) {
-      await DatabaseService(householdId: householdId).addNewTransaction(
-        _selectedCategory.categoryId,
-        double.tryParse(transactionAmountInput.text)!,
-        transactionCommentInput.text,
-        DateFormat('MM/dd/yyyy').parse(dateInput.text),
-        createdByUid: AuthService().currentUser?.uid,
-        createdByName: AuthService().currentUser?.displayName,
-      );
     } else {
-      await DatabaseService(householdId: householdId).editTransactionById(
-        widget.transactionId!,
-        _selectedCategory.categoryId,
-        double.tryParse(transactionAmountInput.text)!,
-        transactionCommentInput.text,
-        DateFormat('MM/dd/yyyy').parse(dateInput.text),
-      );
+      if (widget.transactionId == null) {
+        await DatabaseService(householdId: user!.householdId).addNewTransaction(
+            widget.category.categoryId,
+            double.tryParse(transactionAmountInput.text)!,
+            transactionCommentInput.text,
+            DateFormat('MM/dd/yyyy').parse(dateInput.text),
+            createdByUid: AuthService().currentUser?.uid,
+            createdByName: AuthService().currentUser?.displayName);
+      } else {
+        await DatabaseService(householdId: user!.householdId).editTransactionById(
+            widget.transactionId!,
+            widget.category.categoryId,
+            double.tryParse(transactionAmountInput.text)!,
+            transactionCommentInput.text,
+            DateFormat('MM/dd/yyyy').parse(dateInput.text));
+      }
+      Navigator.pop(context);
     }
-    if (mounted) Navigator.pop(context);
   }
 }

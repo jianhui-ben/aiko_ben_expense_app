@@ -1,18 +1,13 @@
 import 'package:aiko_ben_expense_app/core/theme/app_spacing.dart';
 import 'package:aiko_ben_expense_app/models/category.dart';
-import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/models/user.dart';
 import 'package:aiko_ben_expense_app/screens/single_transaction/add_or_edit_single_transaction.dart';
 import 'package:aiko_ben_expense_app/screens/home/spending_and_budget/daily_and_monthly_total.dart';
 import 'package:aiko_ben_expense_app/screens/home/transactions_list/transactions_list.dart';
-import 'package:aiko_ben_expense_app/services/category_preferences.dart';
-import 'package:aiko_ben_expense_app/services/category_usage_service.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
 import 'package:aiko_ben_expense_app/shared/widgets/app_scaffold.dart';
 import 'package:aiko_ben_expense_app/shared/widgets/category_chip.dart';
-import 'package:aiko_ben_expense_app/shared/widgets/category_editor_sheet.dart';
-import 'package:aiko_ben_expense_app/shared/widgets/category_picker_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -26,10 +21,10 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   Map<String, Category>? userCategoriesMap;
-  List<String>? pinnedCategoryIds;
-  String? lastUsedCategoryId;
+  List<String>? orderedUserCategoryIds;
   String householdName = 'Home';
 
+  // by default select today's date
   DateTime selectedDate =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
 
@@ -42,19 +37,16 @@ class _HomeState extends State<Home> {
   Future<void> fetchHomeData() async {
     final householdId = Provider.of<User?>(context, listen: false)!.householdId!;
     final fetchedCategoriesMap = await getHouseholdCategoriesMap(householdId);
-    final fetchedPinnedIds = await getHouseholdPinnedCategoryIds(householdId);
+    final fetchedOrderedIds = await getHouseholdSelectedCategoryIds(householdId);
     final fetchedName = await getHouseholdName(householdId);
-    final lastUsed = await CategoryPreferences.getLastUsedCategory(householdId);
 
     if (!mounted) return;
     setState(() {
       userCategoriesMap = fetchedCategoriesMap;
-      pinnedCategoryIds = fetchedPinnedIds;
+      orderedUserCategoryIds = fetchedOrderedIds;
       householdName = fetchedName;
-      lastUsedCategoryId = lastUsed;
     });
   }
-
 
   Future<void> _pickDate() async {
     final pickedDate = await showDatePicker(
@@ -68,13 +60,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<void> _openAddSheet(Category category) async {
-    final householdId = Provider.of<User?>(context, listen: false)!.householdId!;
-    await CategoryPreferences.saveLastUsedCategory(
-        householdId, category.categoryId);
-    setState(() => lastUsedCategoryId = category.categoryId);
-
-    if (!mounted) return;
+  void _openAddSheet(Category category) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -93,96 +79,11 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Future<void> _openCategoryPicker() async {
-    final householdId = Provider.of<User?>(context, listen: false)!.householdId!;
-    final transactions = context.read<List<Transaction>?>() ?? const [];
-    final usageCounts = computeUsageCounts(transactions);
-
-    await showCategoryPickerSheet(
-      context: context,
-      householdId: householdId,
-      categories: userCategoriesMap!,
-      pinnedCategoryIds: pinnedCategoryIds!,
-      usageCounts: usageCounts,
-      lastUsedCategoryId: lastUsedCategoryId,
-      onCategorySelected: _openAddSheet,
-    );
-    await fetchHomeData();
-  }
-
-  Future<void> _showChipActions(Category category) async {
-    final householdId = Provider.of<User?>(context, listen: false)!.householdId!;
-    final isPinned = pinnedCategoryIds!.contains(category.categoryId);
-
-    final action = await showModalBottomSheet<String>(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: const Text('Edit category'),
-              onTap: () => Navigator.pop(context, 'edit'),
-            ),
-            ListTile(
-              leading: Icon(isPinned ? Icons.push_pin_outlined : Icons.push_pin),
-              title: Text(isPinned ? 'Unpin from Home' : 'Pin to Home'),
-              onTap: () => Navigator.pop(context, isPinned ? 'unpin' : 'pin'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.visibility_off_outlined),
-              title: const Text('Hide category'),
-              onTap: () => Navigator.pop(context, 'hide'),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    if (!mounted || action == null) return;
-
-    switch (action) {
-      case 'edit':
-        await showCategoryEditorSheet(
-          context: context,
-          householdId: householdId,
-          category: category,
-          pinnedCategoryIds: pinnedCategoryIds!,
-        );
-        await fetchHomeData();
-      case 'pin':
-        await pinCategory(householdId, category.categoryId);
-        await fetchHomeData();
-      case 'unpin':
-        await unpinCategory(householdId, category.categoryId);
-        await fetchHomeData();
-      case 'hide':
-        await updateHouseholdCategoryHidden(
-            householdId, category.categoryId, true);
-        await fetchHomeData();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final transactions = context.watch<List<Transaction>?>() ?? const [];
-
-    if (userCategoriesMap == null || pinnedCategoryIds == null) {
+    if (userCategoriesMap == null || orderedUserCategoryIds == null) {
       return const Loading();
     }
-
-    final usageCounts = computeUsageCounts(transactions);
-    final hiddenIds = userCategoriesMap!.values
-        .where((c) => c.isHidden)
-        .map((c) => c.categoryId)
-        .toSet();
-    final homeCategoryIds = resolveHomeCategoryIds(
-      pinnedIds: pinnedCategoryIds!,
-      usageCounts: usageCounts,
-      hiddenIds: hiddenIds,
-      allCategoryIds: userCategoriesMap!.keys.toSet(),
-    );
 
     return AppScaffold(
       title: householdName,
@@ -205,17 +106,13 @@ class _HomeState extends State<Home> {
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              itemCount: homeCategoryIds.length + 1,
+              itemCount: orderedUserCategoryIds!.length,
               itemBuilder: (context, index) {
-                if (index == homeCategoryIds.length) {
-                  return MoreCategoryChip(onTap: _openCategoryPicker);
-                }
                 final category =
-                    userCategoriesMap![homeCategoryIds[index]]!;
+                    userCategoriesMap![orderedUserCategoryIds![index]]!;
                 return CategoryChip(
                   category: category,
                   onTap: () => _openAddSheet(category),
-                  onLongPress: () => _showChipActions(category),
                 );
               },
             ),

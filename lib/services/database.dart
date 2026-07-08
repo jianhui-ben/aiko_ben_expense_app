@@ -1,29 +1,9 @@
 import 'package:aiko_ben_expense_app/models/category.dart';
-import 'package:aiko_ben_expense_app/services/category_service.dart';
+import 'package:aiko_ben_expense_app/shared/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:aiko_ben_expense_app/models/transaction.dart' as my_user_transaction;
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-
-export 'package:aiko_ben_expense_app/services/category_service.dart'
-    show
-        getHouseholdCategoriesMap,
-        getHouseholdPinnedCategoryIds,
-        getHouseholdSelectedCategoryIds,
-        updateHouseholdPinnedCategoryIds,
-        updateHouseholdSelectedCategoryIds,
-        updateHouseholdCategoryName,
-        updateHouseholdCategoryIcon,
-        updateHouseholdCategoryHidden,
-        createHouseholdCategory,
-        updateHouseholdCategory,
-        pinCategory,
-        unpinCategory,
-        deleteHouseholdCategory,
-        countTransactionsForCategory,
-        reassignTransactionsCategory,
-        parseCategoriesFromHouseholdData,
-        parsePinnedCategoryIdsFromHouseholdData;
 
 /// All shared ledger data lives under `households/{householdId}`:
 /// - transactions in the `transactions` subcollection
@@ -50,12 +30,9 @@ class DatabaseService {
     return _transactionsCollection.snapshots().map((docSnapshot) {
       List<my_user_transaction.Transaction> userTransactions = [];
       for (QueryDocumentSnapshot<Map<String, dynamic>> doc in docSnapshot.docs) {
-        final categoryId = doc.data()['categoryId'] as String?;
-        final category = categoryId != null ? categoriesMap[categoryId] : null;
-        if (category == null) continue;
         userTransactions.add(my_user_transaction.Transaction(
           transactionId: doc["transactionId"],
-          category: category,
+          category: categoriesMap[doc["categoryId"]]!,
           transactionAmount: doc["transactionAmount"],
           transactionComment: doc["transactionComment"],
           dateTime: doc["dateTime"].toDate(),
@@ -123,7 +100,53 @@ class DatabaseService {
   }
 }
 
+DocumentReference<Map<String, dynamic>> _householdDocRef(String householdId) =>
+    FirebaseFirestore.instance.collection('households').doc(householdId);
+
 Future<String> getHouseholdName(String householdId) async {
-  final household = await householdDocRef(householdId).get();
+  final household = await _householdDocRef(householdId).get();
   return (household.data()?['name'] as String?) ?? 'Home';
+}
+
+Future<Map<String, Category>> getHouseholdCategoriesMap(
+    String householdId) async {
+  final household = await _householdDocRef(householdId).get();
+  if (household.exists) {
+    final Map<String, dynamic> categoriesData =
+        Map<String, dynamic>.from(household.data()!['categories'] ?? {});
+
+    final Map<String, Category> categoriesMap = {};
+    categoriesData.forEach((categoryId, categoryData) {
+      categoriesMap[categoryId] = Category(
+          categoryId: categoryId,
+          categoryName: categoryData["categoryName"],
+          categoryIcon:
+              Icon(stringToSupportedIconsMap[categoryData["categoryIcon"]]));
+    });
+    return categoriesMap;
+  } else {
+    throw Exception('Failed to get household categories map');
+  }
+}
+
+Future<List<String>> getHouseholdSelectedCategoryIds(String householdId) async {
+  final household = await _householdDocRef(householdId).get();
+  if (household.exists) {
+    return List<String>.from(household.data()!['selectedCategoryIds'] ?? []);
+  } else {
+    throw Exception('Failed to get household selected category ids');
+  }
+}
+
+Future<void> updateHouseholdSelectedCategoryIds(
+    String householdId, List<String> selectedCategoryIds) async {
+  await _householdDocRef(householdId)
+      .update({'selectedCategoryIds': selectedCategoryIds});
+}
+
+Future<void> updateHouseholdCategoryName(
+    String householdId, String selectedCategoryId, String newCategoryName) async {
+  await _householdDocRef(householdId).update({
+    'categories.$selectedCategoryId.categoryName': newCategoryName,
+  });
 }

@@ -2,36 +2,14 @@
 import 'package:flutter/material.dart';
 
 class Category {
+
   final String categoryId;
   String categoryName;
   final Icon categoryIcon;
-  final String iconKey;
-  final bool isHidden;
+  // late List<Transaction?> transactionsUnderCategory;
 
-  Category({
-    required this.categoryId,
-    required this.categoryName,
-    required this.categoryIcon,
-    this.iconKey = 'category',
-    this.isHidden = false,
-  });
+  Category({required this.categoryId, required this.categoryName, required this.categoryIcon});
 
-  bool get isCustom => categoryId.startsWith('custom_');
-
-  Category copyWith({
-    String? categoryName,
-    Icon? categoryIcon,
-    String? iconKey,
-    bool? isHidden,
-  }) {
-    return Category(
-      categoryId: categoryId,
-      categoryName: categoryName ?? this.categoryName,
-      categoryIcon: categoryIcon ?? this.categoryIcon,
-      iconKey: iconKey ?? this.iconKey,
-      isHidden: isHidden ?? this.isHidden,
-    );
-  }
 }
 
 final List<Category> defaultCategories = [

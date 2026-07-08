@@ -1,10 +1,10 @@
+import 'package:aiko_ben_expense_app/models/category.dart';
 import 'package:aiko_ben_expense_app/models/transaction.dart';
 import 'package:aiko_ben_expense_app/screens/home/home.dart';
 import 'package:aiko_ben_expense_app/screens/insights/insights.dart';
 import 'package:aiko_ben_expense_app/screens/setting/settings.dart';
 import 'package:aiko_ben_expense_app/services/database.dart';
 import 'package:aiko_ben_expense_app/shared/loading.dart';
-import 'package:cloud_firestore/cloud_firestore.dart' hide Transaction, Settings;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,55 +18,48 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> {
+
   int currentPageIndex = 0;
   NavigationDestinationLabelBehavior labelBehavior =
       NavigationDestinationLabelBehavior.alwaysShow;
 
+  // tabs from navigation bar
   final List<Widget> _pages = [
     Home(),
     Insights(),
     Settings(),
   ];
 
-  late final DatabaseService _db;
-  bool _migrationChecked = false;
+
+  Map<String, Category>? userCategoriesMap; // Store household categories here
 
   @override
   void initState() {
     super.initState();
-    _db = DatabaseService(householdId: widget.householdId);
-    _ensurePinnedMigration();
+    fetchUserCategories();
   }
 
-  Future<void> _ensurePinnedMigration() async {
-    await getHouseholdPinnedCategoryIds(widget.householdId);
-    if (mounted) setState(() => _migrationChecked = true);
+  Future<void> fetchUserCategories() async {
+    final fetchedCategoriesMap =
+        await getHouseholdCategoriesMap(widget.householdId);
+
+    if (!mounted) return;
+    setState(() {
+      userCategoriesMap = fetchedCategoriesMap;
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
-    if (!_migrationChecked) {
-      return const Loading();
-    }
+    DatabaseService db = DatabaseService(householdId: widget.householdId);
 
-    final householdDoc = FirebaseFirestore.instance
-        .collection('households')
-        .doc(widget.householdId);
-
-    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: householdDoc.snapshots(),
-      builder: (context, householdSnapshot) {
-        if (!householdSnapshot.hasData || !householdSnapshot.data!.exists) {
-          return const Loading();
-        }
-
-        final householdData = householdSnapshot.data!.data();
-        final categories =
-            parseCategoriesFromHouseholdData(householdData);
-        _db.setUserCategoriesMap(categories);
-
-        return StreamProvider<List<Transaction>?>.value(
-          value: _db.transactions,
+    if (userCategoriesMap == null) {
+      return Loading();
+    } else {
+      db.setUserCategoriesMap(userCategoriesMap!);
+      return StreamProvider<List<Transaction>?>.value(
+          value: db.transactions,
           initialData: null,
           child: Scaffold(
             body: _pages[currentPageIndex],
@@ -74,7 +67,10 @@ class _NavigationState extends State<Navigation> {
               labelBehavior: labelBehavior,
               selectedIndex: currentPageIndex,
               onDestinationSelected: (int index) {
-                setState(() => currentPageIndex = index);
+                setState(() {
+                  // print("curent tab index: $index");
+                  currentPageIndex = index;
+                });
               },
               destinations: const <Widget>[
                 NavigationDestination(
@@ -91,9 +87,7 @@ class _NavigationState extends State<Navigation> {
                 ),
               ],
             ),
-          ),
-        );
-      },
-    );
+          ));
+    }
   }
 }
