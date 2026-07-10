@@ -101,6 +101,11 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
             children: [
               Text('Leave "${household.name}"?',
                   style: theme.textTheme.headlineSmall),
+              const SizedBox(height: AppSpacing.sm),
+              Text(
+                'You can create or join another household afterward.',
+                style: theme.textTheme.bodyMedium,
+              ),
               const SizedBox(height: AppSpacing.lg),
               Text(
                 '• Shared expenses, budget, and categories stay with this household',
@@ -323,15 +328,15 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
                   ],
                   if (membersLoaded) ...[
                   const SizedBox(height: AppSpacing.lg),
-                  Text('Leave household', style: theme.textTheme.headlineSmall),
+                  Text('Change household', style: theme.textTheme.headlineSmall),
                   const SizedBox(height: AppSpacing.sm),
                   AppCard(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          'You\'ll lose access to shared expenses. Data stays '
-                          'with the household.',
+                          'Leave this household to create or join a different '
+                          'one. Shared expenses stay with this household.',
                           style: theme.textTheme.bodyMedium,
                         ),
                         if (!canLeave && partner != null) ...[
@@ -343,36 +348,26 @@ class _HouseholdSettingsScreenState extends State<HouseholdSettingsScreen> {
                           ),
                         ],
                         const SizedBox(height: AppSpacing.lg),
-                        FilledButton(
+                        OutlinedButton(
                           onPressed: _actionLoading || !canLeave
                               ? null
                               : () => _confirmLeave(
                                     household,
                                     members.length <= 1,
                                   ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.error,
+                            side: const BorderSide(color: AppColors.error),
+                          ),
                           child: _actionLoading
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: Colors.white,
                                   ),
                                 )
-                              : const Text('Switch to a different household'),
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        TextButton(
-                          onPressed: _actionLoading || !canLeave
-                              ? null
-                              : () => _confirmLeave(
-                                    household,
-                                    members.length <= 1,
-                                  ),
-                          style: TextButton.styleFrom(
-                            foregroundColor: AppColors.error,
-                          ),
-                          child: const Text('Leave household'),
+                              : const Text('Change household'),
                         ),
                       ],
                     ),

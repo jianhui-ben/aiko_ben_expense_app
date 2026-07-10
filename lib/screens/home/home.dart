@@ -35,17 +35,32 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> fetchHomeData() async {
-    final householdId = Provider.of<User?>(context, listen: false)!.householdId!;
-    final fetchedCategoriesMap = await getHouseholdCategoriesMap(householdId);
-    final fetchedOrderedIds = await getHouseholdSelectedCategoryIds(householdId);
-    final fetchedName = await getHouseholdName(householdId);
+    final householdId =
+        Provider.of<User?>(context, listen: false)?.householdId;
+    // User may have left the household while this fetch was in flight.
+    if (householdId == null) return;
 
-    if (!mounted) return;
-    setState(() {
-      userCategoriesMap = fetchedCategoriesMap;
-      orderedUserCategoryIds = fetchedOrderedIds;
-      householdName = fetchedName;
-    });
+    try {
+      final fetchedCategoriesMap =
+          await getHouseholdCategoriesMap(householdId);
+      final fetchedOrderedIds =
+          await getHouseholdSelectedCategoryIds(householdId);
+      final fetchedName = await getHouseholdName(householdId);
+
+      if (!mounted) return;
+      // Re-check: leave can clear householdId between the awaits above.
+      if (Provider.of<User?>(context, listen: false)?.householdId == null) {
+        return;
+      }
+      setState(() {
+        userCategoriesMap = fetchedCategoriesMap;
+        orderedUserCategoryIds = fetchedOrderedIds;
+        householdName = fetchedName;
+      });
+    } catch (_) {
+      // Permission-denied (or similar) after leaving is expected; ignore.
+      if (!mounted) return;
+    }
   }
 
   Future<void> _pickDate() async {

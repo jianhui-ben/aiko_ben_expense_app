@@ -7,10 +7,15 @@ import 'package:integration_test/integration_test.dart';
 
 /// End-to-end tests for the shared-household experience.
 ///
-/// These run the REAL app against the Firebase Emulator Suite. Start the
-/// emulators first, then run with the USE_EMULATOR flag:
+/// These run the REAL app against the Firebase Emulator Suite.
 ///
-///   firebase emulators:start
+/// **Required before running** (in a separate terminal):
+///
+///   firebase emulators:start --only auth,firestore
+///
+/// Then run tests with the emulator flag (without it, sign-up hits production
+/// Firebase and fails with "Network error / unreachable host"):
+///
 ///   flutter test integration_test/household_e2e_test.dart \
 ///       -d "iPhone 17 Pro" --dart-define=USE_EMULATOR=true
 void main() {
@@ -75,11 +80,11 @@ void main() {
       await _pumpUntilFound(tester, find.text('Alice E2E (You)'));
       expect(find.text('Members'), findsOneWidget);
       final leaveCta = find.widgetWithText(
-        FilledButton,
-        'Switch to a different household',
+        OutlinedButton,
+        'Change household',
       );
       await tester.ensureVisible(leaveCta.first);
-      expect(tester.widget<FilledButton>(leaveCta).onPressed, isNotNull,
+      expect(tester.widget<OutlinedButton>(leaveCta).onPressed, isNotNull,
           reason: 'sole owner should be able to leave');
       await _tap(tester, find.byType(BackButton));
 
@@ -127,11 +132,11 @@ void main() {
           findsOneWidget);
 
       final leaveCta = find.widgetWithText(
-        FilledButton,
-        'Switch to a different household',
+        OutlinedButton,
+        'Change household',
       );
       await tester.ensureVisible(leaveCta.first);
-      expect(tester.widget<FilledButton>(leaveCta).onPressed, isNull,
+      expect(tester.widget<OutlinedButton>(leaveCta).onPressed, isNull,
           reason: 'owner with partner should be blocked until transfer');
     },
   );
@@ -276,13 +281,13 @@ void main() {
       await _openHouseholdSettings(tester);
       await _pumpUntilFound(tester, find.text('Ownership'));
       final leaveButton = find.widgetWithText(
-        FilledButton,
-        'Switch to a different household',
+        OutlinedButton,
+        'Change household',
       );
       await tester.ensureVisible(leaveButton.first);
       await tester.pump();
       expect(leaveButton, findsOneWidget);
-      final widget = tester.widget<FilledButton>(leaveButton);
+      final widget = tester.widget<OutlinedButton>(leaveButton);
       expect(widget.onPressed, isNull,
           reason: 'owner should be blocked from leaving');
 
@@ -435,15 +440,15 @@ Future<void> _waitForOwnerInFirestore(
 
 Future<void> _pumpUntilLeaveEnabled(WidgetTester tester) async {
   final leaveCta = find.widgetWithText(
-    FilledButton,
-    'Switch to a different household',
+    OutlinedButton,
+    'Change household',
   );
   final end = DateTime.now().add(const Duration(seconds: 15));
   while (DateTime.now().isBefore(end)) {
     await tester.pump(const Duration(milliseconds: 150));
     if (leaveCta.evaluate().isEmpty) continue;
     await tester.ensureVisible(leaveCta.first);
-    final button = tester.widget<FilledButton>(leaveCta);
+    final button = tester.widget<OutlinedButton>(leaveCta);
     if (button.onPressed != null) return;
   }
   throw TestFailure('Timed out waiting for leave to be enabled');
@@ -457,8 +462,8 @@ Future<void> _leaveHouseholdViaUi(
     await _openHouseholdSettings(tester);
   }
   final leaveCta = find.widgetWithText(
-    FilledButton,
-    'Switch to a different household',
+    OutlinedButton,
+    'Change household',
   );
   await _pumpUntilFound(tester, leaveCta);
   await tester.ensureVisible(leaveCta.first);
